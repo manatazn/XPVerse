@@ -51,13 +51,11 @@
       user-select: none;
     }
 
-    /* İnput sahələrində yazmağa icazə veririk */
     input {
       -webkit-user-select: auto !important;
       user-select: auto !important;
     }
 
-    /* Şəkilləri sürükləməyi ləğv edirik */
     img {
       pointer-events: none;
     }
@@ -72,14 +70,15 @@
     
     ::-webkit-scrollbar { width: 0px; background: transparent; }
 
-    .fade-in { animation: fadeIn 0.3s ease-in-out forwards; }
+    /* Yalnız yavaşca peyda olma effekti (aşağıdan yuxarı sürüşmə ləğv edildi) */
+    .fade-in { animation: fadeIn 0.2s ease-in forwards; }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
+    
     .pulse-glow { box-shadow: 0 0 20px rgba(6, 182, 212, 0.5); }
 
-    /* Perfect Centered Toast Notification */
     #toast-container {
       position: fixed;
       top: 1.5rem;
@@ -122,7 +121,7 @@
     </div>
   </div>
 
-  <header id="main-header" class="fixed top-0 left-0 right-0 z-50 w-full p-4 glass-card border-b border-crypto-primary/30 bg-[#0f172a]/90 transition-opacity duration-300">
+  <header id="main-header" class="fixed top-0 left-0 right-0 z-50 w-full p-4 glass-card border-b border-crypto-primary/30 bg-[#0f172a]/90">
     <div class="flex justify-between items-center max-w-md mx-auto">
       <div class="flex items-center gap-3">
         <div class="relative w-12 h-12 rounded-full p-[2px] bg-gradient-to-tr from-blue-600 to-cyan-400">
@@ -146,7 +145,7 @@
     </div>
   </header>
 
-  <main class="flex-1 max-w-md w-full mx-auto p-4 pt-28 relative transition-all duration-300" id="app-content">
+  <main class="flex-1 max-w-md w-full mx-auto p-4 pt-28 relative" id="app-content">
     
     <div id="view-home" class="view-section fade-in space-y-5">
       <div class="relative overflow-hidden rounded-3xl border border-blue-500/30 bg-gradient-to-b from-blue-900/40 to-slate-900/80 p-6 text-center glass-card">
@@ -210,7 +209,7 @@
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-crypto-bronze/20 rounded-full blur-xl"></div>
         <div>
           <h3 class="text-lg font-bold text-crypto-bronze">BRONZE BOX</h3>
-          <p class="text-[10px] text-slate-400 mt-1">Cost: 500 XP | Max: $0.10</p>
+          <p class="text-[10px] text-slate-400 mt-1">Cost: 1000 XP | Max: $0.10</p>
         </div>
         <button onclick="openBox('bronze')" class="bg-crypto-bronze/20 border border-crypto-bronze text-crypto-bronze hover:bg-crypto-bronze hover:text-white transition-colors px-4 py-2 rounded-xl text-xs font-bold uppercase">Open</button>
       </div>
@@ -219,7 +218,7 @@
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-crypto-silver/20 rounded-full blur-xl"></div>
         <div>
           <h3 class="text-lg font-bold text-crypto-silver">SILVER BOX</h3>
-          <p class="text-[10px] text-slate-400 mt-1">Cost: 2500 XP | Max: $0.50</p>
+          <p class="text-[10px] text-slate-400 mt-1">Cost: 5000 XP | Max: $0.50</p>
         </div>
         <button onclick="openBox('silver')" class="bg-crypto-silver/20 border border-crypto-silver text-crypto-silver hover:bg-crypto-silver hover:text-crypto-dark transition-colors px-4 py-2 rounded-xl text-xs font-bold uppercase">Open</button>
       </div>
@@ -228,7 +227,7 @@
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-crypto-gold/20 rounded-full blur-xl pulse-glow"></div>
         <div>
           <h3 class="text-lg font-bold text-crypto-gold">GOLD BOX</h3>
-          <p class="text-[10px] text-slate-400 mt-1">Cost: 5000 XP | Max: $1.00</p>
+          <p class="text-[10px] text-slate-400 mt-1">Cost: 10000 XP | Max: $1.00</p>
         </div>
         <button onclick="openBox('gold')" class="bg-crypto-gold/20 border border-crypto-gold text-crypto-gold hover:bg-crypto-gold hover:text-crypto-dark transition-colors px-4 py-2 rounded-xl text-xs font-bold uppercase shadow-[0_0_15px_rgba(251,191,36,0.3)]">Open</button>
       </div>
@@ -368,7 +367,6 @@
     let missionsState = getDefaultMissions();
     const streakRewards = [5, 10, 15, 20, 25, 30, 50]; 
 
-    // --- ANTI-CHEAT SERVER TIME TRACKING ---
     let accurateTimeOffset = null;
 
     async function fetchServerTime() {
@@ -409,7 +407,6 @@
       return new Date(accurateTimeOffset + performance.now());
     }
 
-    // --- TOAST NOTIFICATION SYSTEM ---
     function showToast(title, message, type = 'info') {
       const toast = document.getElementById('toast-container');
       const icon = document.getElementById('toast-icon');
@@ -444,7 +441,6 @@
       }, 3500);
     }
 
-    // --- LOCAL STORAGE MANAGEMENT ---
     function saveState() {
       localStorage.setItem(`xpverse_user_${userState.tgId}`, JSON.stringify(userState));
       localStorage.setItem(`xpverse_missions_${userState.tgId}`, JSON.stringify(missionsState));
@@ -458,7 +454,6 @@
       if (savedMissions) missionsState = { ...getDefaultMissions(), ...JSON.parse(savedMissions) };
     }
 
-    // --- DAILY RESET SYSTEM ---
     function getResetDay(serverDate) {
       return serverDate.toISOString().split('T')[0]; 
     }
@@ -494,7 +489,7 @@
       }
     }
 
-    // --- UI & RENDER LOGIC ---
+    // LEVEL UP sadəcə fəxri (vizual) rütbədir, heç bir mükafat verilmir.
     function checkLevelUp() {
       const xp = userState.totalXp;
       let newLevel = 1;
@@ -506,7 +501,7 @@
       
       if (newLevel > userState.level) {
         userState.level = newLevel;
-        showToast("Level Up!", `Congratulations! You reached Level ${newLevel}!`, "success");
+        showToast("Level Atladın!", `Təbriklər! Yeni Səviyyə: ${newLevel}!`, "success");
       }
     }
 
@@ -560,7 +555,6 @@
       renderStreakTracker();
     }
 
-    // --- MISSIONS ENGINE ---
     function renderStreakTracker() {
       const container = document.getElementById('streak-tracker-container');
       container.innerHTML = '';
@@ -650,7 +644,6 @@
         showToast("Task Completed!", `You earned +${mission.reward} XP!`, "success");
     }
 
-    // --- ADSGRAM & BOX LOGIC ---
     function watchAd() {
       if (userState.adsWatchedToday >= 30) {
         showToast("Limit Reached", "You reached the daily limit of 30 ads. Come back tomorrow!", "error");
@@ -688,14 +681,16 @@
       }
     }
 
-    const boxCosts = { bronze: 500, silver: 2500, gold: 5000 };
+    // YENİ QUTU SİSTEMİ VƏ QİYMƏTLƏRİ (DƏRHAL SİLİNMƏ VƏ MÜKAFAT)
+    const boxCosts = { bronze: 1000, silver: 5000, gold: 10000 };
     function openBox(type) {
       const cost = boxCosts[type];
       if (userState.xp < cost) {
-        showToast("Insufficient XP", `You need ${cost} XP to open this box.`, "error");
+        showToast("Kifayət qədər XP yoxdur", `Bu qutunu açmaq üçün sənə ${cost} XP lazımdır.`, "error");
         return;
       }
 
+      // Xp anında silinir
       userState.xp -= cost;
       userState.boxesOpened += 1;
       
@@ -704,15 +699,15 @@
       else if (type === 'silver') reward = 0.50;
       else if (type === 'gold') reward = 1.00;
 
+      // Balans anında verilir
       userState.usdBalance += reward;
 
       saveState();
       updateUI();
 
-      showToast("🎁 Box Opened!", `You opened a ${type.toUpperCase()} BOX and won $${reward.toFixed(2)}!`, "success");
+      showToast("🎁 Qutu Açıldı!", `Təbriklər! Qutudan $${reward.toFixed(2)} qazandın! (Balansından ${cost} XP silindi)`, "success");
     }
 
-    // --- WITHDRAW LOGIC ---
     function requestWithdrawal() {
       const address = document.getElementById('wallet-address').value;
       const amount = parseFloat(document.getElementById('withdraw-amount').value);
@@ -779,7 +774,7 @@
       });
     }
 
-    // --- NAVIGATION & VIEWS ---
+    // BURA DƏYİŞDİ: Profildə və Cüzdanda başlıq (header) anında, effektsiz yoxa çıxır
     function switchTab(tabId) {
       document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -795,15 +790,16 @@
       const header = document.getElementById('main-header');
       const mainContent = document.getElementById('app-content');
 
-      // Cüzdan (Withdraw) səhifəsində başlığı gizlədirik, digərlərində açırıq
-      if (tabId === 'withdraw') {
-        activeBtn.classList.add('text-emerald-400');
-        header.classList.add('hidden');
+      if (tabId === 'withdraw' || tabId === 'profile') {
+        if(tabId === 'withdraw') activeBtn.classList.add('text-emerald-400');
+        else activeBtn.classList.add('text-cyan-400');
+        
+        header.style.display = 'none'; // Anında yoxa çıxma
         mainContent.classList.remove('pt-28');
         mainContent.classList.add('pt-4');
       } else {
         activeBtn.classList.add('text-cyan-400');
-        header.classList.remove('hidden');
+        header.style.display = 'block'; // Anında qayıtma
         mainContent.classList.remove('pt-4');
         mainContent.classList.add('pt-28');
       }
@@ -811,27 +807,23 @@
       if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
     }
 
-    // --- KLAVİATURANIN GERİ DÜYMƏSİ XƏTASI ÜÇÜN QƏTİ HƏLL ---
     function setupKeyboardFix() {
       const nav = document.getElementById('bottom-nav');
       
-      // Viewport ölçüsünü izləyərək klaviaturanın açılıb-bağlandığını 100% dəqiqliklə tapırıq
       if (window.visualViewport) {
         const initialHeight = window.visualViewport.height;
         window.visualViewport.addEventListener('resize', () => {
           if (window.visualViewport.height < initialHeight - 100) {
-            nav.style.display = 'none'; // Ekran kiçildi, deməli klaviatura açıqdır
+            nav.style.display = 'none'; 
           } else {
-            nav.style.display = ''; // Ekran öz yerinə qayıtdı (Geri düyməsinə basıldıqda da bura işləyir)
+            nav.style.display = ''; 
             
-            // Xəyalət klaviaturaların qarşısını almaq üçün focusdan çıxarırıq
             if (document.activeElement && document.activeElement.tagName === 'INPUT') {
               document.activeElement.blur();
             }
           }
         });
       } else {
-        // Çox köhnə telefonlar üçün ehtiyat planı
         const initialHeight = window.innerHeight;
         window.addEventListener('resize', () => {
           if (window.innerHeight < initialHeight - 100) {
@@ -861,7 +853,6 @@
         }
     }
     
-    // --- INITIALIZATION ---
     async function initApp() {
       fetchServerTime(); 
       

@@ -103,7 +103,7 @@
     </div>
   </div>
 
-  <header class="sticky top-0 z-50 w-full p-4 glass-card border-b border-crypto-primary/30">
+  <header class="fixed top-0 left-0 right-0 z-50 w-full p-4 glass-card border-b border-crypto-primary/30 bg-[#0f172a]/90">
     <div class="flex justify-between items-center max-w-md mx-auto">
       <div class="flex items-center gap-3">
         <div class="relative w-12 h-12 rounded-full p-[2px] bg-gradient-to-tr from-blue-600 to-cyan-400">
@@ -127,7 +127,7 @@
     </div>
   </header>
 
-  <main class="flex-1 max-w-md w-full mx-auto p-4 relative" id="app-content">
+  <main class="flex-1 max-w-md w-full mx-auto p-4 pt-28 relative" id="app-content">
     
     <div id="view-home" class="view-section fade-in space-y-5">
       <div class="relative overflow-hidden rounded-3xl border border-blue-500/30 bg-gradient-to-b from-blue-900/40 to-slate-900/80 p-6 text-center glass-card">
@@ -277,7 +277,7 @@
 
   </main>
 
-  <nav id="bottom-nav" class="fixed bottom-0 left-0 w-full glass-card border-t border-blue-500/20 pb-safe pb-3 pt-2 z-50 transition-transform duration-300">
+  <nav id="bottom-nav" class="fixed bottom-0 left-0 w-full glass-card border-t border-blue-500/20 pb-safe pb-3 pt-2 z-50">
     <div class="max-w-md mx-auto flex justify-between items-center px-6">
       <button onclick="switchTab('home')" class="nav-btn text-cyan-400 flex flex-col items-center gap-1 w-12 transition-colors" data-target="home">
         <i class="fa-solid fa-house text-xl"></i>
@@ -625,7 +625,6 @@
           btn.innerHTML = '<i class="fa-solid fa-video"></i> Watch Ad (+5 XP)';
           btn.classList.remove('opacity-70', 'pointer-events-none');
         }).catch((error) => {
-          // NO ERROR MESSAGE SHOWN TO THE USER
           btn.innerHTML = '<i class="fa-solid fa-video"></i> Watch Ad (+5 XP)';
           btn.classList.remove('opacity-70', 'pointer-events-none');
         });
@@ -748,35 +747,26 @@
       if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
     }
 
-    // The Ultimate Fix for Mobile Keyboard Viewport Resizing
+    // BURA DƏYİŞDİ: Klaviatura problemi üçün ən optimal həll. Transform ləğv edildi, dərhal gizlədilir.
     function setupKeyboardFix() {
       const nav = document.getElementById('bottom-nav');
-      
-      if (window.visualViewport) {
-        const initialHeight = window.visualViewport.height;
+      const inputs = document.querySelectorAll('input');
+
+      inputs.forEach(input => {
+        // Input-a toxunduqda naviqasiyanı dərhal gizlət
+        input.addEventListener('focus', () => { 
+          nav.style.display = 'none'; 
+        });
         
-        window.visualViewport.addEventListener('resize', () => {
-          // If the viewport height gets smaller, the keyboard is open
-          if (window.visualViewport.height < initialHeight - 100) {
-            nav.style.transform = 'translateY(150%)';
-          } else {
-            // Viewport returned to normal size (keyboard closed via hardware back or dismiss button)
-            nav.style.transform = 'translateY(0)';
-            
-            // Remove focus from any active input so it doesn't try to pop keyboard back up
-            if (document.activeElement && document.activeElement.tagName === 'INPUT') {
-              document.activeElement.blur();
+        // Input-dan çıxdıqda (klaviatura bağlandıqda) naviqasiyanı geri gətir
+        input.addEventListener('blur', () => { 
+          setTimeout(() => { 
+            if (document.activeElement.tagName !== 'INPUT') {
+              nav.style.display = ''; // Original CSS dəyərinə qaytarır
             }
-          }
+          }, 150); 
         });
-      } else {
-        // Fallback for extremely old devices
-        const inputs = document.querySelectorAll('input');
-        inputs.forEach(input => {
-          input.addEventListener('focus', () => { nav.style.transform = 'translateY(150%)'; });
-          input.addEventListener('blur', () => { setTimeout(() => { if (document.activeElement.tagName !== 'INPUT') nav.style.transform = 'translateY(0)'; }, 100); });
-        });
-      }
+      });
     }
 
     function updateTimer() {
@@ -799,12 +789,16 @@
     
     // --- INITIALIZATION ---
     async function initApp() {
-      await fetchServerTime();
+      // BURA DƏYİŞDİ: API geciksə belə yüklənmə ekranı düz 3 saniyəyə bitəcək
+      fetchServerTime(); // Gözləmədən arxa planda işləsin
       
-      document.getElementById('loading-overlay').style.opacity = '0';
+      // Tam 3 saniyə (3000ms) gözlədikdən sonra yüklənmə ekranını yoxa çıxarırıq
       setTimeout(() => {
-        document.getElementById('loading-overlay').style.display = 'none';
-      }, 500);
+        document.getElementById('loading-overlay').style.opacity = '0';
+        setTimeout(() => {
+          document.getElementById('loading-overlay').style.display = 'none';
+        }, 500); // fade animasiyası üçün vaxt
+      }, 3000);
 
       loadState();
       checkDailyReset();

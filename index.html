@@ -34,6 +34,7 @@
   </script>
 
   <style>
+    /* KOPYALAMA VƏ SEÇMƏNİN QARŞISININ ALINMASI (ANTI-COPY/DRAG) */
     body {
       background-color: #020617;
       color: #f8fafc;
@@ -207,7 +208,7 @@
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-crypto-bronze/20 rounded-full blur-xl"></div>
         <div>
           <h3 class="text-lg font-bold text-crypto-bronze">BRONZE BOX</h3>
-          <p class="text-[10px] text-slate-400 mt-1">Cost: 1000 XP | Max: $0.10</p>
+          <p class="text-[10px] text-slate-400 mt-1">Cost: 1000 XP | Max: $1.00</p>
         </div>
         <button onclick="openBox('bronze')" class="bg-crypto-bronze/20 border border-crypto-bronze text-crypto-bronze hover:bg-crypto-bronze hover:text-white transition-colors px-4 py-2 rounded-xl text-xs font-bold uppercase">Open</button>
       </div>
@@ -216,7 +217,7 @@
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-crypto-silver/20 rounded-full blur-xl"></div>
         <div>
           <h3 class="text-lg font-bold text-crypto-silver">SILVER BOX</h3>
-          <p class="text-[10px] text-slate-400 mt-1">Cost: 5000 XP | Max: $0.50</p>
+          <p class="text-[10px] text-slate-400 mt-1">Cost: 5000 XP | Max: $7.00</p>
         </div>
         <button onclick="openBox('silver')" class="bg-crypto-silver/20 border border-crypto-silver text-crypto-silver hover:bg-crypto-silver hover:text-crypto-dark transition-colors px-4 py-2 rounded-xl text-xs font-bold uppercase">Open</button>
       </div>
@@ -225,7 +226,7 @@
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-crypto-gold/20 rounded-full blur-xl pulse-glow"></div>
         <div>
           <h3 class="text-lg font-bold text-crypto-gold">GOLD BOX</h3>
-          <p class="text-[10px] text-slate-400 mt-1">Cost: 10000 XP | Max: $1.00</p>
+          <p class="text-[10px] text-slate-400 mt-1">Cost: 10000 XP | Max: $15.00</p>
         </div>
         <button onclick="openBox('gold')" class="bg-crypto-gold/20 border border-crypto-gold text-crypto-gold hover:bg-crypto-gold hover:text-crypto-dark transition-colors px-4 py-2 rounded-xl text-xs font-bold uppercase shadow-[0_0_15px_rgba(251,191,36,0.3)]">Open</button>
       </div>
@@ -331,12 +332,10 @@
   </nav>
 
   <script>
-    // --- TELEGRAM WEBAPP INIT ---
     const tg = window.Telegram.WebApp;
     tg.expand(); 
     tg.ready();
 
-    // Default State structures
     const defaultUserState = {
       tgId: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : 123456789,
       firstName: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : "Crypto User",
@@ -353,9 +352,9 @@
       withdrawHistory: []
     };
 
-    // XP GƏLİRLƏRİ ARTIRILDI (~500 XP/Gün)
+    // Günlük tapşırıqlar (Günə təxmini 500 XP toplanması üçün artırıldı)
     const getDefaultMissions = () => ({
-      dailyReward: { completed: true, claimed: false, reward: 10, type: 'boolean' },
+      dailyReward: { completed: true, claimed: false, reward: 5, type: 'boolean' },
       watch5: { target: 5, claimed: false, reward: 20, type: 'progress' },
       watch10: { target: 10, claimed: false, reward: 30, type: 'progress' },
       watch20: { target: 20, claimed: false, reward: 50, type: 'progress' },
@@ -364,7 +363,7 @@
 
     let userState = { ...defaultUserState };
     let missionsState = getDefaultMissions();
-    const streakRewards = [10, 15, 20, 25, 30, 40, 50]; 
+    const streakRewards = [5, 10, 15, 20, 25, 30, 50]; 
 
     let accurateTimeOffset = null;
 
@@ -421,6 +420,10 @@
         icon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
         icon.className = 'w-12 h-12 rounded-full flex shrink-0 items-center justify-center bg-red-500/20 text-red-400 text-xl shadow-inner border border-red-500/30';
         toast.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+      } else if (type === 'jackpot') {
+        icon.innerHTML = '<i class="fa-solid fa-sack-dollar"></i>';
+        icon.className = 'w-12 h-12 rounded-full flex shrink-0 items-center justify-center bg-amber-500/20 text-amber-400 text-xl shadow-inner border border-amber-500/50 animate-pulse';
+        toast.style.borderColor = 'rgba(251, 191, 36, 0.8)';
       } else {
         icon.innerHTML = '<i class="fa-solid fa-bell"></i>';
         icon.className = 'w-12 h-12 rounded-full flex shrink-0 items-center justify-center bg-blue-500/20 text-blue-400 text-xl shadow-inner border border-blue-500/30';
@@ -430,14 +433,14 @@
       toast.classList.add('toast-show');
       
       if (tg.HapticFeedback) {
-        if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
+        if (type === 'success' || type === 'jackpot') tg.HapticFeedback.notificationOccurred('success');
         else if (type === 'error') tg.HapticFeedback.notificationOccurred('error');
         else tg.HapticFeedback.notificationOccurred('warning');
       }
 
       setTimeout(() => {
         toast.classList.remove('toast-show');
-      }, 3500);
+      }, type === 'jackpot' ? 5000 : 3500); // Cekpotda mesaj daha çox qalır
     }
 
     function saveState() {
@@ -656,7 +659,7 @@
         const AdController = window.Adsgram.init({ blockId: "int-34999" });
         
         AdController.show().then((result) => {
-          userState.xp += 10;
+          userState.xp += 10; // XP qazancı 10 edildi
           userState.totalXp += 10;
           userState.adsWatchedToday += 1;
           
@@ -679,8 +682,9 @@
       }
     }
 
-    // YENİ ŞANS SİSTEMİ (99.99% Ehtimalla minimum, 0.01% ehtimalla isə maksimum məbləğ)
     const boxCosts = { bronze: 1000, silver: 5000, gold: 10000 };
+    
+    // Qutu Cekpot Məntiqi: 99.99% Ehtimalla kiçik pul, 0.01% ehtimalla böyük pul.
     function openBox(type) {
       const cost = boxCosts[type];
       if (userState.xp < cost) {
@@ -691,16 +695,17 @@
       userState.xp -= cost;
       userState.boxesOpened += 1;
       
-      // 0.01% JACKPOT ŞANSI (10,000-də 1 ehtimal)
-      const isJackpot = Math.random() > 0.9999;
-      
       let reward = 0;
+      
+      // Şans mexanizmi (0 ilə 1 arası random rəqəm yaradır)
+      const isJackpot = Math.random() >= 0.9999; 
+
       if (type === 'bronze') {
-          reward = isJackpot ? 0.10 : 0.01;
+        reward = isJackpot ? 1.00 : 0.10;
       } else if (type === 'silver') {
-          reward = isJackpot ? 0.50 : 0.05;
+        reward = isJackpot ? 7.00 : 0.50;
       } else if (type === 'gold') {
-          reward = isJackpot ? 1.00 : 0.10;
+        reward = isJackpot ? 15.00 : 1.00;
       }
 
       userState.usdBalance += reward;
@@ -709,9 +714,9 @@
       updateUI();
 
       if (isJackpot) {
-          showToast("🎉 JACKPOT!", `İnanılmaz! Sən tam $${reward.toFixed(2)} qazandın!`, "success");
+         showToast("🎉 BÖYÜK CEKPOT! 🎉", `İnanılmaz! Sən $${reward.toFixed(2)} qazandın!`, "jackpot");
       } else {
-          showToast("🎁 Qutu Açıldı", `Qutudan $${reward.toFixed(2)} qazandın! (Balansından ${cost} XP silindi)`, "success");
+         showToast("🎁 Qutu Açıldı!", `Təbriklər! Qutudan $${reward.toFixed(2)} qazandın! (Balansından ${cost} XP silindi)`, "success");
       }
     }
 

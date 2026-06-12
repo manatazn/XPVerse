@@ -34,7 +34,6 @@
   </script>
 
   <style>
-    /* KOPYALAMA VƏ SEÇMƏNİN QARŞISININ ALINMASI (ANTI-COPY/DRAG) */
     body {
       background-color: #020617;
       color: #f8fafc;
@@ -70,7 +69,6 @@
     
     ::-webkit-scrollbar { width: 0px; background: transparent; }
 
-    /* Yalnız yavaşca peyda olma effekti (aşağıdan yuxarı sürüşmə ləğv edildi) */
     .fade-in { animation: fadeIn 0.2s ease-in forwards; }
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -176,7 +174,7 @@
       </div>
 
       <button onclick="watchAd()" id="watch-ad-btn" class="w-full py-4 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 transition-all duration-300 text-white font-black rounded-2xl pulse-glow text-sm tracking-widest uppercase flex items-center justify-center gap-3 active:scale-[0.98]">
-        <i class="fa-solid fa-video"></i> Watch Ad (+5 XP)
+        <i class="fa-solid fa-video"></i> Watch Ad (+10 XP)
       </button>
 
       <div class="glass-card rounded-2xl p-4 text-center border border-cyan-500/10">
@@ -355,17 +353,18 @@
       withdrawHistory: []
     };
 
+    // XP GƏLİRLƏRİ ARTIRILDI (~500 XP/Gün)
     const getDefaultMissions = () => ({
-      dailyReward: { completed: true, claimed: false, reward: 5, type: 'boolean' },
-      watch5: { target: 5, claimed: false, reward: 10, type: 'progress' },
-      watch10: { target: 10, claimed: false, reward: 15, type: 'progress' },
-      watch20: { target: 20, claimed: false, reward: 25, type: 'progress' },
-      all: { claimed: false, reward: 50, type: 'meta' }
+      dailyReward: { completed: true, claimed: false, reward: 10, type: 'boolean' },
+      watch5: { target: 5, claimed: false, reward: 20, type: 'progress' },
+      watch10: { target: 10, claimed: false, reward: 30, type: 'progress' },
+      watch20: { target: 20, claimed: false, reward: 50, type: 'progress' },
+      all: { claimed: false, reward: 100, type: 'meta' }
     });
 
     let userState = { ...defaultUserState };
     let missionsState = getDefaultMissions();
-    const streakRewards = [5, 10, 15, 20, 25, 30, 50]; 
+    const streakRewards = [10, 15, 20, 25, 30, 40, 50]; 
 
     let accurateTimeOffset = null;
 
@@ -489,7 +488,6 @@
       }
     }
 
-    // LEVEL UP sadəcə fəxri (vizual) rütbədir, heç bir mükafat verilmir.
     function checkLevelUp() {
       const xp = userState.totalXp;
       let newLevel = 1;
@@ -658,30 +656,30 @@
         const AdController = window.Adsgram.init({ blockId: "int-34999" });
         
         AdController.show().then((result) => {
-          userState.xp += 5;
-          userState.totalXp += 5;
+          userState.xp += 10;
+          userState.totalXp += 10;
           userState.adsWatchedToday += 1;
           
           checkLevelUp();
           saveState();
           updateUI();
           
-          showToast("Reward Received!", "You successfully watched the ad and earned +5 XP.", "success");
+          showToast("Reward Received!", "You successfully watched the ad and earned +10 XP.", "success");
           
-          btn.innerHTML = '<i class="fa-solid fa-video"></i> Watch Ad (+5 XP)';
+          btn.innerHTML = '<i class="fa-solid fa-video"></i> Watch Ad (+10 XP)';
           btn.classList.remove('opacity-70', 'pointer-events-none');
         }).catch((error) => {
-          btn.innerHTML = '<i class="fa-solid fa-video"></i> Watch Ad (+5 XP)';
+          btn.innerHTML = '<i class="fa-solid fa-video"></i> Watch Ad (+10 XP)';
           btn.classList.remove('opacity-70', 'pointer-events-none');
         });
       } else {
         showToast("Error", "Ads system is currently unavailable.", "error");
-        btn.innerHTML = '<i class="fa-solid fa-video"></i> Watch Ad (+5 XP)';
+        btn.innerHTML = '<i class="fa-solid fa-video"></i> Watch Ad (+10 XP)';
         btn.classList.remove('opacity-70', 'pointer-events-none');
       }
     }
 
-    // YENİ QUTU SİSTEMİ VƏ QİYMƏTLƏRİ (DƏRHAL SİLİNMƏ VƏ MÜKAFAT)
+    // YENİ ŞANS SİSTEMİ (99.99% Ehtimalla minimum, 0.01% ehtimalla isə maksimum məbləğ)
     const boxCosts = { bronze: 1000, silver: 5000, gold: 10000 };
     function openBox(type) {
       const cost = boxCosts[type];
@@ -690,22 +688,31 @@
         return;
       }
 
-      // Xp anında silinir
       userState.xp -= cost;
       userState.boxesOpened += 1;
       
+      // 0.01% JACKPOT ŞANSI (10,000-də 1 ehtimal)
+      const isJackpot = Math.random() > 0.9999;
+      
       let reward = 0;
-      if (type === 'bronze') reward = 0.10;
-      else if (type === 'silver') reward = 0.50;
-      else if (type === 'gold') reward = 1.00;
+      if (type === 'bronze') {
+          reward = isJackpot ? 0.10 : 0.01;
+      } else if (type === 'silver') {
+          reward = isJackpot ? 0.50 : 0.05;
+      } else if (type === 'gold') {
+          reward = isJackpot ? 1.00 : 0.10;
+      }
 
-      // Balans anında verilir
       userState.usdBalance += reward;
 
       saveState();
       updateUI();
 
-      showToast("🎁 Qutu Açıldı!", `Təbriklər! Qutudan $${reward.toFixed(2)} qazandın! (Balansından ${cost} XP silindi)`, "success");
+      if (isJackpot) {
+          showToast("🎉 JACKPOT!", `İnanılmaz! Sən tam $${reward.toFixed(2)} qazandın!`, "success");
+      } else {
+          showToast("🎁 Qutu Açıldı", `Qutudan $${reward.toFixed(2)} qazandın! (Balansından ${cost} XP silindi)`, "success");
+      }
     }
 
     function requestWithdrawal() {
@@ -774,7 +781,6 @@
       });
     }
 
-    // BURA DƏYİŞDİ: Profildə və Cüzdanda başlıq (header) anında, effektsiz yoxa çıxır
     function switchTab(tabId) {
       document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -794,12 +800,12 @@
         if(tabId === 'withdraw') activeBtn.classList.add('text-emerald-400');
         else activeBtn.classList.add('text-cyan-400');
         
-        header.style.display = 'none'; // Anında yoxa çıxma
+        header.style.display = 'none'; 
         mainContent.classList.remove('pt-28');
         mainContent.classList.add('pt-4');
       } else {
         activeBtn.classList.add('text-cyan-400');
-        header.style.display = 'block'; // Anında qayıtma
+        header.style.display = 'block'; 
         mainContent.classList.remove('pt-4');
         mainContent.classList.add('pt-28');
       }

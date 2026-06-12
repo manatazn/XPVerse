@@ -6,11 +6,8 @@
   <title>XPVerse - Telegram Mini App</title>
   
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  
   <script src="https://cdn.tailwindcss.com"></script>
-  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 
   <script>
@@ -20,13 +17,13 @@
           fontFamily: { sans: ['Inter', 'sans-serif'] },
           colors: {
             crypto: {
-              dark: '#020617',     // Slate 950
-              card: '#0f172a',     // Slate 900
-              primary: '#3b82f6',  // Blue 500
-              glow: '#06b6d4',     // Cyan 500
-              gold: '#fbbf24',     // Amber 400
-              silver: '#cbd5e1',   // Slate 300
-              bronze: '#b45309'    // Amber 700
+              dark: '#020617',     
+              card: '#0f172a',     
+              primary: '#3b82f6',  
+              glow: '#06b6d4',     
+              gold: '#fbbf24',     
+              silver: '#cbd5e1',   
+              bronze: '#b45309'    
             }
           }
         }
@@ -39,13 +36,11 @@
       background-color: #020617;
       color: #f8fafc;
       overflow-x: hidden;
-      /* Premium Dark Blue Background Gradient */
       background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.15), transparent 40%),
                         radial-gradient(circle at bottom left, rgba(6, 182, 212, 0.1), transparent 40%);
       background-attachment: fixed;
     }
     
-    /* Glassmorphism Utilities */
     .glass-card {
       background: rgba(15, 23, 42, 0.6);
       backdrop-filter: blur(12px);
@@ -54,10 +49,8 @@
       box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     }
     
-    /* Hide scrollbar for tabs */
     ::-webkit-scrollbar { width: 0px; background: transparent; }
 
-    /* Animations */
     .fade-in { animation: fadeIn 0.3s ease-in-out forwards; }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
@@ -94,86 +87,70 @@
       
       <div class="relative overflow-hidden rounded-3xl border border-blue-500/30 bg-gradient-to-b from-blue-900/40 to-slate-900/80 p-6 text-center glass-card">
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-blue-500/20 rounded-full filter blur-[40px] pointer-events-none"></div>
-        <p class="text-xs font-semibold text-blue-400 uppercase tracking-widest mb-1">Cari Balans</p>
+        <p class="text-xs font-semibold text-blue-400 uppercase tracking-widest mb-1">Current Balance</p>
         <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-200 to-blue-400 tracking-tight" id="main-xp-display">0 XP</h1>
         
         <div class="mt-5 grid grid-cols-2 gap-3 text-left">
           <div class="bg-slate-900/80 border border-slate-700 p-3 rounded-2xl flex items-center gap-3">
             <div class="bg-blue-500/20 p-2 rounded-lg"><i class="fa-solid fa-play text-blue-400"></i></div>
             <div>
-              <p class="text-[10px] text-slate-400 uppercase">Gündəlik Limit</p>
-              <p class="text-xs font-bold text-white"><span id="ads-watched">0</span> / 30 Reklam</p>
+              <p class="text-[10px] text-slate-400 uppercase">Daily Limit</p>
+              <p class="text-xs font-bold text-white"><span id="ads-watched">0</span> / 30 Ads</p>
             </div>
           </div>
           <div class="bg-slate-900/80 border border-slate-700 p-3 rounded-2xl flex items-center gap-3">
             <div class="bg-amber-500/20 p-2 rounded-lg"><i class="fa-solid fa-fire text-amber-400"></i></div>
             <div>
               <p class="text-[10px] text-slate-400 uppercase">Streak</p>
-              <p class="text-xs font-bold text-white"><span id="streak-days">1</span> Gün</p>
+              <p class="text-xs font-bold text-white"><span id="streak-days">1</span> Day(s)</p>
             </div>
           </div>
         </div>
         
         <div class="mt-4 text-[10px] text-slate-400 text-center flex justify-center items-center gap-1">
-          <i class="fa-regular fa-clock"></i> Növbəti sıfırlanma (23:00 MSK): <span class="text-blue-400 font-bold" id="reset-timer">00:00:00</span>
+          <i class="fa-regular fa-clock"></i> Next reset (23:00 MSK): <span class="text-blue-400 font-bold" id="reset-timer">00:00:00</span>
         </div>
       </div>
 
       <button onclick="watchAd()" id="watch-ad-btn" class="w-full py-4 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 transition-all duration-300 text-white font-black rounded-2xl pulse-glow text-sm tracking-widest uppercase flex items-center justify-center gap-3 active:scale-[0.98]">
-        <i class="fa-solid fa-video"></i> Reklam İzlə (+2 XP)
+        <i class="fa-solid fa-video"></i> Watch Ad (+2 XP)
       </button>
 
       <div>
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider pl-2 mb-2"><i class="fa-solid fa-list-check mr-1"></i> Günlük Missiyalar</h3>
-        <div class="glass-card rounded-2xl p-4 space-y-3">
-          <div class="flex justify-between items-center border-b border-slate-700/50 pb-2">
-            <span class="text-xs text-slate-300">5 Reklam İzlə</span>
-            <span class="text-[10px] font-bold bg-blue-500/20 text-cyan-400 px-2 py-1 rounded">+10 XP</span>
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider pl-2 mb-2"><i class="fa-solid fa-list-check mr-1"></i> Daily Missions</h3>
+        <div id="missions-container" class="glass-card rounded-2xl p-4 space-y-3">
           </div>
-          <div class="flex justify-between items-center border-b border-slate-700/50 pb-2">
-            <span class="text-xs text-slate-300">10 Reklam İzlə</span>
-            <span class="text-[10px] font-bold bg-blue-500/20 text-cyan-400 px-2 py-1 rounded">+15 XP</span>
-          </div>
-          <div class="flex justify-between items-center border-b border-slate-700/50 pb-2">
-            <span class="text-xs text-slate-300">Tətbiqi Aç</span>
-            <span class="text-[10px] font-bold bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded"><i class="fa-solid fa-check"></i> Tamamlandı</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-xs text-slate-300">Bütün Missiyalar</span>
-            <span class="text-[10px] font-bold bg-amber-500/20 text-amber-400 px-2 py-1 rounded">+30 XP</span>
-          </div>
-        </div>
       </div>
     </div>
 
     <div id="view-boxes" class="view-section hidden fade-in space-y-4">
-      <h2 class="text-2xl font-black text-center text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 mb-6">Sirli Qutular</h2>
+      <h2 class="text-2xl font-black text-center text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 mb-6">Mystery Boxes</h2>
       
       <div class="glass-card rounded-2xl p-5 border border-crypto-bronze/50 relative overflow-hidden flex justify-between items-center">
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-crypto-bronze/20 rounded-full blur-xl"></div>
         <div>
           <h3 class="text-lg font-bold text-crypto-bronze">BRONZE BOX</h3>
-          <p class="text-[10px] text-slate-400 mt-1">Dəyəri: 500 XP | Max: $1.00</p>
+          <p class="text-[10px] text-slate-400 mt-1">Cost: 500 XP | Max: $1.00</p>
         </div>
-        <button onclick="openBox('bronze')" class="bg-crypto-bronze/20 border border-crypto-bronze text-crypto-bronze hover:bg-crypto-bronze hover:text-white transition-colors px-4 py-2 rounded-xl text-xs font-bold uppercase">Aç</button>
+        <button onclick="openBox('bronze')" class="bg-crypto-bronze/20 border border-crypto-bronze text-crypto-bronze hover:bg-crypto-bronze hover:text-white transition-colors px-4 py-2 rounded-xl text-xs font-bold uppercase">Open</button>
       </div>
 
       <div class="glass-card rounded-2xl p-5 border border-crypto-silver/50 relative overflow-hidden flex justify-between items-center">
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-crypto-silver/20 rounded-full blur-xl"></div>
         <div>
           <h3 class="text-lg font-bold text-crypto-silver">SILVER BOX</h3>
-          <p class="text-[10px] text-slate-400 mt-1">Dəyəri: 2500 XP | Max: $5.00</p>
+          <p class="text-[10px] text-slate-400 mt-1">Cost: 2500 XP | Max: $5.00</p>
         </div>
-        <button onclick="openBox('silver')" class="bg-crypto-silver/20 border border-crypto-silver text-crypto-silver hover:bg-crypto-silver hover:text-crypto-dark transition-colors px-4 py-2 rounded-xl text-xs font-bold uppercase">Aç</button>
+        <button onclick="openBox('silver')" class="bg-crypto-silver/20 border border-crypto-silver text-crypto-silver hover:bg-crypto-silver hover:text-crypto-dark transition-colors px-4 py-2 rounded-xl text-xs font-bold uppercase">Open</button>
       </div>
 
       <div class="glass-card rounded-2xl p-5 border border-crypto-gold/50 relative overflow-hidden flex justify-between items-center">
         <div class="absolute -right-4 -top-4 w-24 h-24 bg-crypto-gold/20 rounded-full blur-xl pulse-glow"></div>
         <div>
           <h3 class="text-lg font-bold text-crypto-gold">GOLD BOX</h3>
-          <p class="text-[10px] text-slate-400 mt-1">Dəyəri: 5000 XP | Max: $15.00</p>
+          <p class="text-[10px] text-slate-400 mt-1">Cost: 5000 XP | Max: $15.00</p>
         </div>
-        <button onclick="openBox('gold')" class="bg-crypto-gold/20 border border-crypto-gold text-crypto-gold hover:bg-crypto-gold hover:text-crypto-dark transition-colors px-4 py-2 rounded-xl text-xs font-bold uppercase shadow-[0_0_15px_rgba(251,191,36,0.3)]">Aç</button>
+        <button onclick="openBox('gold')" class="bg-crypto-gold/20 border border-crypto-gold text-crypto-gold hover:bg-crypto-gold hover:text-crypto-dark transition-colors px-4 py-2 rounded-xl text-xs font-bold uppercase shadow-[0_0_15px_rgba(251,191,36,0.3)]">Open</button>
       </div>
     </div>
 
@@ -182,7 +159,7 @@
         <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 p-[3px] mb-4">
            <img id="profile-photo-large" src="https://via.placeholder.com/150/0f172a/3b82f6" class="w-full h-full rounded-full border-4 border-crypto-dark object-cover">
         </div>
-        <h2 id="profile-name" class="text-xl font-bold text-white">Ad Soyad</h2>
+        <h2 id="profile-name" class="text-xl font-bold text-white">Full Name</h2>
         <p id="profile-tgid" class="text-xs text-slate-500 mt-1">ID: 00000000</p>
         <div class="mt-4 inline-block bg-blue-500/20 px-4 py-1 rounded-full border border-blue-500/30 text-cyan-400 text-sm font-bold tracking-widest">
           LVL <span id="profile-level">1</span>
@@ -191,16 +168,12 @@
 
       <div class="grid grid-cols-2 gap-3">
         <div class="glass-card p-4 rounded-2xl text-center">
-          <p class="text-[10px] text-slate-400 uppercase mb-1">Toplam XP</p>
+          <p class="text-[10px] text-slate-400 uppercase mb-1">Total XP</p>
           <p id="profile-total-xp" class="text-lg font-bold text-white">0</p>
         </div>
         <div class="glass-card p-4 rounded-2xl text-center">
-          <p class="text-[10px] text-slate-400 uppercase mb-1">Açılan Qutular</p>
+          <p class="text-[10px] text-slate-400 uppercase mb-1">Boxes Opened</p>
           <p id="profile-boxes" class="text-lg font-bold text-white">0</p>
-        </div>
-        <div class="glass-card p-4 rounded-2xl text-center col-span-2 flex justify-between items-center">
-          <span class="text-xs text-slate-400 uppercase">Qeydiyyat Tarixi</span>
-          <span class="text-xs font-bold text-white">Bugün</span>
         </div>
       </div>
     </div>
@@ -211,48 +184,133 @@
     <div class="max-w-md mx-auto flex justify-around items-center px-4">
       <button onclick="switchTab('home')" class="nav-btn text-cyan-400 flex flex-col items-center gap-1 p-2 w-16 transition-colors" data-target="home">
         <i class="fa-solid fa-house text-xl"></i>
-        <span class="text-[10px] font-bold">Ana Səhifə</span>
+        <span class="text-[10px] font-bold">Home</span>
       </button>
       <button onclick="switchTab('boxes')" class="nav-btn text-slate-500 hover:text-cyan-400 flex flex-col items-center gap-1 p-2 w-16 transition-colors" data-target="boxes">
         <i class="fa-solid fa-box-open text-xl"></i>
-        <span class="text-[10px] font-bold">Qutular</span>
+        <span class="text-[10px] font-bold">Boxes</span>
       </button>
       <button onclick="switchTab('profile')" class="nav-btn text-slate-500 hover:text-cyan-400 flex flex-col items-center gap-1 p-2 w-16 transition-colors" data-target="profile">
         <i class="fa-solid fa-user text-xl"></i>
-        <span class="text-[10px] font-bold">Profil</span>
+        <span class="text-[10px] font-bold">Profile</span>
       </button>
     </div>
   </nav>
 
   <script>
-    // --- 1. MOCK STATE (Frontend üçün simulyasiya) ---
-    // Qeyd: Real layihədə bu dəyərlər serverdən gəlməlidir.
-    let userState = {
-      tgId: 123456789,
-      firstName: "Crypto User",
-      username: "xpverse",
-      photoUrl: "",
+    // --- 1. TELEGRAM WEBAPP INIT ---
+    const tg = window.Telegram.WebApp;
+    tg.expand(); 
+    tg.ready();
+
+    // Default State structures
+    const defaultUserState = {
+      tgId: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : 123456789,
+      firstName: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : "Crypto User",
+      username: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.username : "xpverse",
+      photoUrl: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.photo_url : "",
       xp: 0,
       totalXp: 0,
       level: 1,
       adsWatchedToday: 0,
       boxesOpened: 0,
-      streak: 1
+      streak: 1,
+      lastResetDay: ""
     };
 
-    // --- 2. TELEGRAM WEBAPP INIT ---
-    const tg = window.Telegram.WebApp;
-    tg.expand(); // Ekranı tam böyüt
-    tg.ready();
+    const getDefaultMissions = () => ({
+      openApp: { completed: true, claimed: false, reward: 5, type: 'boolean' },
+      dailyReward: { completed: true, claimed: false, reward: 5, type: 'boolean' },
+      watch5: { target: 5, claimed: false, reward: 10, type: 'progress' },
+      watch10: { target: 10, claimed: false, reward: 15, type: 'progress' },
+      watch20: { target: 20, claimed: false, reward: 25, type: 'progress' },
+      all: { claimed: false, reward: 30, type: 'meta' }
+    });
 
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-      userState.tgId = tg.initDataUnsafe.user.id;
-      userState.firstName = tg.initDataUnsafe.user.first_name;
-      userState.username = tg.initDataUnsafe.user.username || "";
-      userState.photoUrl = tg.initDataUnsafe.user.photo_url || "";
+    let userState = { ...defaultUserState };
+    let missionsState = getDefaultMissions();
+    const streakRewards = [5, 8, 10, 12, 15, 20, 30];
+
+    // --- 2. LOCAL STORAGE MANAGEMENT ---
+    function saveState() {
+      localStorage.setItem(`xpverse_user_${userState.tgId}`, JSON.stringify(userState));
+      localStorage.setItem(`xpverse_missions_${userState.tgId}`, JSON.stringify(missionsState));
     }
 
-    // --- 3. UI YENİLƏNMƏSİ ---
+    function loadState() {
+      const savedUser = localStorage.getItem(`xpverse_user_${userState.tgId}`);
+      const savedMissions = localStorage.getItem(`xpverse_missions_${userState.tgId}`);
+
+      if (savedUser) {
+        userState = { ...userState, ...JSON.parse(savedUser) };
+      }
+      if (savedMissions) {
+        missionsState = { ...getDefaultMissions(), ...JSON.parse(savedMissions) };
+      }
+    }
+
+    // --- 3. DAILY RESET SYSTEM (23:00 MSK) ---
+    function getMskResetDay() {
+      const now = new Date();
+      const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+      const mskTime = new Date(utcTime + (3 * 3600000)); // UTC+3
+      
+      let resetDay = new Date(mskTime);
+      if (mskTime.getHours() >= 23) {
+        resetDay.setDate(resetDay.getDate() + 1);
+      }
+      return resetDay.toISOString().split('T')[0];
+    }
+
+    function checkDailyReset() {
+      const currentResetDay = getMskResetDay();
+      
+      if (userState.lastResetDay !== currentResetDay) {
+        // It's a new day, handle streak logic
+        if (userState.lastResetDay) {
+            let last = new Date(userState.lastResetDay);
+            let curr = new Date(currentResetDay);
+            let diff = (curr - last) / (1000 * 3600 * 24);
+            if (diff === 1) {
+                userState.streak += 1;
+                if (userState.streak > 7) userState.streak = 1;
+            } else if (diff > 1) {
+                userState.streak = 1;
+            }
+        } else {
+            userState.streak = 1;
+        }
+
+        // Reset Limits and Missions
+        userState.adsWatchedToday = 0;
+        userState.lastResetDay = currentResetDay;
+        missionsState = getDefaultMissions();
+        missionsState.dailyReward.reward = streakRewards[userState.streak - 1]; // Set Streak Reward
+        
+        saveState();
+      } else {
+        // Auto-complete Open App if they return on the same day
+        missionsState.openApp.completed = true;
+        saveState();
+      }
+    }
+
+    // --- 4. UI & RENDER LOGIC ---
+    function checkLevelUp() {
+      const xp = userState.totalXp;
+      let newLevel = 1;
+      if (xp >= 20000) newLevel = 10;
+      else if (xp >= 3000) newLevel = 5;
+      else if (xp >= 1500) newLevel = 4;
+      else if (xp >= 750) newLevel = 3;
+      else if (xp >= 250) newLevel = 2;
+      
+      if (newLevel > userState.level) {
+        userState.level = newLevel;
+        tg.showAlert(`🎉 Congratulations! You reached Level ${newLevel}!`);
+      }
+    }
+
     function updateUI() {
       // Header
       document.getElementById('user-name').innerText = userState.firstName;
@@ -264,130 +322,178 @@
         document.getElementById('profile-photo-large').src = userState.photoUrl;
       }
 
-      // Home Page
+      // Home
       document.getElementById('main-xp-display').innerText = `${userState.xp.toLocaleString()} XP`;
       document.getElementById('ads-watched').innerText = userState.adsWatchedToday;
       document.getElementById('streak-days').innerText = userState.streak;
 
-      // Profile Page
+      // Profile
       document.getElementById('profile-name').innerText = userState.firstName;
       document.getElementById('profile-tgid').innerText = `ID: ${userState.tgId}`;
       document.getElementById('profile-level').innerText = userState.level;
       document.getElementById('profile-total-xp').innerText = userState.totalXp.toLocaleString();
       document.getElementById('profile-boxes').innerText = userState.boxesOpened;
+
+      renderMissions();
     }
 
-    // Level Hesablama Məntiqi (Tələblərə əsasən)
-    function checkLevelUp() {
-      const xp = userState.xp;
-      let newLevel = 1;
-      if (xp >= 20000) newLevel = 10;
-      else if (xp >= 3000) newLevel = 5;
-      else if (xp >= 1500) newLevel = 4;
-      else if (xp >= 750) newLevel = 3;
-      else if (xp >= 250) newLevel = 2;
+    // --- 5. MISSIONS ENGINE ---
+    function renderMissions() {
+      const container = document.getElementById('missions-container');
+      container.innerHTML = '';
       
-      if (newLevel > userState.level) {
-        userState.level = newLevel;
-        tg.showAlert(`🎉 Təbriklər! Sən Level ${newLevel} oldun!`);
-      }
+      const missionsList = [
+        { key: 'openApp', label: 'Open App', icon: 'fa-mobile-screen' },
+        { key: 'dailyReward', label: `Daily Streak Reward`, icon: 'fa-calendar-check' },
+        { key: 'watch5', label: 'Watch 5 Ads', icon: 'fa-video' },
+        { key: 'watch10', label: 'Watch 10 Ads', icon: 'fa-video' },
+        { key: 'watch20', label: 'Watch 20 Ads', icon: 'fa-video' },
+        { key: 'all', label: 'Complete All Missions', icon: 'fa-crown' }
+      ];
+
+      missionsList.forEach(m => {
+        const mission = missionsState[m.key];
+        let isComplete = false;
+        let progressText = '';
+        
+        if (mission.type === 'progress') {
+            isComplete = userState.adsWatchedToday >= mission.target;
+            progressText = `(${Math.min(userState.adsWatchedToday, mission.target)}/${mission.target})`;
+        } else if (mission.type === 'boolean') {
+            isComplete = mission.completed;
+        } else if (mission.type === 'meta') {
+            isComplete = ['openApp', 'dailyReward', 'watch5', 'watch10', 'watch20'].every(k => missionsState[k].claimed);
+        }
+
+        let btnHtml = '';
+        if (mission.claimed) {
+            btnHtml = `<span class="text-[10px] font-bold bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded border border-emerald-500/30"><i class="fa-solid fa-check"></i> Claimed</span>`;
+        } else if (isComplete) {
+            btnHtml = `<button onclick="claimMission('${m.key}')" class="text-[10px] font-bold bg-blue-500 hover:bg-blue-400 text-white px-3 py-1 rounded shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all">Claim +${mission.reward} XP</button>`;
+        } else {
+            btnHtml = `<span class="text-[10px] font-bold bg-slate-800 text-slate-400 px-2 py-1 rounded border border-slate-700">+${mission.reward} XP</span>`;
+        }
+
+        container.innerHTML += `
+          <div class="flex justify-between items-center border-b border-slate-700/50 pb-3 mb-2 last:border-0 last:pb-0 last:mb-0">
+            <span class="text-xs text-slate-300"><i class="fa-solid ${m.icon} w-5 text-slate-500 text-center"></i> ${m.label} <span class="text-blue-400 text-[10px] ml-1">${progressText}</span></span>
+            ${btnHtml}
+          </div>
+        `;
+      });
     }
 
-    // --- 4. REKLAM İZLƏMƏ SİMULYASİYASI ---
+    function claimMission(key) {
+        const mission = missionsState[key];
+        if (mission.claimed) return;
+        
+        mission.claimed = true;
+        userState.xp += mission.reward;
+        userState.totalXp += mission.reward;
+        
+        checkLevelUp();
+        saveState();
+        updateUI();
+        
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    }
+
+    // --- 6. AD WATCH & BOX LOGIC ---
     function watchAd() {
       if (userState.adsWatchedToday >= 30) {
-        tg.showAlert("❌ Günlük 30 reklam limitinə çatdınız! Sabah yenidən yoxlayın.");
+        tg.showAlert("❌ You reached the daily limit of 30 ads. Come back tomorrow!");
         return;
       }
 
       const btn = document.getElementById('watch-ad-btn');
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Yoxlanılır...';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
       btn.classList.add('opacity-70', 'pointer-events-none');
 
-      // Server yoxlanışını simulyasiya edirik (2 saniyə)
+      // Simulate Server Ad Verification
       setTimeout(() => {
-        // AdsGram uğurlu olduqdan sonra XP artırırıq
         userState.xp += 2;
         userState.totalXp += 2;
         userState.adsWatchedToday += 1;
         
         checkLevelUp();
+        saveState();
         updateUI();
-        tg.HapticFeedback.notificationOccurred('success'); // Titrəmə
         
-        btn.innerHTML = '<i class="fa-solid fa-video"></i> Reklam İzlə (+2 XP)';
+        if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+        
+        btn.innerHTML = '<i class="fa-solid fa-video"></i> Watch Ad (+2 XP)';
         btn.classList.remove('opacity-70', 'pointer-events-none');
       }, 1500);
     }
 
-    // --- 5. QUTU AÇMA SİMULYASİYASI ---
     const boxCosts = { bronze: 500, silver: 2500, gold: 5000 };
-    
     function openBox(type) {
       const cost = boxCosts[type];
       if (userState.xp < cost) {
-        tg.showAlert(`❌ Kifayət qədər XP yoxdur! Bu qutu üçün ${cost} XP lazımdır.`);
+        tg.showAlert(`❌ Insufficient XP! You need ${cost} XP to open this box.`);
         return;
       }
 
-      // Xərcləmə və serverdən gələn təsadüfi mükafat simulyasiyası
       userState.xp -= cost;
       userState.boxesOpened += 1;
+      saveState();
       updateUI();
 
-      // Qutu tiplərinə görə saxta mükafatlandırma (Əsl layihədə serverdə olacaq)
       let reward = "0.00";
       if (type === 'bronze') reward = "0.10";
       else if (type === 'silver') reward = "0.50";
       else if (type === 'gold') reward = "1.00";
 
-      tg.HapticFeedback.impactOccurred('heavy');
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       tg.showPopup({
-        title: "🎁 Qutu Açıldı!",
-        message: `Sən ${type.toUpperCase()} BOX açdın və $${reward} qazandın!`,
+        title: "🎁 Box Opened!",
+        message: `You opened a ${type.toUpperCase()} BOX and won $${reward}!`,
         buttons: [{ type: "ok" }]
       });
     }
 
-    // --- 6. TAB KEÇİDLƏRİ (Navigation) ---
+    // --- 7. NAVIGATION & TIMER ---
     function switchTab(tabId) {
-      // Bütün səhifələri gizlət
       document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-      // Bütün ikon rənglərini boz et
       document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.remove('text-cyan-400');
         btn.classList.add('text-slate-500');
       });
 
-      // Seçiləni göstər
       document.getElementById(`view-${tabId}`).classList.remove('hidden');
       document.querySelector(`[data-target="${tabId}"]`).classList.remove('text-slate-500');
       document.querySelector(`[data-target="${tabId}"]`).classList.add('text-cyan-400');
       
-      tg.HapticFeedback.selectionChanged();
+      if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
     }
 
-    // --- 7. TİMER (Günlük Reset 23:00 MSK / UTC+3) ---
     function updateTimer() {
-      const now = new Date();
-      // UTC vaxtını al, üzərinə 3 saat gəl (MSK)
-      let mskHour = now.getUTCHours() + 3;
-      let targetHour = 23;
-      
-      let hoursLeft = targetHour - mskHour;
-      if (hoursLeft <= 0) hoursLeft += 24; // Əgər gecə saatıdırsa, növbəti günə hesablasın
-
-      let minsLeft = 59 - now.getUTCMinutes();
-      let secsLeft = 59 - now.getUTCSeconds();
-
-      document.getElementById('reset-timer').innerText = 
-        `${String(hoursLeft).padStart(2, '0')}:${String(minsLeft).padStart(2, '0')}:${String(secsLeft).padStart(2, '0')}`;
+        const now = new Date();
+        const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+        const mskTime = new Date(utcTime + (3 * 3600000));
+        
+        let target = new Date(mskTime);
+        target.setHours(23, 0, 0, 0);
+        
+        if (mskTime.getHours() >= 23) {
+            target.setDate(target.getDate() + 1);
+        }
+        
+        const diff = target.getTime() - mskTime.getTime();
+        const h = Math.floor(diff / 1000 / 60 / 60);
+        const m = Math.floor((diff / 1000 / 60) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        
+        document.getElementById('reset-timer').innerText = 
+          `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
     
+    // --- 8. INITIALIZATION ---
     setInterval(updateTimer, 1000);
     updateTimer();
-
-    // Səhifə yükləndikdə UI-ı başla
+    
+    loadState();
+    checkDailyReset();
     updateUI();
   </script>
 </body>

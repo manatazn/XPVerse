@@ -30,7 +30,6 @@
           },
           animation: {
             'blob': 'blob 7s infinite',
-            'float': 'float 3s ease-in-out infinite',
             'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
           },
           keyframes: {
@@ -39,10 +38,6 @@
               '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
               '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
               '100%': { transform: 'translate(0px, 0px) scale(1)' },
-            },
-            float: {
-              '0%, 100%': { transform: 'translateY(0)' },
-              '50%': { transform: 'translateY(-10px)' },
             }
           }
         }
@@ -101,6 +96,16 @@
       content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
       width: 24px; height: 4px; background: #00f0ff; border-radius: 4px;
       box-shadow: 0 0 12px #00f0ff, 0 0 20px #3b82f6;
+    }
+
+    /* Klaviatura açılanda naviqasiyanın gizlənməsi üçün CSS */
+    #bottom-nav {
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out;
+    }
+    .nav-hidden {
+      transform: translate(-50%, 150%) !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
     }
 
     /* 3D Action Button */
@@ -473,7 +478,43 @@
     const streakRewards = [5, 10, 15, 20, 25, 30, 50]; 
 
     let accurateTimeOffset = null;
-    let headerTimeout; // Gecikmə xətasını həll etmək üçün qlobal dəyişən
+    let headerTimeout; 
+
+    // ---- Klaviatura İzləmə Məntiqi Başlayır ----
+    const bottomNavElement = document.getElementById('bottom-nav');
+    let maxViewportHeight = window.innerHeight;
+
+    function handleKeyboardState() {
+      // Bəzən ekran tam açılanda daxili hündürlük böyüyə bilər, maksimumu hər zaman yeniləyirik
+      if (window.innerHeight > maxViewportHeight) {
+        maxViewportHeight = window.innerHeight;
+      }
+      
+      // Əgər hazırkı hündürlük maksimumdan 100px+ kiçikdirsə, deməli klaviatura açılıb
+      if (window.innerHeight < maxViewportHeight - 100) {
+        bottomNavElement.classList.add('nav-hidden');
+      } else {
+        bottomNavElement.classList.remove('nav-hidden');
+      }
+    }
+
+    // Ekran ölçüsü dəyişəndə (Telegram Mini App içində klaviatura açılanda) bu event işə düşür
+    window.addEventListener('resize', handleKeyboardState);
+    if (tg.onEvent) {
+       tg.onEvent('viewportChanged', handleKeyboardState);
+    }
+
+    // Əlavə təhlükəsizlik olaraq inputlara fokuslandıqda paneli gizlətmək
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('focus', () => {
+        bottomNavElement.classList.add('nav-hidden');
+      });
+      input.addEventListener('blur', () => {
+        // Blur olanda dərhal gətirmirik ki, başqa inputa kliklənibsə ekran qırpışmasın
+        setTimeout(handleKeyboardState, 150);
+      });
+    });
+    // ---- Klaviatura İzləmə Məntiqi Bitir ----
 
     async function fetchServerTime() {
       const apis = [
@@ -913,7 +954,6 @@
       const header = document.getElementById('main-header');
       const mainContent = document.getElementById('app-content');
 
-      // Təkrarlanan sürətli kliklərin qarşısını almaq üçün Timeout-u təmizləyirik
       clearTimeout(headerTimeout);
 
       if (tabId === 'withdraw' || tabId === 'profile') {

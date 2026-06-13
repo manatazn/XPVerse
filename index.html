@@ -481,46 +481,55 @@
     let accurateTimeOffset = null;
     let headerTimeout; 
 
-    // ---- Klaviatura İzləmə Məntiqi (Təkmilləşdirilmiş) ----
+    // ---- KLAVİATURA İZLƏMƏ MƏNTİQİ (MÜKƏMMƏL YENİLƏNMƏ) ----
     const bottomNavElement = document.getElementById('bottom-nav');
-    
-    // İnputlara fokuslanan kimi anında gizlət (Ekranın yığılmasını gözləmədən)
-    document.querySelectorAll('input').forEach(input => {
-      input.addEventListener('focus', () => {
-        bottomNavElement.classList.add('nav-hidden');
-      });
-      input.addEventListener('blur', () => {
-        // Blur olanda cüzi gecikmə ilə gətir ki, başqa inputa kliklənəndə qırpışmasın
-        setTimeout(() => {
-          bottomNavElement.classList.remove('nav-hidden');
-        }, 150);
-      });
+    let maxViewportHeight = window.innerHeight;
+
+    function checkKeyboard() {
+        // Ekranın ölçüsü maksimumdan 100px kiçilirsə, deməli klaviatura AÇIQDIR
+        if (window.innerHeight < maxViewportHeight - 100) {
+            bottomNavElement.classList.add('nav-hidden');
+        } else {
+            // Əks halda klaviatura BAĞLIDIR
+            bottomNavElement.classList.remove('nav-hidden');
+            
+            // Telefonun "Geri" düyməsi ilə klaviatura bağlananda input hələ də focusda qalır,
+            // bunu qarşısını almaq və dizayn xətası yaratmamaq üçün blur edirik.
+            if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+                document.activeElement.blur();
+            }
+        }
+    }
+
+    // Pəncərənin hər ölçü dəyişimində yoxla (Geri düyməsi və ya klaviatura açılması)
+    window.addEventListener('resize', () => {
+        if (window.innerHeight > maxViewportHeight) {
+            maxViewportHeight = window.innerHeight;
+        }
+        checkKeyboard();
     });
 
-    // Əlavə ehtiyat kimi viewport dəyişikliyini izləmək
-    let maxViewportHeight = window.innerHeight;
-    function handleKeyboardState() {
-      if (window.innerHeight > maxViewportHeight) {
-        maxViewportHeight = window.innerHeight;
-      }
-      // Aktiv focus yoxdursa və hündürlük fərqi varsa gizlət/göstər
-      const activeElement = document.activeElement;
-      const isInputActive = activeElement && activeElement.tagName === 'INPUT';
-      
-      if (!isInputActive) {
-          if (window.innerHeight < maxViewportHeight - 100) {
-            bottomNavElement.classList.add('nav-hidden');
-          } else {
-            bottomNavElement.classList.remove('nav-hidden');
-          }
-      }
-    }
-    
-    window.addEventListener('resize', handleKeyboardState);
+    // Telegram daxilində ehtiyat tədbiri
     if (tg.onEvent) {
-       tg.onEvent('viewportChanged', handleKeyboardState);
+        tg.onEvent('viewportChanged', () => {
+            if (window.innerHeight > maxViewportHeight) {
+                maxViewportHeight = window.innerHeight;
+            }
+            checkKeyboard();
+        });
     }
-    // ---- Klaviatura İzləmə Bitir ----
+
+    // İnput üzərinə kliklənəndə (hələ ekran balacalanmamış) dərhal gizlət
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('focus', () => {
+            bottomNavElement.classList.add('nav-hidden');
+        });
+        
+        input.addEventListener('blur', () => {
+            setTimeout(checkKeyboard, 150);
+        });
+    });
+    // ---- KLAVİATURA İZLƏMƏ BİTİR ----
 
     async function fetchServerTime() {
       const apis = [

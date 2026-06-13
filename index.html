@@ -32,6 +32,8 @@
             'blob': 'blob 7s infinite',
             'float': 'float 3s ease-in-out infinite',
             'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'shimmer': 'shimmer 2s infinite',
+            'loading': 'loading 1.5s ease-in-out infinite alternate',
           },
           keyframes: {
             blob: {
@@ -43,6 +45,13 @@
             float: {
               '0%, 100%': { transform: 'translateY(0)' },
               '50%': { transform: 'translateY(-10px)' },
+            },
+            shimmer: {
+              '100%': { transform: 'translateX(100%)' }
+            },
+            loading: {
+              '0%': { transform: 'translateX(-100%)' },
+              '100%': { transform: 'translateX(100%)' }
             }
           }
         }
@@ -60,7 +69,7 @@
       user-select: none;
     }
 
-    /* Arxa plan neon orbları */
+    /* Background Neon Orbs */
     .bg-orb-1 {
       position: fixed; top: -10%; left: -10%; width: 50vw; height: 50vw;
       background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
@@ -72,11 +81,18 @@
       z-index: -1; filter: blur(50px);
     }
 
+    /* Premium Grid Pattern for Main Card */
+    .bg-grid-pattern {
+      background-size: 20px 20px;
+      background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+    }
+
     input { user-select: auto !important; }
     img { pointer-events: none; }
     ::-webkit-scrollbar { width: 0px; background: transparent; }
 
-    /* Ultra Müasir Glassmorphism */
+    /* Ultra Modern Glassmorphism */
     .glass-card {
       background: linear-gradient(145deg, rgba(20, 22, 45, 0.6) 0%, rgba(10, 11, 26, 0.8) 100%);
       backdrop-filter: blur(16px);
@@ -94,7 +110,7 @@
     .fade-in { animation: fadeIn 0.3s ease-out forwards; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Alt Menyu Seçili Vəziyyəti */
+    /* Bottom Menu Active State */
     .nav-active { color: #00f0ff !important; transform: translateY(-2px); }
     .nav-active i { filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.6)); }
     .nav-active::before {
@@ -134,20 +150,22 @@
   <div class="bg-orb-1 animate-blob"></div>
   <div class="bg-orb-2 animate-blob animation-delay-2000"></div>
 
-  <div id="loading-overlay" class="bg-[#050511] flex flex-col items-center justify-center z-[10000] fixed inset-0 transition-opacity duration-500">
-    <div class="relative w-24 h-24 mb-8">
-      <div class="absolute inset-0 rounded-full border-t-4 border-crypto-glow animate-[spin_1s_linear_infinite] shadow-[0_0_20px_rgba(0,240,255,0.5)]"></div>
-      <div class="absolute inset-3 rounded-full border-b-4 border-blue-500 animate-[spin_1.5s_linear_infinite_reverse]"></div>
-      <div class="absolute inset-0 flex items-center justify-center">
-        <i class="fa-brands fa-space-awesome text-crypto-glow text-3xl animate-pulse"></i>
+  <!-- UPGRADED LOADING SCREEN -->
+  <div id="loading-overlay" class="bg-[#050511] flex flex-col items-center justify-center z-[10000] fixed inset-0 transition-all duration-700">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,240,255,0.05)_0%,transparent_70%)]"></div>
+    <div class="relative w-36 h-36 mb-10 flex items-center justify-center">
+      <div class="absolute inset-0 rounded-full border-t-2 border-r-2 border-crypto-glow animate-[spin_2s_linear_infinite] shadow-[0_0_30px_rgba(0,240,255,0.3)]"></div>
+      <div class="absolute inset-3 rounded-full border-b-2 border-l-2 border-blue-500 animate-[spin_3s_linear_infinite_reverse]"></div>
+      <div class="absolute inset-6 rounded-full border-t-2 border-indigo-500 animate-[spin_1.5s_linear_infinite]"></div>
+      <div class="absolute inset-0 flex items-center justify-center bg-black/20 rounded-full backdrop-blur-sm">
+        <i class="fa-brands fa-space-awesome text-crypto-glow text-5xl drop-shadow-[0_0_20px_#00f0ff] animate-pulse"></i>
       </div>
     </div>
-    <h2 class="text-white font-black tracking-[0.25em] text-2xl uppercase bg-clip-text text-transparent bg-gradient-to-r from-crypto-glow via-blue-400 to-indigo-500 mb-2 drop-shadow-lg">XPVerse</h2>
-    <div class="flex gap-1 mt-2">
-      <div class="w-1.5 h-1.5 bg-crypto-glow rounded-full animate-bounce"></div>
-      <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-      <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+    <h2 class="text-white font-black tracking-[0.3em] text-4xl uppercase bg-clip-text text-transparent bg-gradient-to-r from-crypto-glow via-white to-blue-500 mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">XPVerse</h2>
+    <div class="w-56 h-1.5 bg-slate-800 rounded-full overflow-hidden relative shadow-[0_0_10px_rgba(0,0,0,0.5)inset]">
+      <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-600 via-crypto-glow to-blue-400 w-full animate-loading"></div>
     </div>
+    <p class="text-crypto-glow/80 text-[11px] font-bold uppercase tracking-[0.25em] mt-4 animate-pulse">Initializing System...</p>
   </div>
 
   <div id="toast-container" class="glass-card rounded-2xl p-4 flex items-center gap-4">
@@ -189,61 +207,66 @@
 
   <main class="flex-1 max-w-md w-full mx-auto p-4 pt-28 relative" id="app-content">
     
+    <!-- UPGRADED HOME SCREEN -->
     <div id="view-home" class="view-section fade-in space-y-6">
       
-      <div class="relative glass-card rounded-[2rem] p-8 text-center border-t border-t-blue-400/20 overflow-hidden flex flex-col items-center justify-center min-h-[280px]">
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/20 rounded-full filter blur-[40px] pointer-events-none animate-pulse-fast"></div>
+      <div class="relative glass-card bg-grid-pattern rounded-[2rem] p-8 text-center border border-blue-500/30 overflow-hidden flex flex-col items-center justify-center min-h-[300px] shadow-[0_15px_40px_rgba(0,0,0,0.6)]">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 bg-blue-500/20 rounded-full filter blur-[50px] pointer-events-none animate-pulse-fast"></div>
         
-        <div class="relative z-10 animate-float flex flex-col items-center">
-          <div class="w-16 h-16 rounded-full bg-blue-900/40 border border-blue-400/30 flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
-             <i class="fa-solid fa-gem text-3xl text-crypto-glow drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]"></i>
+        <div class="relative z-10 animate-float flex flex-col items-center w-full">
+          <div class="w-20 h-20 rounded-full bg-gradient-to-br from-[#0a0b1a] to-blue-900/60 border border-blue-400/40 flex items-center justify-center mb-5 shadow-[0_0_25px_rgba(59,130,246,0.4)]">
+             <i class="fa-solid fa-gem text-4xl text-crypto-glow drop-shadow-[0_0_15px_rgba(0,240,255,0.8)]"></i>
           </div>
-          <p class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-2 opacity-80">Balans</p>
-          <h1 class="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-blue-400 tracking-tighter drop-shadow-2xl" id="main-xp-display">0 XP</h1>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-1.5 h-1.5 bg-crypto-glow rounded-full animate-pulse shadow-[0_0_5px_#00f0ff]"></span>
+            <p class="text-[11px] font-black text-blue-300 uppercase tracking-[0.3em] opacity-90">Total Balance</p>
+          </div>
+          <h1 class="text-6xl font-black text-transparent bg-clip-text bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-white via-cyan-100 to-blue-600 tracking-tighter drop-shadow-2xl" id="main-xp-display">0 XP</h1>
         </div>
         
-        <div class="w-full mt-8 grid grid-cols-2 gap-4">
-          <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md">
-            <div class="bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/20"><i class="fa-solid fa-clapperboard text-blue-400"></i></div>
+        <div class="w-full mt-8 grid grid-cols-2 gap-4 relative z-10">
+          <div class="bg-[#050511]/70 border border-slate-700/60 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md shadow-inner">
+            <div class="bg-blue-500/15 p-2.5 rounded-xl border border-blue-500/30"><i class="fa-solid fa-clapperboard text-blue-400"></i></div>
             <div class="text-left">
-              <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Gündəlik Limit</p>
-              <p class="text-sm font-black text-white"><span id="ads-watched" class="text-blue-400">0</span> / 30</p>
+              <p class="text-[9px] text-slate-400 uppercase font-bold tracking-wider">Daily Limit</p>
+              <p class="text-sm font-black text-white"><span id="ads-watched" class="text-blue-400 drop-shadow-[0_0_3px_#3b82f6]">0</span> / 30</p>
             </div>
           </div>
-          <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md">
-            <div class="bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20"><i class="fa-solid fa-fire-flame-curved text-amber-400"></i></div>
+          <div class="bg-[#050511]/70 border border-slate-700/60 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md shadow-inner">
+            <div class="bg-amber-500/15 p-2.5 rounded-xl border border-amber-500/30"><i class="fa-solid fa-fire-flame-curved text-amber-400"></i></div>
             <div class="text-left">
-              <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Seriya</p>
-              <p class="text-sm font-black text-white"><span id="streak-days" class="text-amber-400">1</span> Gün</p>
+              <p class="text-[9px] text-slate-400 uppercase font-bold tracking-wider">Streak</p>
+              <p class="text-sm font-black text-white"><span id="streak-days" class="text-amber-400 drop-shadow-[0_0_3px_#f59e0b]">1</span> Day</p>
             </div>
           </div>
         </div>
       </div>
 
-      <button onclick="watchAd()" id="watch-ad-btn" class="w-full py-5 rounded-2xl text-white font-black text-base tracking-[0.2em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(59,130,246,0.4)] btn-3d relative overflow-hidden group">
-        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
-        <i class="fa-solid fa-play bg-white/20 p-2 rounded-full text-xs"></i> 
-        <span>Reklam İzlə <span class="text-cyan-200">+10 XP</span></span>
+      <button onclick="watchAd()" id="watch-ad-btn" class="w-full py-5 rounded-2xl text-white font-black text-base tracking-[0.2em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(59,130,246,0.4)] border border-blue-400/50 btn-3d relative overflow-hidden group">
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+        <i class="fa-solid fa-play bg-white/20 p-2 rounded-full text-xs shadow-[0_0_10px_rgba(255,255,255,0.3)]"></i> 
+        <span>Watch Ad <span class="text-cyan-200 ml-1">+10 XP</span></span>
       </button>
 
-      <div class="glass-card rounded-xl p-3 flex justify-between items-center">
-        <div class="flex items-center gap-2 text-slate-400 text-xs">
-          <i class="fa-solid fa-rotate text-blue-400"></i> Yenilənməyə qaldı:
+      <div class="glass-card rounded-xl p-3 flex justify-between items-center border border-slate-700/50 shadow-md">
+        <div class="flex items-center gap-2 text-slate-400 text-xs font-bold uppercase tracking-wider">
+          <i class="fa-solid fa-rotate text-blue-400 animate-spin-slow"></i> Resets in:
         </div>
-        <span class="text-white font-mono font-bold tracking-widest" id="reset-timer">--:--:--</span>
+        <span class="text-white font-mono font-bold tracking-widest bg-[#050511] px-3 py-1 rounded-lg border border-slate-700" id="reset-timer">--:--:--</span>
       </div>
     </div>
 
+    <!-- TASKS SECTION -->
     <div id="view-tasks" class="view-section hidden fade-in space-y-6 pb-4">
       <div class="text-center pt-2">
-        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Görəvlər</h2>
-        <p class="text-xs text-crypto-glow mt-1 uppercase tracking-widest font-bold">XP Qazanmaq Üçün Tamamla</p>
+        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Tasks</h2>
+        <p class="text-xs text-crypto-glow mt-1 uppercase tracking-widest font-bold">Complete to Earn XP</p>
       </div>
       
       <div class="glass-card rounded-3xl p-5 relative overflow-hidden border-t-2 border-t-blue-500/30">
         <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl"></div>
         <h3 class="text-xs font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
-          <i class="fa-solid fa-calendar-check text-blue-400 text-lg"></i> 7 Günlük Seriya
+          <i class="fa-solid fa-calendar-check text-blue-400 text-lg"></i> 7-Day Streak
         </h3>
         
         <div class="relative flex justify-between items-center" id="streak-tracker-container">
@@ -251,16 +274,17 @@
       </div>
 
       <div>
-        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">Gündəlik Missiyalar</h3>
+        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">Daily Missions</h3>
         <div id="missions-container" class="space-y-3">
           </div>
       </div>
     </div>
 
+    <!-- BOXES SECTION -->
     <div id="view-boxes" class="view-section hidden fade-in space-y-5 pb-4">
       <div class="text-center pt-2 mb-6">
-        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Qutular</h2>
-        <p class="text-xs text-amber-400 mt-1 uppercase tracking-widest font-bold">Şansını Sına, Dollarları Qazan</p>
+        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Boxes</h2>
+        <p class="text-xs text-amber-400 mt-1 uppercase tracking-widest font-bold">Try Your Luck, Win Dollars</p>
       </div>
       
       <div class="box-bronze glass-card rounded-[2rem] p-6 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
@@ -270,14 +294,14 @@
             <i class="fa-solid fa-box text-3xl text-crypto-bronze"></i>
           </div>
           <div>
-            <h3 class="text-xl font-black text-white tracking-wide">Bürünc Qutu</h3>
+            <h3 class="text-xl font-black text-white tracking-wide">Bronze Box</h3>
             <div class="flex flex-col mt-1">
               <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 1,000 XP</span>
-              <span class="text-xs text-emerald-400 font-bold mt-0.5">Maksimum: $1.00</span>
+              <span class="text-xs text-emerald-400 font-bold mt-0.5">Max: $1.00</span>
             </div>
           </div>
         </div>
-        <button onclick="openBox('bronze')" class="relative z-10 bg-gradient-to-b from-orange-600 to-orange-800 text-white shadow-[0_4px_15px_rgba(205,127,50,0.4)] hover:brightness-110 active:scale-95 transition-all px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider">Aç</button>
+        <button onclick="openBox('bronze')" class="relative z-10 bg-gradient-to-b from-orange-600 to-orange-800 text-white shadow-[0_4px_15px_rgba(205,127,50,0.4)] hover:brightness-110 active:scale-95 transition-all px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
       </div>
 
       <div class="box-silver glass-card rounded-[2rem] p-6 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
@@ -287,14 +311,14 @@
             <i class="fa-solid fa-box-open text-3xl text-crypto-silver"></i>
           </div>
           <div>
-            <h3 class="text-xl font-black text-white tracking-wide">Gümüş Qutu</h3>
+            <h3 class="text-xl font-black text-white tracking-wide">Silver Box</h3>
             <div class="flex flex-col mt-1">
               <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 5,000 XP</span>
-              <span class="text-xs text-emerald-400 font-bold mt-0.5">Maksimum: $7.00</span>
+              <span class="text-xs text-emerald-400 font-bold mt-0.5">Max: $7.00</span>
             </div>
           </div>
         </div>
-        <button onclick="openBox('silver')" class="relative z-10 bg-gradient-to-b from-slate-400 to-slate-600 text-crypto-dark shadow-[0_4px_15px_rgba(226,232,240,0.3)] hover:brightness-110 active:scale-95 transition-all px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider">Aç</button>
+        <button onclick="openBox('silver')" class="relative z-10 bg-gradient-to-b from-slate-400 to-slate-600 text-crypto-dark shadow-[0_4px_15px_rgba(226,232,240,0.3)] hover:brightness-110 active:scale-95 transition-all px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
       </div>
 
       <div class="box-gold glass-card rounded-[2rem] p-6 relative overflow-hidden flex justify-between items-center border border-crypto-gold shadow-[0_0_20px_rgba(255,184,0,0.15)] transition-transform hover:scale-[1.02]">
@@ -304,24 +328,25 @@
             <i class="fa-solid fa-gem text-3xl text-crypto-gold drop-shadow-[0_0_10px_#ffb800]"></i>
           </div>
           <div>
-            <h3 class="text-xl font-black text-crypto-gold tracking-wide drop-shadow-[0_0_5px_rgba(255,184,0,0.5)]">Qızıl Qutu</h3>
+            <h3 class="text-xl font-black text-crypto-gold tracking-wide drop-shadow-[0_0_5px_rgba(255,184,0,0.5)]">Gold Box</h3>
             <div class="flex flex-col mt-1">
               <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 10,000 XP</span>
-              <span class="text-xs text-emerald-400 font-bold mt-0.5">Maksimum: $15.00</span>
+              <span class="text-xs text-emerald-400 font-bold mt-0.5">Max: $15.00</span>
             </div>
           </div>
         </div>
-        <button onclick="openBox('gold')" class="relative z-10 bg-gradient-to-b from-yellow-400 to-amber-600 text-crypto-dark shadow-[0_4px_20px_rgba(255,184,0,0.6)] hover:brightness-110 active:scale-95 transition-all px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider">Aç</button>
+        <button onclick="openBox('gold')" class="relative z-10 bg-gradient-to-b from-yellow-400 to-amber-600 text-crypto-dark shadow-[0_4px_20px_rgba(255,184,0,0.6)] hover:brightness-110 active:scale-95 transition-all px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
       </div>
     </div>
 
+    <!-- WITHDRAW SECTION -->
     <div id="view-withdraw" class="view-section hidden fade-in space-y-6">
       
       <div class="glass-card rounded-[2.5rem] p-8 text-center border-t-2 border-emerald-500/40 bg-gradient-to-b from-emerald-900/30 to-[#050511]">
         <div class="w-16 h-16 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-4 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
           <i class="fa-solid fa-wallet text-2xl text-emerald-400"></i>
         </div>
-        <p class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-2 opacity-80">Çıxarış Balansı</p>
+        <p class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-2 opacity-80">Withdrawal Balance</p>
         <h1 class="text-6xl font-black text-white tracking-tighter mb-4">$<span id="withdraw-balance-display">0.00</span></h1>
         <div class="inline-block bg-[#050511]/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-700/50">
           <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> Minimum: $5.00</p>
@@ -330,7 +355,7 @@
 
       <div class="glass-card rounded-[2rem] p-6 space-y-5 border-slate-800">
         <div>
-          <label class="block text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-2 ml-2">TON Cüzdan Ünvanı</label>
+          <label class="block text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-2 ml-2">TON Wallet Address</label>
           <div class="relative group">
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="w-5 h-5 opacity-70 group-focus-within:opacity-100 transition-opacity" alt="TON">
@@ -340,7 +365,7 @@
         </div>
         
         <div>
-          <label class="block text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-2 ml-2">Məbləğ (USD)</label>
+          <label class="block text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-2 ml-2">Amount (USD)</label>
           <div class="relative group">
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <i class="fa-solid fa-dollar-sign text-slate-500 group-focus-within:text-emerald-400 transition-colors text-lg"></i>
@@ -350,17 +375,18 @@
         </div>
 
         <button onclick="requestWithdrawal()" id="withdraw-btn" class="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-500 hover:brightness-110 active:scale-95 transition-all text-white font-black rounded-2xl text-sm uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-[0_10px_20px_rgba(16,185,129,0.3)]">
-          <i class="fa-solid fa-money-bill-transfer"></i> Çıxarış Tələb Et
+          <i class="fa-solid fa-money-bill-transfer"></i> Request Withdrawal
         </button>
       </div>
 
       <div>
-        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">Tarixçə</h3>
+        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">History</h3>
         <div id="withdraw-history-container" class="space-y-3">
           </div>
       </div>
     </div>
 
+    <!-- PROFILE SECTION -->
     <div id="view-profile" class="view-section hidden fade-in space-y-6">
       
       <div class="glass-card rounded-[2.5rem] p-1 text-center relative overflow-hidden border border-slate-700/50">
@@ -375,12 +401,12 @@
              <div class="absolute -bottom-2 -right-2 bg-gradient-to-br from-[#0a0b1a] to-blue-900 border-2 border-crypto-glow text-white w-10 h-10 rounded-full flex items-center justify-center font-black text-sm shadow-[0_0_15px_#00f0ff]" id="profile-badge-level">1</div>
           </div>
           
-          <h2 id="profile-name" class="text-3xl font-black text-white tracking-tight">İstifadəçi</h2>
+          <h2 id="profile-name" class="text-3xl font-black text-white tracking-tight">User</h2>
           <p id="profile-tgid" class="text-[11px] text-blue-400 font-mono mt-1 tracking-widest bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20">ID: 00000000</p>
           
           <div class="mt-8">
             <div class="flex justify-between items-end mb-2 px-1">
-               <span class="text-[10px] font-black text-crypto-glow uppercase tracking-wider">Səviyyə İrəliləyişi</span>
+               <span class="text-[10px] font-black text-crypto-glow uppercase tracking-wider">Level Progress</span>
                <span class="text-[10px] font-bold text-slate-400" id="profile-current-xp-text">0 XP</span>
             </div>
             <div class="w-full bg-[#050511] rounded-full h-4 border border-slate-700/50 overflow-hidden relative shadow-inner p-0.5">
@@ -389,7 +415,7 @@
                </div>
             </div>
             <div class="text-right mt-1.5 px-1">
-              <span class="text-[9px] font-bold text-slate-500 uppercase">Hədəf: <span id="profile-next-xp-text" class="text-blue-400">250 XP</span></span>
+              <span class="text-[9px] font-bold text-slate-500 uppercase">Target: <span id="profile-next-xp-text" class="text-blue-400">250 XP</span></span>
             </div>
           </div>
         </div>
@@ -398,12 +424,12 @@
       <div class="grid grid-cols-2 gap-4">
         <div class="glass-card p-6 rounded-3xl text-center border-t-2 border-t-blue-500/30">
           <div class="w-12 h-12 mx-auto bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center mb-3 text-xl shadow-[0_0_15px_rgba(59,130,246,0.2)inset]"><i class="fa-solid fa-chart-line"></i></div>
-          <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Cəmi Qazanc</p>
+          <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Total Earned</p>
           <p id="profile-total-xp" class="text-2xl font-black text-white">0</p>
         </div>
         <div class="glass-card p-6 rounded-3xl text-center border-t-2 border-t-amber-500/30">
           <div class="w-12 h-12 mx-auto bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-2xl flex items-center justify-center mb-3 text-xl shadow-[0_0_15px_rgba(245,158,11,0.2)inset]"><i class="fa-solid fa-box-open"></i></div>
-          <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Açılan Qutular</p>
+          <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Boxes Opened</p>
           <p id="profile-boxes" class="text-2xl font-black text-white">0</p>
         </div>
       </div>
@@ -415,23 +441,23 @@
     <div class="flex justify-between items-center px-4 py-3 relative">
       <button onclick="switchTab('home')" class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1.5 w-14 transition-all duration-300 relative group" data-target="home">
         <i class="fa-solid fa-house text-xl transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Ana</span>
+        <span class="text-[8px] font-black uppercase tracking-widest">Home</span>
       </button>
       <button onclick="switchTab('tasks')" class="nav-btn text-slate-500 flex flex-col items-center gap-1.5 w-14 transition-all duration-300 relative group" data-target="tasks">
         <i class="fa-solid fa-list-check text-xl transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Görəv</span>
+        <span class="text-[8px] font-black uppercase tracking-widest">Tasks</span>
       </button>
       <button onclick="switchTab('boxes')" class="nav-btn text-slate-500 flex flex-col items-center gap-1.5 w-14 transition-all duration-300 relative group" data-target="boxes">
         <i class="fa-solid fa-box-open text-xl transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Qutu</span>
+        <span class="text-[8px] font-black uppercase tracking-widest">Boxes</span>
       </button>
       <button onclick="switchTab('withdraw')" class="nav-btn text-slate-500 flex flex-col items-center gap-1.5 w-14 transition-all duration-300 relative group" data-target="withdraw">
         <i class="fa-solid fa-wallet text-xl transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Çıxarış</span>
+        <span class="text-[8px] font-black uppercase tracking-widest">Withdraw</span>
       </button>
       <button onclick="switchTab('profile')" class="nav-btn text-slate-500 flex flex-col items-center gap-1.5 w-14 transition-all duration-300 relative group" data-target="profile">
         <i class="fa-solid fa-user-astronaut text-xl transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Profil</span>
+        <span class="text-[8px] font-black uppercase tracking-widest">Profile</span>
       </button>
     </div>
   </nav>
@@ -600,7 +626,7 @@
       
       if (newLevel > userState.level) {
         userState.level = newLevel;
-        showToast("Level Atladın!", `Təbriklər! Yeni Səviyyə: ${newLevel}!`, "success");
+        showToast("Level Up!", `Congratulations! New Level: ${newLevel}!`, "success");
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       }
     }
@@ -680,7 +706,7 @@
             <div class="w-10 h-10 rounded-xl border-2 flex items-center justify-center transition-all duration-300 ${styles} z-10 relative bg-[#0a0b1a]">
               ${icon}
             </div>
-            <span class="text-[9px] font-black tracking-widest ${isToday ? 'text-crypto-glow drop-shadow-[0_0_5px_#00f0ff]' : 'text-slate-500'}">GÜN ${i}</span>
+            <span class="text-[9px] font-black tracking-widest ${isToday ? 'text-crypto-glow drop-shadow-[0_0_5px_#00f0ff]' : 'text-slate-500'}">DAY ${i}</span>
             ${i < 7 ? `<div class="absolute top-5 left-[50%] w-full h-1 -z-0 ${lineStyle} rounded-full"></div>` : ''}
           </div>
         `;
@@ -692,11 +718,11 @@
       container.innerHTML = '';
       
       const missionsList = [
-        { key: 'dailyReward', label: `Gündəlik Giriş`, icon: 'fa-gift', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
-        { key: 'watch5', label: '5 Reklam İzlə', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
-        { key: 'watch10', label: '10 Reklam İzlə', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
-        { key: 'watch20', label: '20 Reklam İzlə', icon: 'fa-clapperboard', color: 'text-cyan-400', bg: 'bg-cyan-500/10 border-cyan-500/20' },
-        { key: 'all', label: 'Bütün Görəvlər', icon: 'fa-crown', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' }
+        { key: 'dailyReward', label: `Daily Login`, icon: 'fa-gift', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
+        { key: 'watch5', label: 'Watch 5 Ads', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
+        { key: 'watch10', label: 'Watch 10 Ads', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
+        { key: 'watch20', label: 'Watch 20 Ads', icon: 'fa-clapperboard', color: 'text-cyan-400', bg: 'bg-cyan-500/10 border-cyan-500/20' },
+        { key: 'all', label: 'All Tasks', icon: 'fa-crown', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' }
       ];
 
       missionsList.forEach(m => {
@@ -715,9 +741,9 @@
 
         let btnHtml = '';
         if (mission.claimed) {
-            btnHtml = `<span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-2 rounded-xl border border-emerald-500/30 flex items-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]"><i class="fa-solid fa-check-double"></i> Alındı</span>`;
+            btnHtml = `<span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-2 rounded-xl border border-emerald-500/30 flex items-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]"><i class="fa-solid fa-check-double"></i> Claimed</span>`;
         } else if (isComplete) {
-            btnHtml = `<button onclick="claimMission('${m.key}')" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-2 rounded-xl shadow-[0_0_15px_rgba(0,240,255,0.4)] active:scale-95 transition-all uppercase tracking-wider">Tələb Et</button>`;
+            btnHtml = `<button onclick="claimMission('${m.key}')" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-2 rounded-xl shadow-[0_0_15px_rgba(0,240,255,0.4)] active:scale-95 transition-all uppercase tracking-wider">Claim</button>`;
         } else {
             btnHtml = `<span class="text-[10px] font-black bg-[#050511] text-slate-500 px-3 py-2 rounded-xl border border-slate-700/50">+${mission.reward} XP</span>`;
         }
@@ -751,18 +777,18 @@
         saveState();
         updateUI();
         
-        showToast("Görəv Tamamlandı!", `Sən ${mission.reward} XP qazandın!`, "success");
+        showToast("Task Completed!", `You earned ${mission.reward} XP!`, "success");
     }
 
     function watchAd() {
       if (userState.adsWatchedToday >= 30) {
-        showToast("Limit", "Gündəlik 30 reklam limitinə çatdınız. Sabah yenidən gəlin!", "error");
+        showToast("Limit", "You reached the daily limit of 30 ads. Come back tomorrow!", "error");
         return;
       }
 
       const btn = document.getElementById('watch-ad-btn');
       const originalHTML = btn.innerHTML;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Reklam Yüklənir...</span>';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Loading Ad...</span>';
       btn.classList.add('opacity-80', 'pointer-events-none');
 
       if (window.Adsgram) {
@@ -777,7 +803,7 @@
           saveState();
           updateUI();
           
-          showToast("Mükafat Verildi!", "Reklamı uğurla izlədiniz və +10 XP qazandınız.", "success");
+          showToast("Reward Granted!", "You successfully watched an ad and earned +10 XP.", "success");
           
           btn.innerHTML = originalHTML;
           btn.classList.remove('opacity-80', 'pointer-events-none');
@@ -786,7 +812,7 @@
           btn.classList.remove('opacity-80', 'pointer-events-none');
         });
       } else {
-        showToast("Xəta", "Reklam sistemi hazırda işləmir.", "error");
+        showToast("Error", "Ad system is currently unavailable.", "error");
         btn.innerHTML = originalHTML;
         btn.classList.remove('opacity-80', 'pointer-events-none');
       }
@@ -797,7 +823,7 @@
     function openBox(type) {
       const cost = boxCosts[type];
       if (userState.xp < cost) {
-        showToast("Kifayət qədər XP yoxdur", `Bu qutunu açmaq üçün sənə ${cost} XP lazımdır.`, "error");
+        showToast("Not enough XP", `You need ${cost} XP to open this box.`, "error");
         return;
       }
 
@@ -817,9 +843,9 @@
       updateUI();
 
       if (isJackpot) {
-         showToast("🎉 BÖYÜK CEKPOT! 🎉", `İnanılmaz! Sən $${reward.toFixed(2)} qazandın!`, "jackpot");
+         showToast("🎉 HUGE JACKPOT! 🎉", `Incredible! You won $${reward.toFixed(2)}!`, "jackpot");
       } else {
-         showToast("🎁 Qutu Açıldı!", `Təbriklər! Qutudan $${reward.toFixed(2)} qazandın!`, "success");
+         showToast("🎁 Box Opened!", `Congratulations! You won $${reward.toFixed(2)} from the box!`, "success");
       }
     }
 
@@ -828,17 +854,17 @@
       const amount = parseFloat(document.getElementById('withdraw-amount').value);
 
       if (!address || address.length < 10) {
-        showToast("Səhv Ünvan", "Zəhmət olmasa düzgün TON cüzdan ünvanı daxil edin.", "error");
+        showToast("Invalid Address", "Please enter a valid TON wallet address.", "error");
         return;
       }
 
       if (isNaN(amount) || amount < 5) {
-        showToast("Səhv Məbləğ", "Minimum çıxarış məbləği $5.00-dır.", "error");
+        showToast("Invalid Amount", "The minimum withdrawal amount is $5.00.", "error");
         return;
       }
 
       if (amount > userState.usdBalance) {
-        showToast("Kifayət qədər balans yoxdur", "Bu məbləği çıxarmaq üçün kifayət qədər vəsaitiniz yoxdur.", "error");
+        showToast("Insufficient balance", "You don't have enough funds to withdraw this amount.", "error");
         return;
       }
 
@@ -850,7 +876,7 @@
         date: now.toLocaleDateString(),
         amount: amount,
         address: address.substring(0, 6) + '...' + address.substring(address.length - 4),
-        status: 'Gözləyir'
+        status: 'Pending'
       };
 
       userState.withdrawHistory.unshift(withdrawalRecord); 
@@ -861,7 +887,7 @@
       document.getElementById('wallet-address').value = '';
       document.getElementById('withdraw-amount').value = '';
 
-      showToast("Çıxarış Tələb Edildi", `$${amount.toFixed(2)} üçün sorğunuz göndərildi.`, "success");
+      showToast("Withdrawal Requested", `Your request for $${amount.toFixed(2)} has been submitted.`, "success");
     }
 
     function renderWithdrawHistory() {
@@ -871,7 +897,7 @@
         container.innerHTML = `
           <div class="glass-card rounded-2xl p-6 text-center border-dashed border-2 border-slate-700">
             <i class="fa-solid fa-clock-rotate-left text-3xl text-slate-600 mb-2"></i>
-            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">Tarixçə Boşdur</p>
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">History is Empty</p>
           </div>`;
         return;
       }
@@ -947,7 +973,7 @@
 
         if (checkDailyReset()) {
             updateUI();
-            showToast("Yeni Gün Başladı!", "Gündəlik limitlər və tapşırıqlar sıfırlandı.", "info");
+            showToast("New Day Started!", "Daily limits and tasks have been reset.", "info");
         }
     }
     
@@ -958,8 +984,8 @@
         document.getElementById('loading-overlay').style.opacity = '0';
         setTimeout(() => {
           document.getElementById('loading-overlay').style.display = 'none';
-        }, 500); 
-      }, 3000);
+        }, 700); 
+      }, 3500);
 
       loadState();
       checkDailyReset();

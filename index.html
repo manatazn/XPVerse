@@ -481,36 +481,35 @@
     let accurateTimeOffset = null;
     let headerTimeout; 
 
-    // ---- Klaviatura İzləmə Məntiqi (Yenilənmiş və Tam Problemsiz) ----
+    // ---- Klaviatura İzləmə Məntiqi (Tam Problemsiz) ----
     const bottomNavElement = document.getElementById('bottom-nav');
-    let maxViewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    
+    // Yalnız fiziki ekran hündürlüyünün ölçülməsi. (Input focus/blur tamam ləğv edildi)
+    let maxViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
     function handleKeyboardState() {
-      // Dəqiq ekran ölçüsünü alırıq (Telegram-da xüsusilə visualViewport daha etibarlıdır)
       let currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       
-      // Əgər yeni hündürlük əvvəlkindən böyükdürsə, maksimumu yeniləyirik
+      // Əgər ekran tam açılarsa maksimum hündürlüyü yeniləyirik
       if (currentHeight > maxViewportHeight) {
         maxViewportHeight = currentHeight;
       }
 
-      // Hündürlük 100px-dən çox azalıbsa, deməli klaviatura həqiqətən ekranda yer tutur
-      if (maxViewportHeight - currentHeight > 100) {
+      // Hündürlük 150px-dən çox azalıbsa, deməli klaviatura HƏQİQƏTƏN ekranda yer tutur
+      if (maxViewportHeight - currentHeight > 150) {
         bottomNavElement.classList.add('nav-hidden');
       } else {
-        // Klaviatura yoxdursa, naviqasiyanı qaytarırıq
+        // Klaviatura ekrandan gedibsə, naviqasiyanı qaytar
         bottomNavElement.classList.remove('nav-hidden');
         
-        // Əsas Həll: Klaviatura cihazın geri düyməsi ilə bağlanarsa, 
-        // input asılı qaldığı üçün onu məcburi focus-dan çıxarırıq (blur).
-        if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+        // Cihazın Geri Düyməsi (Back Button) ilə çıxdıqda asılı qalan input-u azad edirik
+        // Beləliklə sistem donmur və 2ci dəfə klikləyəndə problemsiz açılır.
+        if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
           document.activeElement.blur();
         }
       }
     }
 
-    // Təkcə input-un focus olmasına görə yox, sırf ekranın fiziki olaraq kiçilməsinə 
-    // əsaslandığımız üçün "Yapışdır" (Paste) menyusu çıxanda naviqasiya yoxa çıxmayacaq.
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', handleKeyboardState);
     }
@@ -519,13 +518,6 @@
     if (tg.onEvent) {
        tg.onEvent('viewportChanged', handleKeyboardState);
     }
-
-    // İnputlara klikləndikdə əmin olmaq üçün yoxlanışı işə salırıq
-    document.querySelectorAll('input').forEach(input => {
-      input.addEventListener('focus', () => {
-        setTimeout(handleKeyboardState, 150); // Ekran kiçilirsə tutacaq, əks halda gizlətməyəcək
-      });
-    });
     // ---- Klaviatura İzləmə Bitir ----
 
     async function fetchServerTime() {

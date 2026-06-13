@@ -160,7 +160,7 @@
     </div>
   </div>
 
-  <header id="main-header" class="fixed top-0 left-0 right-0 z-50 w-full p-4 glass-card rounded-b-3xl border-b-0 shadow-lg">
+  <header id="main-header" class="fixed top-0 left-0 right-0 z-50 w-full p-4 glass-card rounded-b-3xl border-b-0 shadow-lg transition-transform duration-300">
     <div class="flex justify-between items-center max-w-md mx-auto">
       <div class="flex items-center gap-3">
         <div class="relative w-12 h-12 rounded-full p-[2px] bg-gradient-to-tr from-blue-600 via-crypto-glow to-indigo-500 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
@@ -194,7 +194,7 @@
       <div class="relative glass-card rounded-[2rem] p-8 text-center border-t border-t-blue-400/20 overflow-hidden flex flex-col items-center justify-center min-h-[280px]">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/20 rounded-full filter blur-[40px] pointer-events-none animate-pulse-fast"></div>
         
-        <div class="relative z-10 animate-float flex flex-col items-center">
+        <div class="relative z-10 flex flex-col items-center">
           <div class="w-16 h-16 rounded-full bg-blue-900/40 border border-blue-400/30 flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
              <i class="fa-solid fa-gem text-3xl text-crypto-glow drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]"></i>
           </div>
@@ -473,6 +473,7 @@
     const streakRewards = [5, 10, 15, 20, 25, 30, 50]; 
 
     let accurateTimeOffset = null;
+    let headerTimeout; // Gecikmə xətasını həll etmək üçün qlobal dəyişən
 
     async function fetchServerTime() {
       const apis = [
@@ -912,9 +913,12 @@
       const header = document.getElementById('main-header');
       const mainContent = document.getElementById('app-content');
 
+      // Təkrarlanan sürətli kliklərin qarşısını almaq üçün Timeout-u təmizləyirik
+      clearTimeout(headerTimeout);
+
       if (tabId === 'withdraw' || tabId === 'profile') {
         header.style.transform = 'translateY(-100%)';
-        setTimeout(() => header.style.display = 'none', 300);
+        headerTimeout = setTimeout(() => header.style.display = 'none', 300);
         mainContent.classList.remove('pt-28');
         mainContent.classList.add('pt-4');
       } else {

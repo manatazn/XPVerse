@@ -352,7 +352,7 @@
       withdrawHistory: []
     };
 
-    // Günlük tapşırıqlar (Günə təxmini 500 XP toplanması üçün artırıldı)
+    // Günlük tapşırıqlar
     const getDefaultMissions = () => ({
       dailyReward: { completed: true, claimed: false, reward: 5, type: 'boolean' },
       watch5: { target: 5, claimed: false, reward: 20, type: 'progress' },
@@ -401,7 +401,8 @@
     }
 
     function getNow() {
-      if (!accurateTimeOffset) return null; 
+      // Əgər API hələ yüklənməyibsə yerli saatdan istifadə et
+      if (!accurateTimeOffset) return new Date(); 
       return new Date(accurateTimeOffset + performance.now());
     }
 
@@ -440,7 +441,7 @@
 
       setTimeout(() => {
         toast.classList.remove('toast-show');
-      }, type === 'jackpot' ? 5000 : 3500); // Cekpotda mesaj daha çox qalır
+      }, type === 'jackpot' ? 5000 : 3500); 
     }
 
     function saveState() {
@@ -462,7 +463,7 @@
 
     function checkDailyReset() {
       const now = getNow();
-      if (!now) return;
+      if (!now) return false;
 
       const currentResetDay = getResetDay(now);
       
@@ -488,7 +489,9 @@
         missionsState.dailyReward.reward = streakRewards[userState.streak - 1]; 
         
         saveState();
+        return true; // Əgər reset olubsa true qaytarır ki, updateUI işə düşsün
       }
+      return false;
     }
 
     function checkLevelUp() {
@@ -659,7 +662,7 @@
         const AdController = window.Adsgram.init({ blockId: "int-34999" });
         
         AdController.show().then((result) => {
-          userState.xp += 10; // XP qazancı 10 edildi
+          userState.xp += 10;
           userState.totalXp += 10;
           userState.adsWatchedToday += 1;
           
@@ -684,7 +687,6 @@
 
     const boxCosts = { bronze: 1000, silver: 5000, gold: 10000 };
     
-    // Qutu Cekpot Məntiqi: 99.99% Ehtimalla kiçik pul, 0.01% ehtimalla böyük pul.
     function openBox(type) {
       const cost = boxCosts[type];
       if (userState.xp < cost) {
@@ -697,7 +699,6 @@
       
       let reward = 0;
       
-      // Şans mexanizmi (0 ilə 1 arası random rəqəm yaradır)
       const isJackpot = Math.random() >= 0.9999; 
 
       if (type === 'bronze') {
@@ -861,6 +862,12 @@
         const timerEl = document.getElementById('reset-timer');
         if (timerEl) {
             timerEl.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        // ƏGƏR GÜN DƏYİŞİBSƏ SİSTEM BİRBAŞA BURADA SIFIRLANIR VƏ UI YENİLƏNİR
+        if (checkDailyReset()) {
+            updateUI();
+            showToast("Yeni Gün Başladı!", "Gündəlik limitlər, tapşırıqlar və seriya sıfırlandı.", "info");
         }
     }
     

@@ -98,12 +98,13 @@
       box-shadow: 0 0 12px #00f0ff, 0 0 20px #3b82f6;
     }
 
-    /* Klaviatura açılanda naviqasiyanın gizlənməsi üçün CSS */
+    /* Naviqasiyanın gizlənməsi üçün CSS - Klaviatura problemi həlli */
     #bottom-nav {
-      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out;
     }
     .nav-hidden {
-      transform: translate(-50%, 150%) !important;
+      transition: none !important; /* Ekran yuxarı qalxanda sliding yaranmasın deyə transition bağlandı */
+      transform: translate(-50%, 150px) !important;
       opacity: 0 !important;
       pointer-events: none !important;
     }
@@ -111,13 +112,13 @@
     /* 3D Action Button */
     .btn-3d {
       background: linear-gradient(to bottom, #3b82f6, #2563eb);
-      border-bottom: 4px solid #1e3a8a;
+      border-bottom: 3px solid #1e3a8a;
       transition: all 0.1s;
     }
     .btn-3d:active {
-      transform: translateY(4px);
+      transform: translateY(3px);
       border-bottom-width: 0px;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
 
     #toast-container {
@@ -168,7 +169,7 @@
   <header id="main-header" class="fixed top-0 left-0 right-0 z-50 w-full p-4 glass-card rounded-b-3xl border-b-0 shadow-lg transition-transform duration-300">
     <div class="flex justify-between items-center max-w-md mx-auto">
       <div class="flex items-center gap-3">
-        <div class="relative w-12 h-12 rounded-full p-[2px] bg-gradient-to-tr from-blue-600 via-crypto-glow to-indigo-500 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
+        <div class="relative w-11 h-11 rounded-full p-[2px] bg-gradient-to-tr from-blue-600 via-crypto-glow to-indigo-500 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
           <img id="user-photo" src="https://via.placeholder.com/150/0a0b1a/00f0ff?text=XP" alt="Profile" class="w-full h-full rounded-full object-cover border-2 border-[#050511]">
         </div>
         <div class="flex flex-col">
@@ -192,22 +193,22 @@
     </div>
   </header>
 
-  <main class="flex-1 max-w-md w-full mx-auto p-4 pt-28 relative" id="app-content">
+  <main class="flex-1 max-w-md w-full mx-auto p-4 pt-24 relative" id="app-content">
     
     <div id="view-home" class="view-section fade-in space-y-6">
       
-      <div class="relative glass-card rounded-[2rem] p-8 text-center border-t border-t-blue-400/20 overflow-hidden flex flex-col items-center justify-center min-h-[280px]">
+      <div class="relative glass-card rounded-[2rem] p-6 text-center border-t border-t-blue-400/20 overflow-hidden flex flex-col items-center justify-center min-h-[240px]">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/20 rounded-full filter blur-[40px] pointer-events-none animate-pulse-fast"></div>
         
         <div class="relative z-10 flex flex-col items-center">
-          <div class="w-16 h-16 rounded-full bg-blue-900/40 border border-blue-400/30 flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
-             <i class="fa-solid fa-gem text-3xl text-crypto-glow drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]"></i>
+          <div class="w-14 h-14 rounded-full bg-blue-900/40 border border-blue-400/30 flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
+             <i class="fa-solid fa-gem text-2xl text-crypto-glow drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]"></i>
           </div>
-          <p class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-2 opacity-80">Balance</p>
-          <h1 class="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-blue-400 tracking-tighter drop-shadow-2xl" id="main-xp-display">0 XP</h1>
+          <p class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-1 opacity-80">Balance</p>
+          <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-blue-400 tracking-tighter drop-shadow-2xl" id="main-xp-display">0 XP</h1>
         </div>
         
-        <div class="w-full mt-8 grid grid-cols-2 gap-4">
+        <div class="w-full mt-6 grid grid-cols-2 gap-3">
           <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md">
             <div class="bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/20"><i class="fa-solid fa-clapperboard text-blue-400"></i></div>
             <div class="text-left">
@@ -225,9 +226,9 @@
         </div>
       </div>
 
-      <button onclick="watchAd()" id="watch-ad-btn" class="w-full py-5 rounded-2xl text-white font-black text-base tracking-[0.2em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(59,130,246,0.4)] btn-3d relative overflow-hidden group">
+      <button onclick="watchAd()" id="watch-ad-btn" class="w-full py-4 rounded-2xl text-white font-black text-sm tracking-[0.15em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(59,130,246,0.3)] btn-3d relative overflow-hidden group">
         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
-        <i class="fa-solid fa-play bg-white/20 p-2 rounded-full text-xs"></i> 
+        <i class="fa-solid fa-play bg-white/20 p-2 rounded-full text-[10px]"></i> 
         <span>Watch Ad <span class="text-cyan-200">+10 XP</span></span>
       </button>
 
@@ -268,93 +269,93 @@
         <p class="text-xs text-amber-400 mt-1 uppercase tracking-widest font-bold">Try Your Luck, Win Dollars</p>
       </div>
       
-      <div class="box-bronze glass-card rounded-[2rem] p-6 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
+      <div class="box-bronze glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
         <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-crypto-bronze/10 rounded-full blur-2xl"></div>
         <div class="flex items-center gap-4 relative z-10">
-          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-900 to-[#050511] border border-crypto-bronze flex items-center justify-center shadow-[0_0_15px_rgba(205,127,50,0.3)]">
-            <i class="fa-solid fa-box text-3xl text-crypto-bronze"></i>
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-900 to-[#050511] border border-crypto-bronze flex items-center justify-center shadow-[0_0_15px_rgba(205,127,50,0.3)]">
+            <i class="fa-solid fa-box text-2xl text-crypto-bronze"></i>
           </div>
           <div>
-            <h3 class="text-xl font-black text-white tracking-wide">Bronze Box</h3>
-            <div class="flex flex-col mt-1">
+            <h3 class="text-lg font-black text-white tracking-wide">Bronze Box</h3>
+            <div class="flex flex-col mt-0.5">
               <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 1,000 XP</span>
-              <span class="text-xs text-emerald-400 font-bold mt-0.5">Maximum: $1.00</span>
+              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $1.00</span>
             </div>
           </div>
         </div>
-        <button onclick="openBox('bronze')" class="relative z-10 bg-gradient-to-b from-orange-600 to-orange-800 text-white shadow-[0_4px_15px_rgba(205,127,50,0.4)] hover:brightness-110 active:scale-95 transition-all px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
+        <button onclick="openBox('bronze')" class="relative z-10 bg-gradient-to-b from-orange-600 to-orange-800 text-white shadow-[0_4px_15px_rgba(205,127,50,0.4)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
       </div>
 
-      <div class="box-silver glass-card rounded-[2rem] p-6 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
+      <div class="box-silver glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
         <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-crypto-silver/10 rounded-full blur-2xl"></div>
         <div class="flex items-center gap-4 relative z-10">
-          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-600 to-[#050511] border border-crypto-silver flex items-center justify-center shadow-[0_0_15px_rgba(226,232,240,0.2)]">
-            <i class="fa-solid fa-box-open text-3xl text-crypto-silver"></i>
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-600 to-[#050511] border border-crypto-silver flex items-center justify-center shadow-[0_0_15px_rgba(226,232,240,0.2)]">
+            <i class="fa-solid fa-box-open text-2xl text-crypto-silver"></i>
           </div>
           <div>
-            <h3 class="text-xl font-black text-white tracking-wide">Silver Box</h3>
-            <div class="flex flex-col mt-1">
+            <h3 class="text-lg font-black text-white tracking-wide">Silver Box</h3>
+            <div class="flex flex-col mt-0.5">
               <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 5,000 XP</span>
-              <span class="text-xs text-emerald-400 font-bold mt-0.5">Maximum: $7.00</span>
+              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $7.00</span>
             </div>
           </div>
         </div>
-        <button onclick="openBox('silver')" class="relative z-10 bg-gradient-to-b from-slate-400 to-slate-600 text-crypto-dark shadow-[0_4px_15px_rgba(226,232,240,0.3)] hover:brightness-110 active:scale-95 transition-all px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
+        <button onclick="openBox('silver')" class="relative z-10 bg-gradient-to-b from-slate-400 to-slate-600 text-crypto-dark shadow-[0_4px_15px_rgba(226,232,240,0.3)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
       </div>
 
-      <div class="box-gold glass-card rounded-[2rem] p-6 relative overflow-hidden flex justify-between items-center border border-crypto-gold shadow-[0_0_20px_rgba(255,184,0,0.15)] transition-transform hover:scale-[1.02]">
+      <div class="box-gold glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center border border-crypto-gold shadow-[0_0_20px_rgba(255,184,0,0.15)] transition-transform hover:scale-[1.02]">
         <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-crypto-gold/20 rounded-full blur-xl animate-pulse"></div>
         <div class="flex items-center gap-4 relative z-10">
-          <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-[#050511] border-2 border-crypto-gold flex items-center justify-center shadow-[0_0_25px_rgba(255,184,0,0.5)]">
-            <i class="fa-solid fa-gem text-3xl text-crypto-gold drop-shadow-[0_0_10px_#ffb800]"></i>
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-[#050511] border border-crypto-gold flex items-center justify-center shadow-[0_0_25px_rgba(255,184,0,0.5)]">
+            <i class="fa-solid fa-gem text-2xl text-crypto-gold drop-shadow-[0_0_10px_#ffb800]"></i>
           </div>
           <div>
-            <h3 class="text-xl font-black text-crypto-gold tracking-wide drop-shadow-[0_0_5px_rgba(255,184,0,0.5)]">Gold Box</h3>
-            <div class="flex flex-col mt-1">
+            <h3 class="text-lg font-black text-crypto-gold tracking-wide drop-shadow-[0_0_5px_rgba(255,184,0,0.5)]">Gold Box</h3>
+            <div class="flex flex-col mt-0.5">
               <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 10,000 XP</span>
-              <span class="text-xs text-emerald-400 font-bold mt-0.5">Maximum: $15.00</span>
+              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $15.00</span>
             </div>
           </div>
         </div>
-        <button onclick="openBox('gold')" class="relative z-10 bg-gradient-to-b from-yellow-400 to-amber-600 text-crypto-dark shadow-[0_4px_20px_rgba(255,184,0,0.6)] hover:brightness-110 active:scale-95 transition-all px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
+        <button onclick="openBox('gold')" class="relative z-10 bg-gradient-to-b from-yellow-400 to-amber-600 text-crypto-dark shadow-[0_4px_20px_rgba(255,184,0,0.6)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
       </div>
     </div>
 
     <div id="view-withdraw" class="view-section hidden fade-in space-y-6">
       
-      <div class="glass-card rounded-[2.5rem] p-8 text-center border-t-2 border-emerald-500/40 bg-gradient-to-b from-emerald-900/30 to-[#050511]">
-        <div class="w-16 h-16 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-4 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-          <i class="fa-solid fa-wallet text-2xl text-emerald-400"></i>
+      <div class="glass-card rounded-[2rem] p-6 text-center border-t-2 border-emerald-500/40 bg-gradient-to-b from-emerald-900/30 to-[#050511]">
+        <div class="w-14 h-14 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-3 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+          <i class="fa-solid fa-wallet text-xl text-emerald-400"></i>
         </div>
-        <p class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-2 opacity-80">Withdrawal Balance</p>
-        <h1 class="text-6xl font-black text-white tracking-tighter mb-4">$<span id="withdraw-balance-display">0.00</span></h1>
-        <div class="inline-block bg-[#050511]/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-700/50">
-          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> Minimum: $5.00</p>
+        <p class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-1 opacity-80">Withdrawal Balance</p>
+        <h1 class="text-5xl font-black text-white tracking-tighter mb-3">$<span id="withdraw-balance-display">0.00</span></h1>
+        <div class="inline-block bg-[#050511]/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-700/50">
+          <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> Minimum: $5.00</p>
         </div>
       </div>
 
-      <div class="glass-card rounded-[2rem] p-6 space-y-5 border-slate-800">
+      <div class="glass-card rounded-[1.5rem] p-5 space-y-4 border-slate-800">
         <div>
-          <label class="block text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-2 ml-2">TON Wallet Address</label>
+          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">TON Wallet Address</label>
           <div class="relative group">
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="w-5 h-5 opacity-70 group-focus-within:opacity-100 transition-opacity" alt="TON">
             </div>
-            <input type="text" id="wallet-address" placeholder="UQ..." class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium text-white focus:outline-none focus:border-blue-500 transition-colors placeholder-slate-600 shadow-inner">
+            <input type="text" id="wallet-address" placeholder="UQ..." class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-sm font-medium text-white focus:outline-none focus:border-blue-500 transition-colors placeholder-slate-600 shadow-inner">
           </div>
         </div>
         
         <div>
-          <label class="block text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-2 ml-2">Amount (USD)</label>
+          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">Amount (USD)</label>
           <div class="relative group">
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <i class="fa-solid fa-dollar-sign text-slate-500 group-focus-within:text-emerald-400 transition-colors text-lg"></i>
             </div>
-            <input type="number" id="withdraw-amount" placeholder="5.00" min="5" step="0.5" class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-emerald-400 focus:outline-none focus:border-emerald-500 transition-colors placeholder-slate-600 shadow-inner">
+            <input type="number" id="withdraw-amount" placeholder="5.00" min="5" step="0.5" class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-sm font-bold text-emerald-400 focus:outline-none focus:border-emerald-500 transition-colors placeholder-slate-600 shadow-inner">
           </div>
         </div>
 
-        <button onclick="requestWithdrawal()" id="withdraw-btn" class="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-500 hover:brightness-110 active:scale-95 transition-all text-white font-black rounded-2xl text-sm uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-[0_10px_20px_rgba(16,185,129,0.3)]">
+        <button onclick="requestWithdrawal()" id="withdraw-btn" class="w-full py-3.5 mt-2 bg-gradient-to-r from-emerald-600 to-teal-500 hover:brightness-110 active:scale-95 transition-all text-white font-black rounded-xl text-sm uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-[0_10px_20px_rgba(16,185,129,0.3)]">
           <i class="fa-solid fa-money-bill-transfer"></i> Request Withdrawal
         </button>
       </div>
@@ -375,67 +376,67 @@
         </div>
         
         <div class="px-6 pb-8 -mt-16 relative z-10">
-          <div class="relative w-28 h-28 mx-auto rounded-full bg-gradient-to-b from-crypto-glow to-blue-600 p-1 mb-4 shadow-[0_0_30px_rgba(0,240,255,0.4)]">
+          <div class="relative w-24 h-24 mx-auto rounded-full bg-gradient-to-b from-crypto-glow to-blue-600 p-1 mb-3 shadow-[0_0_30px_rgba(0,240,255,0.4)]">
              <img id="profile-photo-large" src="https://via.placeholder.com/150" class="w-full h-full rounded-full border-4 border-[#0a0b1a] object-cover">
-             <div class="absolute -bottom-2 -right-2 bg-gradient-to-br from-[#0a0b1a] to-blue-900 border-2 border-crypto-glow text-white w-10 h-10 rounded-full flex items-center justify-center font-black text-sm shadow-[0_0_15px_#00f0ff]" id="profile-badge-level">1</div>
+             <div class="absolute -bottom-2 -right-2 bg-gradient-to-br from-[#0a0b1a] to-blue-900 border-2 border-crypto-glow text-white w-8 h-8 rounded-full flex items-center justify-center font-black text-xs shadow-[0_0_15px_#00f0ff]" id="profile-badge-level">1</div>
           </div>
           
-          <h2 id="profile-name" class="text-3xl font-black text-white tracking-tight">User</h2>
-          <p id="profile-tgid" class="text-[11px] text-blue-400 font-mono mt-1 tracking-widest bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20">ID: 00000000</p>
+          <h2 id="profile-name" class="text-2xl font-black text-white tracking-tight">User</h2>
+          <p id="profile-tgid" class="text-[10px] text-blue-400 font-mono mt-1 tracking-widest bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20">ID: 00000000</p>
           
-          <div class="mt-8">
-            <div class="flex justify-between items-end mb-2 px-1">
+          <div class="mt-6">
+            <div class="flex justify-between items-end mb-1.5 px-1">
                <span class="text-[10px] font-black text-crypto-glow uppercase tracking-wider">Level Progress</span>
                <span class="text-[10px] font-bold text-slate-400" id="profile-current-xp-text">0 XP</span>
             </div>
-            <div class="w-full bg-[#050511] rounded-full h-4 border border-slate-700/50 overflow-hidden relative shadow-inner p-0.5">
+            <div class="w-full bg-[#050511] rounded-full h-3 border border-slate-700/50 overflow-hidden relative shadow-inner p-0.5">
                <div id="profile-xp-progress" class="bg-gradient-to-r from-blue-600 via-crypto-glow to-indigo-400 h-full rounded-full transition-all duration-1000 w-[0%] relative">
                  <div class="absolute inset-0 bg-white/20 w-full h-full animate-[shimmer_2s_infinite]"></div>
                </div>
             </div>
-            <div class="text-right mt-1.5 px-1">
+            <div class="text-right mt-1 px-1">
               <span class="text-[9px] font-bold text-slate-500 uppercase">Target: <span id="profile-next-xp-text" class="text-blue-400">250 XP</span></span>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-4">
-        <div class="glass-card p-6 rounded-3xl text-center border-t-2 border-t-blue-500/30">
-          <div class="w-12 h-12 mx-auto bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center mb-3 text-xl shadow-[0_0_15px_rgba(59,130,246,0.2)inset]"><i class="fa-solid fa-chart-line"></i></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-blue-500/30">
+          <div class="w-10 h-10 mx-auto bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center mb-2 text-lg shadow-[0_0_15px_rgba(59,130,246,0.2)inset]"><i class="fa-solid fa-chart-line"></i></div>
           <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Total Earned</p>
-          <p id="profile-total-xp" class="text-2xl font-black text-white">0</p>
+          <p id="profile-total-xp" class="text-xl font-black text-white">0</p>
         </div>
-        <div class="glass-card p-6 rounded-3xl text-center border-t-2 border-t-amber-500/30">
-          <div class="w-12 h-12 mx-auto bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-2xl flex items-center justify-center mb-3 text-xl shadow-[0_0_15px_rgba(245,158,11,0.2)inset]"><i class="fa-solid fa-box-open"></i></div>
+        <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-amber-500/30">
+          <div class="w-10 h-10 mx-auto bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center mb-2 text-lg shadow-[0_0_15px_rgba(245,158,11,0.2)inset]"><i class="fa-solid fa-box-open"></i></div>
           <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Boxes Opened</p>
-          <p id="profile-boxes" class="text-2xl font-black text-white">0</p>
+          <p id="profile-boxes" class="text-xl font-black text-white">0</p>
         </div>
       </div>
     </div>
 
   </main>
 
-  <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] glass-card rounded-3xl pb-safe z-50 shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-slate-700/50 backdrop-blur-xl">
-    <div class="flex justify-between items-center px-4 py-3 relative">
-      <button onclick="switchTab('home')" class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1.5 w-14 transition-all duration-300 relative group" data-target="home">
-        <i class="fa-solid fa-house text-xl transition-transform group-active:scale-90"></i>
+  <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] glass-card rounded-2xl pb-safe z-50 shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-slate-700/50 backdrop-blur-xl">
+    <div class="flex justify-between items-center px-4 py-2.5 relative">
+      <button onclick="switchTab('home')" class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="home">
+        <i class="fa-solid fa-house text-lg transition-transform group-active:scale-90"></i>
         <span class="text-[8px] font-black uppercase tracking-widest">Home</span>
       </button>
-      <button onclick="switchTab('tasks')" class="nav-btn text-slate-500 flex flex-col items-center gap-1.5 w-14 transition-all duration-300 relative group" data-target="tasks">
-        <i class="fa-solid fa-list-check text-xl transition-transform group-active:scale-90"></i>
+      <button onclick="switchTab('tasks')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="tasks">
+        <i class="fa-solid fa-list-check text-lg transition-transform group-active:scale-90"></i>
         <span class="text-[8px] font-black uppercase tracking-widest">Tasks</span>
       </button>
-      <button onclick="switchTab('boxes')" class="nav-btn text-slate-500 flex flex-col items-center gap-1.5 w-14 transition-all duration-300 relative group" data-target="boxes">
-        <i class="fa-solid fa-box-open text-xl transition-transform group-active:scale-90"></i>
+      <button onclick="switchTab('boxes')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="boxes">
+        <i class="fa-solid fa-box-open text-lg transition-transform group-active:scale-90"></i>
         <span class="text-[8px] font-black uppercase tracking-widest">Box</span>
       </button>
-      <button onclick="switchTab('withdraw')" class="nav-btn text-slate-500 flex flex-col items-center gap-1.5 w-14 transition-all duration-300 relative group" data-target="withdraw">
-        <i class="fa-solid fa-wallet text-xl transition-transform group-active:scale-90"></i>
+      <button onclick="switchTab('withdraw')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="withdraw">
+        <i class="fa-solid fa-wallet text-lg transition-transform group-active:scale-90"></i>
         <span class="text-[8px] font-black uppercase tracking-widest">Withdraw</span>
       </button>
-      <button onclick="switchTab('profile')" class="nav-btn text-slate-500 flex flex-col items-center gap-1.5 w-14 transition-all duration-300 relative group" data-target="profile">
-        <i class="fa-solid fa-user-astronaut text-xl transition-transform group-active:scale-90"></i>
+      <button onclick="switchTab('profile')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="profile">
+        <i class="fa-solid fa-user-astronaut text-lg transition-transform group-active:scale-90"></i>
         <span class="text-[8px] font-black uppercase tracking-widest">Profile</span>
       </button>
     </div>
@@ -480,41 +481,46 @@
     let accurateTimeOffset = null;
     let headerTimeout; 
 
-    // ---- Klaviatura İzləmə Məntiqi Başlayır ----
+    // ---- Klaviatura İzləmə Məntiqi (Təkmilləşdirilmiş) ----
     const bottomNavElement = document.getElementById('bottom-nav');
-    let maxViewportHeight = window.innerHeight;
-
-    function handleKeyboardState() {
-      // Bəzən ekran tam açılanda daxili hündürlük böyüyə bilər, maksimumu hər zaman yeniləyirik
-      if (window.innerHeight > maxViewportHeight) {
-        maxViewportHeight = window.innerHeight;
-      }
-      
-      // Əgər hazırkı hündürlük maksimumdan 100px+ kiçikdirsə, deməli klaviatura açılıb
-      if (window.innerHeight < maxViewportHeight - 100) {
-        bottomNavElement.classList.add('nav-hidden');
-      } else {
-        bottomNavElement.classList.remove('nav-hidden');
-      }
-    }
-
-    // Ekran ölçüsü dəyişəndə (Telegram Mini App içində klaviatura açılanda) bu event işə düşür
-    window.addEventListener('resize', handleKeyboardState);
-    if (tg.onEvent) {
-       tg.onEvent('viewportChanged', handleKeyboardState);
-    }
-
-    // Əlavə təhlükəsizlik olaraq inputlara fokuslandıqda paneli gizlətmək
+    
+    // İnputlara fokuslanan kimi anında gizlət (Ekranın yığılmasını gözləmədən)
     document.querySelectorAll('input').forEach(input => {
       input.addEventListener('focus', () => {
         bottomNavElement.classList.add('nav-hidden');
       });
       input.addEventListener('blur', () => {
-        // Blur olanda dərhal gətirmirik ki, başqa inputa kliklənibsə ekran qırpışmasın
-        setTimeout(handleKeyboardState, 150);
+        // Blur olanda cüzi gecikmə ilə gətir ki, başqa inputa kliklənəndə qırpışmasın
+        setTimeout(() => {
+          bottomNavElement.classList.remove('nav-hidden');
+        }, 150);
       });
     });
-    // ---- Klaviatura İzləmə Məntiqi Bitir ----
+
+    // Əlavə ehtiyat kimi viewport dəyişikliyini izləmək
+    let maxViewportHeight = window.innerHeight;
+    function handleKeyboardState() {
+      if (window.innerHeight > maxViewportHeight) {
+        maxViewportHeight = window.innerHeight;
+      }
+      // Aktiv focus yoxdursa və hündürlük fərqi varsa gizlət/göstər
+      const activeElement = document.activeElement;
+      const isInputActive = activeElement && activeElement.tagName === 'INPUT';
+      
+      if (!isInputActive) {
+          if (window.innerHeight < maxViewportHeight - 100) {
+            bottomNavElement.classList.add('nav-hidden');
+          } else {
+            bottomNavElement.classList.remove('nav-hidden');
+          }
+      }
+    }
+    
+    window.addEventListener('resize', handleKeyboardState);
+    if (tg.onEvent) {
+       tg.onEvent('viewportChanged', handleKeyboardState);
+    }
+    // ---- Klaviatura İzləmə Bitir ----
 
     async function fetchServerTime() {
       const apis = [
@@ -569,7 +575,7 @@
       }
 
       icon.innerHTML = iconHtml;
-      icon.className = `w-12 h-12 rounded-2xl flex shrink-0 items-center justify-center text-xl ${iconClass}`;
+      icon.className = `w-12 h-12 rounded-xl flex shrink-0 items-center justify-center text-xl ${iconClass}`;
       toast.style.border = borderStyle;
 
       toast.classList.add('toast-show');
@@ -719,11 +725,11 @@
 
         container.innerHTML += `
           <div class="relative flex flex-col items-center gap-1.5 z-10 flex-1">
-            <div class="w-10 h-10 rounded-xl border-2 flex items-center justify-center transition-all duration-300 ${styles} z-10 relative bg-[#0a0b1a]">
+            <div class="w-9 h-9 rounded-xl border-2 flex items-center justify-center transition-all duration-300 ${styles} z-10 relative bg-[#0a0b1a]">
               ${icon}
             </div>
-            <span class="text-[9px] font-black tracking-widest ${isToday ? 'text-crypto-glow drop-shadow-[0_0_5px_#00f0ff]' : 'text-slate-500'}">DAY ${i}</span>
-            ${i < 7 ? `<div class="absolute top-5 left-[50%] w-full h-1 -z-0 ${lineStyle} rounded-full"></div>` : ''}
+            <span class="text-[8px] font-black tracking-widest ${isToday ? 'text-crypto-glow drop-shadow-[0_0_5px_#00f0ff]' : 'text-slate-500'}">DAY ${i}</span>
+            ${i < 7 ? `<div class="absolute top-4 left-[50%] w-full h-1 -z-0 ${lineStyle} rounded-full"></div>` : ''}
           </div>
         `;
       }
@@ -757,15 +763,16 @@
 
         let btnHtml = '';
         if (mission.claimed) {
-            btnHtml = `<span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-2 rounded-xl border border-emerald-500/30 flex items-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]"><i class="fa-solid fa-check-double"></i> Claimed</span>`;
+            btnHtml = `<span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/30 flex items-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]"><i class="fa-solid fa-check-double"></i> Claimed</span>`;
         } else if (isComplete) {
-            btnHtml = `<button onclick="claimMission('${m.key}')" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-2 rounded-xl shadow-[0_0_15px_rgba(0,240,255,0.4)] active:scale-95 transition-all uppercase tracking-wider">Claim</button>`;
+            btnHtml = `<button onclick="claimMission('${m.key}')" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-1.5 rounded-xl shadow-[0_0_15px_rgba(0,240,255,0.4)] active:scale-95 transition-all uppercase tracking-wider">Claim</button>`;
         } else {
-            btnHtml = `<span class="text-[10px] font-black bg-[#050511] text-slate-500 px-3 py-2 rounded-xl border border-slate-700/50">+${mission.reward} XP</span>`;
+            // Tünd ağ (slate-200) və aydın arxa plan rəngləməsi
+            btnHtml = `<span class="text-[10px] font-black bg-slate-800/50 text-slate-200 px-3 py-1.5 rounded-xl border border-slate-600 shadow-inner">+${mission.reward} XP</span>`;
         }
 
         container.innerHTML += `
-          <div class="glass-card rounded-2xl p-3 flex justify-between items-center transition-transform hover:-translate-y-0.5">
+          <div class="glass-card rounded-2xl p-3 flex justify-between items-center transition-transform hover:-translate-y-0.5 border border-slate-800">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-xl border ${m.bg} flex items-center justify-center">
                  <i class="fa-solid ${m.icon} ${m.color} text-lg"></i>
@@ -959,13 +966,13 @@
       if (tabId === 'withdraw' || tabId === 'profile') {
         header.style.transform = 'translateY(-100%)';
         headerTimeout = setTimeout(() => header.style.display = 'none', 300);
-        mainContent.classList.remove('pt-28');
+        mainContent.classList.remove('pt-24');
         mainContent.classList.add('pt-4');
       } else {
         header.style.display = 'block'; 
         setTimeout(() => header.style.transform = 'translateY(0)', 10);
         mainContent.classList.remove('pt-4');
-        mainContent.classList.add('pt-28');
+        mainContent.classList.add('pt-24');
       }
       
       if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();

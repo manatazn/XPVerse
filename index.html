@@ -481,10 +481,10 @@
     let accurateTimeOffset = null;
     let headerTimeout; 
 
-    // ---- Klaviatura İzləmə Məntiqi (Tam Problemsiz) ----
+    // ---- Klaviatura İzləmə Məntiqi Düzəldilmiş Versiya ----
     const bottomNavElement = document.getElementById('bottom-nav');
     
-    // Yalnız fiziki ekran hündürlüyünün ölçülməsi. (Input focus/blur tamam ləğv edildi)
+    // Yalnız fiziki ekran hündürlüyünün ölçülməsi.
     let maxViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
     function handleKeyboardState() {
@@ -495,18 +495,13 @@
         maxViewportHeight = currentHeight;
       }
 
-      // Hündürlük 150px-dən çox azalıbsa, deməli klaviatura HƏQİQƏTƏN ekranda yer tutur
-      if (maxViewportHeight - currentHeight > 150) {
+      // Hündürlük 100px-dən çox azalıbsa, deməli klaviatura ekranda yer tutur
+      if (maxViewportHeight - currentHeight > 100) {
         bottomNavElement.classList.add('nav-hidden');
       } else {
         // Klaviatura ekrandan gedibsə, naviqasiyanı qaytar
         bottomNavElement.classList.remove('nav-hidden');
-        
-        // Cihazın Geri Düyməsi (Back Button) ilə çıxdıqda asılı qalan input-u azad edirik
-        // Beləliklə sistem donmur və 2ci dəfə klikləyəndə problemsiz açılır.
-        if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
-          document.activeElement.blur();
-        }
+        // QEYD: Buralardakı document.activeElement.blur() silinib, problemi bu yaradırdı.
       }
     }
 

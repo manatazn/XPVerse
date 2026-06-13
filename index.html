@@ -481,55 +481,52 @@
     let accurateTimeOffset = null;
     let headerTimeout; 
 
-    // ---- KLAVİATURA İZLƏMƏ MƏNTİQİ (MÜKƏMMƏL YENİLƏNMƏ) ----
+    // ---- Klaviatura İzləmə Məntiqi (Yenilənmiş və Tam Problemsiz) ----
     const bottomNavElement = document.getElementById('bottom-nav');
-    let maxViewportHeight = window.innerHeight;
+    let maxViewportHeight = window.innerHeight || document.documentElement.clientHeight;
 
-    function checkKeyboard() {
-        // Ekranın ölçüsü maksimumdan 100px kiçilirsə, deməli klaviatura AÇIQDIR
-        if (window.innerHeight < maxViewportHeight - 100) {
-            bottomNavElement.classList.add('nav-hidden');
-        } else {
-            // Əks halda klaviatura BAĞLIDIR
-            bottomNavElement.classList.remove('nav-hidden');
-            
-            // Telefonun "Geri" düyməsi ilə klaviatura bağlananda input hələ də focusda qalır,
-            // bunu qarşısını almaq və dizayn xətası yaratmamaq üçün blur edirik.
-            if (document.activeElement && document.activeElement.tagName === 'INPUT') {
-                document.activeElement.blur();
-            }
-        }
-    }
+    function handleKeyboardState() {
+      // Dəqiq ekran ölçüsünü alırıq (Telegram-da xüsusilə visualViewport daha etibarlıdır)
+      let currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      
+      // Əgər yeni hündürlük əvvəlkindən böyükdürsə, maksimumu yeniləyirik
+      if (currentHeight > maxViewportHeight) {
+        maxViewportHeight = currentHeight;
+      }
 
-    // Pəncərənin hər ölçü dəyişimində yoxla (Geri düyməsi və ya klaviatura açılması)
-    window.addEventListener('resize', () => {
-        if (window.innerHeight > maxViewportHeight) {
-            maxViewportHeight = window.innerHeight;
-        }
-        checkKeyboard();
-    });
-
-    // Telegram daxilində ehtiyat tədbiri
-    if (tg.onEvent) {
-        tg.onEvent('viewportChanged', () => {
-            if (window.innerHeight > maxViewportHeight) {
-                maxViewportHeight = window.innerHeight;
-            }
-            checkKeyboard();
-        });
-    }
-
-    // İnput üzərinə kliklənəndə (hələ ekran balacalanmamış) dərhal gizlət
-    document.querySelectorAll('input').forEach(input => {
-        input.addEventListener('focus', () => {
-            bottomNavElement.classList.add('nav-hidden');
-        });
+      // Hündürlük 100px-dən çox azalıbsa, deməli klaviatura həqiqətən ekranda yer tutur
+      if (maxViewportHeight - currentHeight > 100) {
+        bottomNavElement.classList.add('nav-hidden');
+      } else {
+        // Klaviatura yoxdursa, naviqasiyanı qaytarırıq
+        bottomNavElement.classList.remove('nav-hidden');
         
-        input.addEventListener('blur', () => {
-            setTimeout(checkKeyboard, 150);
-        });
+        // Əsas Həll: Klaviatura cihazın geri düyməsi ilə bağlanarsa, 
+        // input asılı qaldığı üçün onu məcburi focus-dan çıxarırıq (blur).
+        if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+          document.activeElement.blur();
+        }
+      }
+    }
+
+    // Təkcə input-un focus olmasına görə yox, sırf ekranın fiziki olaraq kiçilməsinə 
+    // əsaslandığımız üçün "Yapışdır" (Paste) menyusu çıxanda naviqasiya yoxa çıxmayacaq.
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleKeyboardState);
+    }
+    window.addEventListener('resize', handleKeyboardState);
+    
+    if (tg.onEvent) {
+       tg.onEvent('viewportChanged', handleKeyboardState);
+    }
+
+    // İnputlara klikləndikdə əmin olmaq üçün yoxlanışı işə salırıq
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('focus', () => {
+        setTimeout(handleKeyboardState, 150); // Ekran kiçilirsə tutacaq, əks halda gizlətməyəcək
+      });
     });
-    // ---- KLAVİATURA İZLƏMƏ BİTİR ----
+    // ---- Klaviatura İzləmə Bitir ----
 
     async function fetchServerTime() {
       const apis = [
@@ -776,7 +773,6 @@
         } else if (isComplete) {
             btnHtml = `<button onclick="claimMission('${m.key}')" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-1.5 rounded-xl shadow-[0_0_15px_rgba(0,240,255,0.4)] active:scale-95 transition-all uppercase tracking-wider">Claim</button>`;
         } else {
-            // Tünd ağ (slate-200) və aydın arxa plan rəngləməsi
             btnHtml = `<span class="text-[10px] font-black bg-slate-800/50 text-slate-200 px-3 py-1.5 rounded-xl border border-slate-600 shadow-inner">+${mission.reward} XP</span>`;
         }
 

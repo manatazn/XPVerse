@@ -448,7 +448,6 @@
     tg.setHeaderColor('#0a0b1a');
     tg.setBackgroundColor('#050511');
 
-    // Default struktur
     const defaultUserState = {
       tgId: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id.toString() : "123456789",
       firstName: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : "Crypto User",
@@ -464,7 +463,6 @@
 
     const getResetDay = (d) => d.toISOString().split('T')[0];
 
-    // SERVERDƏN MƏLUMATLARIN ALINMASI (LOCAL STORAGE ƏVƏZİNƏ)
     async function syncWithServer() {
       try {
         const response = await fetch(`${WORKER_URL}/api/init`, {
@@ -509,7 +507,6 @@
       if (window.Adsgram) {
         const AdController = window.Adsgram.init({ blockId: "int-34999" });
         AdController.show().then(async (result) => {
-          // Reklam izlənildikdə serverə məlumat ötürülür
           try {
             const response = await fetch(`${WORKER_URL}/api/watch-ad`, {
               method: "POST",
@@ -675,9 +672,6 @@
       showToast("Kopyalandı!", "Dəvət linkiniz panoya kopyalandı.", "success");
     }
 
-    // ==========================================
-    // ADMİN PANELİ SCRIPT MƏNTİQİ
-    // ==========================================
     async function adminFetchUser() {
       const uid = document.getElementById('admin-search-uid').value;
       if(!uid) return;
@@ -701,29 +695,33 @@
       } catch(e) { showToast("Xəta", "Axtarış yerinə yetirilə bilmədi", "error"); }
     }
 
-    async function adminExecuteAction(type) {
-      const uid = document.getElementById('admin-search-uid').value;
+    async function adminExecuteAction(actionType) {
+      const targetUid = document.getElementById('admin-search-uid').value;
       let val = 0;
-      if(type === 'add_xp' || type === 'sub_xp') val = document.getElementById('admin-amount-xp').value;
-      if(type === 'add_usd' || type === 'sub_usd') val = document.getElementById('admin-amount-usd').value;
+      
+      if (userState.tgId !== ADMIN_ACCOUNT_ID) return showToast("Error", "Access Denied", "error");
+      if (!targetUid) return showToast("Error", "Geçərli UID daxil edin", "error");
+      
+      if(actionType === 'add_xp' || actionType === 'sub_xp') val = document.getElementById('admin-amount-xp').value;
+      if(actionType === 'add_usd' || actionType === 'sub_usd') val = document.getElementById('admin-amount-usd').value;
 
       try {
         const res = await fetch(`${WORKER_URL}/api/admin/action`, {
           method: "POST",
           headers: { "Content-Type": "application/json", "X-Admin-ID": userState.tgId },
-          body: JSON.stringify({ targetUid: uid, actionType: type, val: val })
+          body: JSON.stringify({ targetUid: targetUid, actionType: actionType, val: val })
         });
         const data = await res.json();
         if(data.success) {
           showToast("Uğurlu", "Əməliyyat tamamlandı!", "success");
-          adminFetchUser(); // Məlumatları yenilə
+          if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+          adminFetchUser();
         } else {
           showToast("Xəta", data.error, "error");
         }
       } catch(e) { showToast("Xəta", "Əməliyyat xətası", "error"); }
     }
 
-    // INTERFACE UPDATE
     function updateUI() {
       document.getElementById('user-name').innerText = userState.firstName;
       document.getElementById('user-xp').innerHTML = `${userState.xp.toLocaleString()} <span class="text-[10px] text-crypto-glow font-bold">XP</span>`;
@@ -744,7 +742,6 @@
       document.getElementById('profile-name').innerText = userState.firstName;
       document.getElementById('profile-tgid').innerText = `ID: ${userState.tgId}`;
       
-      // Admin Panelini sadəcə təyin olunmuş ID üçün göstər
       if(userState.tgId.toString() === ADMIN_ACCOUNT_ID) {
         document.getElementById('nav-admin-btn').classList.remove('hidden');
         document.getElementById('nav-admin-btn').classList.add('flex');
@@ -756,7 +753,6 @@
       renderReferrals();
     }
 
-    // Digər standart render funksiyaları (Eynilə saxlanılıb və optimizasiya edilib)
     function renderStreakTracker() {
       const container = document.getElementById('streak-tracker-container');
       container.innerHTML = '';
@@ -880,19 +876,19 @@
       setTimeout(() => { toast.classList.remove('toast-show'); }, 3000);
     }
 
-    function updateTimer() {
-        const now = new Date();
-        const tomorrow = new Date(now);
-        tomorrow.setUTCHours(24, 0, 0, 0); 
-        const diff = tomorrow.getTime() - now.getTime();
-        const h = Math.floor(diff / 1000 / 60 / 60);
-        const m = Math.floor((diff / 1000 / 60) % 60);
-        const s = Math.floor((diff / 1000) % 60);
-        
-        const timerEl = document.getElementById('reset-timer');
-        if (timerEl) timerEl.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    let serverTimeOffset = 0;
+    
+    function fetchServerTime() {
+       // Cloudflare tərəfindən server saatını əldə etmək üçün mövcudsa çağırış
+       serverTimeOffset = 0; 
+    }
 
-        // Gün dəyişdikdə server sinxronizasiyası
+    function getNow() {
+       return new Date(Date.now() + serverTimeOffset);
+    }
+
+    function checkDailyReset() {
+        const now = getNow();
         const currentResetDay = getResetDay(now);
         if (userState.lastResetDay && userState.lastResetDay !== currentResetDay) {
            let last = new Date(userState.lastResetDay);
@@ -908,15 +904,45 @@
            }).then(r => r.json()).then(data => {
               if(data.success) { userState = data.user; updateUI(); }
            });
+           return true;
         }
+        return false;
     }
 
-    async function initApp() {
-      const active = await syncWithServer();
-      if(!active) return; // Əgər banlıdırsa davam etmə
+    function updateTimer() {
+        const now = getNow();
+        if (!now) return;
 
-      document.getElementById('loading-overlay').style.opacity = '0';
-      setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; }, 500);
+        const tomorrow = new Date(now);
+        tomorrow.setUTCHours(24, 0, 0, 0); 
+        
+        const diff = tomorrow.getTime() - now.getTime();
+        const h = Math.floor(diff / 1000 / 60 / 60);
+        const m = Math.floor((diff / 1000 / 60) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        
+        const timerEl = document.getElementById('reset-timer');
+        if (timerEl) {
+            timerEl.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        if (checkDailyReset()) {
+            updateUI();
+            showToast("Yeni Gün Başladı!", "Günlük tapşırıq limitləriniz sıfırlandı.", "info");
+        }
+    }
+    
+    async function initApp() {
+      fetchServerTime(); 
+      const active = await syncWithServer();
+      if(!active) return;
+
+      setTimeout(() => {
+        document.getElementById('loading-overlay').style.opacity = '0';
+        setTimeout(() => {
+          document.getElementById('loading-overlay').style.display = 'none';
+        }, 500);
+      }, 1000);
 
       updateUI();
       setInterval(updateTimer, 1000);

@@ -103,7 +103,7 @@
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out;
     }
     .nav-hidden {
-      transition: none !important; /* Ekran yuxarı qalxanda sliding yaranmasın deyə transition bağlandı */
+      transition: none !important;
       transform: translate(-50%, 150px) !important;
       opacity: 0 !important;
       pointer-events: none !important;
@@ -129,10 +129,11 @@
     }
     .toast-show { transform: translate(-50%, 0) scale(1) !important; opacity: 1 !important; }
 
-    /* Box Gradients */
+    /* Box Gradients & Admin Glow */
     .box-bronze { background: linear-gradient(135deg, rgba(205,127,50,0.1), rgba(139,69,19,0.2)); border: 1px solid rgba(205,127,50,0.4); }
     .box-silver { background: linear-gradient(135deg, rgba(226,232,240,0.1), rgba(148,163,184,0.2)); border: 1px solid rgba(226,232,240,0.4); }
     .box-gold { background: linear-gradient(135deg, rgba(255,184,0,0.15), rgba(217,119,6,0.25)); border: 1px solid rgba(255,184,0,0.5); }
+    .admin-glow { box-shadow: 0 0 30px rgba(239, 68, 68, 0.2) inset; border: 1px solid rgba(239, 68, 68, 0.5); }
   </style>
 </head>
 <body class="flex flex-col min-h-screen pb-32">
@@ -251,15 +252,12 @@
         <h3 class="text-xs font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
           <i class="fa-solid fa-calendar-check text-blue-400 text-lg"></i> 7-Day Streak
         </h3>
-        
-        <div class="relative flex justify-between items-center" id="streak-tracker-container">
-          </div>
+        <div class="relative flex justify-between items-center" id="streak-tracker-container"></div>
       </div>
 
       <div>
         <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">Daily Missions</h3>
-        <div id="missions-container" class="space-y-3">
-          </div>
+        <div id="missions-container" class="space-y-3"></div>
       </div>
     </div>
 
@@ -321,8 +319,70 @@
       </div>
     </div>
 
+    <div id="view-social" class="view-section hidden fade-in space-y-6 pb-4">
+      <div class="text-center pt-2 mb-4">
+        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Social</h2>
+        <p class="text-xs text-blue-400 mt-1 uppercase tracking-widest font-bold">Friends & Rankings</p>
+      </div>
+
+      <div class="flex bg-[#050511]/80 rounded-2xl p-1 border border-slate-700/50 mb-4">
+        <button onclick="toggleSocialTab('ref')" id="tab-btn-ref" class="flex-1 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all bg-blue-600 text-white shadow-lg">Referrals</button>
+        <button onclick="toggleSocialTab('lead')" id="tab-btn-lead" class="flex-1 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all text-slate-400">Leaderboard</button>
+      </div>
+
+      <div id="social-ref" class="space-y-4">
+        <div class="glass-card rounded-[2rem] p-6 text-center border-t-2 border-purple-500/40 bg-gradient-to-b from-purple-900/30 to-[#050511]">
+          <div class="w-14 h-14 mx-auto bg-purple-500/10 rounded-full flex items-center justify-center mb-3 border border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.2)]">
+            <i class="fa-solid fa-users text-xl text-purple-400"></i>
+          </div>
+          <h1 class="text-4xl font-black text-white tracking-tighter mb-1" id="total-refs-display">0</h1>
+          <p class="text-[10px] font-black text-purple-400 uppercase tracking-[0.2em] opacity-80">Total Invited</p>
+          <button onclick="copyRefLink()" class="w-full mt-4 py-3 bg-purple-600 hover:bg-purple-500 active:scale-95 transition-all text-white font-black rounded-xl text-xs uppercase tracking-widest flex items-center justify-center gap-2 shadow-[0_5px_15px_rgba(147,51,234,0.4)]">
+            <i class="fa-solid fa-link"></i> Copy Invite Link
+          </button>
+        </div>
+        
+        <div class="glass-card rounded-2xl p-4 flex justify-between items-center border border-slate-800">
+          <div class="flex items-center gap-3">
+             <i class="fa-solid fa-gift text-2xl text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]"></i>
+             <div>
+                <p class="text-sm font-black text-white">0 Friends</p>
+                <p class="text-[10px] text-slate-400">0 XP Ready to claim</p>
+             </div>
+          </div>
+          <button class="bg-slate-700 text-slate-400 px-4 py-2 rounded-xl text-xs font-black uppercase" disabled>Claim</button>
+        </div>
+      </div>
+
+      <div id="social-lead" class="hidden space-y-3">
+        <div class="flex justify-between px-4 text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">
+          <span>Rank & User</span><span>XP Score</span>
+        </div>
+        <div class="glass-card rounded-2xl p-3 flex justify-between items-center border border-amber-500/50 bg-amber-500/10 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-crypto-dark font-black text-xs">#1</div>
+            <div><p class="text-sm font-black text-white">ProGamer</p></div>
+          </div>
+          <span class="text-sm font-black text-amber-400">1,250,000 XP</span>
+        </div>
+        <div class="glass-card rounded-2xl p-3 flex justify-between items-center border border-slate-700/50">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-slate-300 to-slate-500 flex items-center justify-center text-crypto-dark font-black text-xs">#2</div>
+            <div><p class="text-sm font-black text-white">CryptoKing</p></div>
+          </div>
+          <span class="text-sm font-black text-slate-300">890,000 XP</span>
+        </div>
+        <div class="glass-card rounded-2xl p-3 flex justify-between items-center border border-blue-500/30 bg-blue-900/10 mt-4">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-black text-xs shadow-[0_0_10px_rgba(37,99,235,0.5)]">#42</div>
+            <div><p class="text-sm font-black text-white">You (Me)</p></div>
+          </div>
+          <span class="text-sm font-black text-blue-400" id="lb-my-xp">0 XP</span>
+        </div>
+      </div>
+    </div>
+
     <div id="view-withdraw" class="view-section hidden fade-in space-y-6">
-      
       <div class="glass-card rounded-[2rem] p-6 text-center border-t-2 border-emerald-500/40 bg-gradient-to-b from-emerald-900/30 to-[#050511]">
         <div class="w-14 h-14 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-3 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
           <i class="fa-solid fa-wallet text-xl text-emerald-400"></i>
@@ -362,13 +422,11 @@
 
       <div>
         <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">History</h3>
-        <div id="withdraw-history-container" class="space-y-3">
-          </div>
+        <div id="withdraw-history-container" class="space-y-3"></div>
       </div>
     </div>
 
     <div id="view-profile" class="view-section hidden fade-in space-y-6">
-      
       <div class="glass-card rounded-[2.5rem] p-1 text-center relative overflow-hidden border border-slate-700/50">
         <div class="h-32 bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 rounded-t-[2.3rem] relative overflow-hidden">
            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
@@ -382,7 +440,7 @@
           </div>
           
           <h2 id="profile-name" class="text-2xl font-black text-white tracking-tight">User</h2>
-          <p id="profile-tgid" class="text-[10px] text-blue-400 font-mono mt-1 tracking-widest bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20">ID: 00000000</p>
+          <p id="profile-tgid" class="text-[10px] text-blue-400 font-mono mt-1 tracking-widest bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20 active:scale-95 transition-transform cursor-pointer">ID: 00000000</p>
           
           <div class="mt-6">
             <div class="flex justify-between items-end mb-1.5 px-1">
@@ -415,27 +473,64 @@
       </div>
     </div>
 
+    <div id="view-admin" class="view-section hidden fade-in space-y-6">
+      <div class="glass-card admin-glow rounded-[2rem] p-6 text-center bg-gradient-to-b from-red-900/20 to-[#050511]">
+        <i class="fa-solid fa-shield-halved text-4xl text-red-500 mb-2 drop-shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-pulse"></i>
+        <h1 class="text-2xl font-black text-white tracking-tighter">Admin Panel</h1>
+        <p class="text-[10px] font-black text-red-400 uppercase tracking-[0.2em]">Authorized Access Only</p>
+      </div>
+      
+      <div class="glass-card rounded-[1.5rem] p-5 space-y-4">
+        <h3 class="text-xs font-black text-white uppercase tracking-widest border-b border-slate-700 pb-2">User Management</h3>
+        <input type="number" id="admin-target-uid" placeholder="Target User UID" class="w-full bg-[#050511]/80 border border-slate-600 rounded-xl py-3 px-4 text-sm text-white focus:border-red-500 outline-none transition-colors">
+        
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="adminAction('addXP')" class="py-2.5 bg-blue-600/20 border border-blue-500 text-blue-400 font-black rounded-xl text-xs uppercase tracking-wider active:scale-95 transition-all shadow-[0_0_10px_rgba(59,130,246,0.2)]">+ Add XP</button>
+          <button onclick="adminAction('removeXP')" class="py-2.5 bg-orange-600/20 border border-orange-500 text-orange-400 font-black rounded-xl text-xs uppercase tracking-wider active:scale-95 transition-all shadow-[0_0_10px_rgba(249,115,22,0.2)]">- Remove XP</button>
+          <button onclick="adminAction('addUSD')" class="py-2.5 bg-emerald-600/20 border border-emerald-500 text-emerald-400 font-black rounded-xl text-xs uppercase tracking-wider active:scale-95 transition-all shadow-[0_0_10px_rgba(16,185,129,0.2)]">+ Add USD</button>
+          <button onclick="adminAction('ban')" class="py-2.5 bg-red-600/20 border border-red-500 text-red-500 font-black rounded-xl text-xs uppercase tracking-wider active:scale-95 transition-all shadow-[0_0_10px_rgba(239,68,68,0.2)]"><i class="fa-solid fa-ban"></i> Ban / Unban</button>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-[1.5rem] p-5">
+         <h3 class="text-xs font-black text-white uppercase tracking-widest border-b border-slate-700 pb-2 mb-3">Pending Withdrawals</h3>
+         <div class="space-y-2">
+            <div class="p-3 bg-slate-800/50 rounded-xl border border-slate-700 flex justify-between items-center transition-transform hover:-translate-y-0.5">
+               <div><p class="text-xs font-black text-white">UID: 987654321</p><p class="text-[10px] text-emerald-400">$15.00</p></div>
+               <div class="flex gap-2">
+                 <button class="w-8 h-8 rounded bg-emerald-500/20 text-emerald-400 active:scale-95 transition-all"><i class="fa-solid fa-check"></i></button>
+                 <button class="w-8 h-8 rounded bg-red-500/20 text-red-400 active:scale-95 transition-all"><i class="fa-solid fa-xmark"></i></button>
+               </div>
+            </div>
+         </div>
+      </div>
+    </div>
+
   </main>
 
-  <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] glass-card rounded-2xl pb-safe z-50 shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-slate-700/50 backdrop-blur-xl">
-    <div class="flex justify-between items-center px-4 py-2.5 relative">
-      <button onclick="switchTab('home')" class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="home">
+  <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] max-w-[420px] glass-card rounded-2xl pb-safe z-50 shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-slate-700/50 backdrop-blur-xl">
+    <div class="flex justify-between items-center px-2 py-2.5 relative">
+      <button onclick="switchTab('home')" class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="home">
         <i class="fa-solid fa-house text-lg transition-transform group-active:scale-90"></i>
         <span class="text-[8px] font-black uppercase tracking-widest">Home</span>
       </button>
-      <button onclick="switchTab('tasks')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="tasks">
+      <button onclick="switchTab('tasks')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="tasks">
         <i class="fa-solid fa-list-check text-lg transition-transform group-active:scale-90"></i>
         <span class="text-[8px] font-black uppercase tracking-widest">Tasks</span>
       </button>
-      <button onclick="switchTab('boxes')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="boxes">
+      <button onclick="switchTab('boxes')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="boxes">
         <i class="fa-solid fa-box-open text-lg transition-transform group-active:scale-90"></i>
         <span class="text-[8px] font-black uppercase tracking-widest">Box</span>
       </button>
-      <button onclick="switchTab('withdraw')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="withdraw">
-        <i class="fa-solid fa-wallet text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Withdraw</span>
+      <button onclick="switchTab('social')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="social">
+        <i class="fa-solid fa-users text-lg transition-transform group-active:scale-90"></i>
+        <span class="text-[8px] font-black uppercase tracking-widest">Social</span>
       </button>
-      <button onclick="switchTab('profile')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="profile">
+      <button onclick="switchTab('withdraw')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="withdraw">
+        <i class="fa-solid fa-wallet text-lg transition-transform group-active:scale-90"></i>
+        <span class="text-[8px] font-black uppercase tracking-widest">Wallet</span>
+      </button>
+      <button onclick="switchTab('profile')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="profile">
         <i class="fa-solid fa-user-astronaut text-lg transition-transform group-active:scale-90"></i>
         <span class="text-[8px] font-black uppercase tracking-widest">Profile</span>
       </button>
@@ -450,9 +545,11 @@
     tg.setHeaderColor('#0a0b1a');
     tg.setBackgroundColor('#050511');
 
+    const ADMIN_UID = 7397122686;
+
     const defaultUserState = {
-      tgId: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : 123456789,
-      firstName: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : "Crypto User",
+      tgId: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : ADMIN_UID, 
+      firstName: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : "XP Boss",
       username: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.username : "xpverse",
       photoUrl: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.photo_url : "",
       xp: 0,
@@ -462,6 +559,7 @@
       adsWatchedToday: 0,
       boxesOpened: 0,
       streak: 1,
+      refs: 0,
       lastResetDay: "",
       withdrawHistory: []
     };
@@ -481,27 +579,18 @@
     let accurateTimeOffset = null;
     let headerTimeout; 
 
-    // ---- Klaviatura İzləmə Məntiqi Düzəldilmiş Versiya ----
     const bottomNavElement = document.getElementById('bottom-nav');
-    
-    // Yalnız fiziki ekran hündürlüyünün ölçülməsi.
     let maxViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
     function handleKeyboardState() {
       let currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      
-      // Əgər ekran tam açılarsa maksimum hündürlüyü yeniləyirik
       if (currentHeight > maxViewportHeight) {
         maxViewportHeight = currentHeight;
       }
-
-      // Hündürlük 100px-dən çox azalıbsa, deməli klaviatura ekranda yer tutur
       if (maxViewportHeight - currentHeight > 100) {
         bottomNavElement.classList.add('nav-hidden');
       } else {
-        // Klaviatura ekrandan gedibsə, naviqasiyanı qaytar
         bottomNavElement.classList.remove('nav-hidden');
-        // QEYD: Buralardakı document.activeElement.blur() silinib, problemi bu yaradırdı.
       }
     }
 
@@ -513,7 +602,6 @@
     if (tg.onEvent) {
        tg.onEvent('viewportChanged', handleKeyboardState);
     }
-    // ---- Klaviatura İzləmə Bitir ----
 
     async function fetchServerTime() {
       const apis = [
@@ -683,6 +771,8 @@
       document.getElementById('streak-days').innerText = userState.streak;
 
       document.getElementById('withdraw-balance-display').innerText = userState.usdBalance.toFixed(2);
+      document.querySelectorAll('#withdraw-balance-display').forEach(el => el.innerText = userState.usdBalance.toFixed(2));
+
       renderWithdrawHistory();
 
       document.getElementById('profile-name').innerText = userState.firstName;
@@ -690,6 +780,9 @@
       document.getElementById('profile-total-xp').innerText = userState.totalXp.toLocaleString();
       document.getElementById('profile-boxes').innerText = userState.boxesOpened;
       
+      document.getElementById('total-refs-display').innerText = userState.refs || 0;
+      document.getElementById('lb-my-xp').innerText = `${userState.totalXp.toLocaleString()} XP`;
+
       updateProfileProgress();
       renderMissions();
       renderStreakTracker();
@@ -948,14 +1041,14 @@
       document.getElementById(`view-${tabId}`).classList.remove('hidden');
       
       const activeBtn = document.querySelector(`[data-target="${tabId}"]`);
-      activeBtn.classList.add('nav-active');
+      if(activeBtn) activeBtn.classList.add('nav-active');
       
       const header = document.getElementById('main-header');
       const mainContent = document.getElementById('app-content');
 
       clearTimeout(headerTimeout);
 
-      if (tabId === 'withdraw' || tabId === 'profile') {
+      if (tabId === 'withdraw' || tabId === 'profile' || tabId === 'admin') {
         header.style.transform = 'translateY(-100%)';
         headerTimeout = setTimeout(() => header.style.display = 'none', 300);
         mainContent.classList.remove('pt-24');
@@ -969,6 +1062,50 @@
       
       if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleSocialTab(tab) {
+      document.getElementById('social-ref').classList.toggle('hidden', tab !== 'ref');
+      document.getElementById('social-lead').classList.toggle('hidden', tab !== 'lead');
+      document.getElementById('tab-btn-ref').className = `flex-1 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${tab === 'ref' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400'}`;
+      document.getElementById('tab-btn-lead').className = `flex-1 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${tab === 'lead' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400'}`;
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
+
+    function copyRefLink() {
+      const link = `https://t.me/XPVerseBot?start=ref_${userState.tgId}`;
+      navigator.clipboard.writeText(link);
+      showToast("Copied!", "Referral link copied to clipboard.", "success");
+    }
+
+    // --- ADMIN PANEL AÇILIŞ MƏNTİQİ (Səlis Animasiya və Səs İnteqrasiyası ilə) ---
+    let uidClicks = 0;
+    let uidTimer;
+    document.getElementById('profile-tgid').addEventListener('click', () => {
+      uidClicks++;
+      clearTimeout(uidTimer);
+      
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+
+      if (uidClicks === 3) {
+        if (userState.tgId.toString() === ADMIN_UID.toString()) {
+           if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+           showToast("Admin Verified", "Welcome to the control panel.", "success");
+           switchTab('admin');
+        } else {
+           if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+           showToast("Access Denied", "You don't have admin privileges.", "error");
+        }
+        uidClicks = 0;
+      }
+      uidTimer = setTimeout(() => uidClicks = 0, 1000);
+    });
+
+    function adminAction(action) {
+       const target = document.getElementById('admin-target-uid').value;
+       if(!target) return showToast("Error", "7397122686", "error");
+       showToast("Command Sent", `Action ${action} executed for ${target}`, "success");
+       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
     }
 
     function updateTimer() {

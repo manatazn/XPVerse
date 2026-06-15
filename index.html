@@ -32,7 +32,8 @@
             'blob': 'blob 7s infinite',
             'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             'float-up': 'floatUp 2s ease-out forwards',
-            'pop': 'pop 0.3s ease-out forwards'
+            'pop': 'pop 0.3s ease-out forwards',
+            'shimmer': 'shimmer 2s infinite'
           },
           keyframes: {
             blob: {
@@ -49,6 +50,9 @@
               '0%': { transform: 'scale(1)' },
               '50%': { transform: 'scale(1.3)' },
               '100%': { transform: 'scale(0)', opacity: 0 }
+            },
+            shimmer: {
+              '100%': { transform: 'translateX(100%)' }
             }
           }
         }
@@ -156,6 +160,7 @@
     .box-silver { background: linear-gradient(135deg, rgba(226,232,240,0.1), rgba(148,163,184,0.2)); border: 1px solid rgba(226,232,240,0.4); }
     .box-gold { background: linear-gradient(135deg, rgba(255,184,0,0.15), rgba(217,119,6,0.25)); border: 1px solid rgba(255,184,0,0.5); }
 
+    /* Game Specific Styles */
     #game-play-container.fullscreen-mode {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -325,8 +330,8 @@
         </div>
       </div>
 
-      <div id="game-play-container" class="hidden flex flex-col gap-3">
-        <div class="glass-card p-3 rounded-2xl flex justify-between items-center border border-blue-500/30 shrink-0 z-10">
+      <div id="game-play-container" class="hidden flex flex-col gap-3 relative">
+        <div class="glass-card p-3 rounded-2xl flex justify-between items-center border border-blue-500/30 shrink-0">
           <button onclick="exitGame()" class="w-10 h-10 rounded-xl bg-slate-800/50 flex items-center justify-center text-slate-400 active:scale-95 transition-all">
             <i class="fa-solid fa-arrow-left"></i>
           </button>
@@ -341,8 +346,8 @@
           </div>
         </div>
 
-        <div id="game-canvas-container">
-          <div id="splash-screen" class="absolute inset-0 flex flex-col items-center justify-center text-center transition-opacity duration-500">
+        <div id="game-canvas-container" class="relative">
+          <div id="splash-screen" class="absolute inset-0 flex flex-col items-center justify-center text-center transition-opacity duration-500 z-50">
             <div class="w-20 h-20 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-4 border border-blue-400/50 shadow-[0_0_30px_rgba(59,130,246,0.5)]">
               <i class="fa-solid fa-gamepad text-4xl text-crypto-glow"></i>
             </div>
@@ -351,38 +356,33 @@
           </div>
           
           <canvas id="balloon-canvas"></canvas>
+          
+          <div class="absolute bottom-16 right-4 flex flex-col gap-3 z-10 pointer-events-auto">
+            <div class="flex flex-col items-center gap-1 group relative">
+              <button onclick="activatePowerup('bomb')" class="w-12 h-12 rounded-full bg-slate-900/90 border border-slate-600 flex items-center justify-center text-orange-400 active:scale-95 transition-all relative shadow-[0_0_15px_rgba(249,115,22,0.4)] backdrop-blur-md" id="btn-power-bomb">
+                <i class="fa-solid fa-bomb text-lg"></i>
+                <span class="absolute -top-1 -right-1 bg-blue-600 text-white text-[9px] font-bold w-5 h-5 rounded-full flex items-center justify-center border border-[#050511]" id="count-bomb">1</span>
+              </button>
+            </div>
+            <div class="flex flex-col items-center gap-1 group relative">
+              <button onclick="activatePowerup('rocket')" class="w-12 h-12 rounded-full bg-slate-900/90 border border-slate-600 flex items-center justify-center text-red-400 active:scale-95 transition-all relative shadow-[0_0_15px_rgba(239,68,68,0.4)] backdrop-blur-md" id="btn-power-rocket">
+                <i class="fa-solid fa-rocket text-lg"></i>
+                <span class="absolute -top-1 -right-1 bg-blue-600 text-white text-[9px] font-bold w-5 h-5 rounded-full flex items-center justify-center border border-[#050511]" id="count-rocket">1</span>
+              </button>
+            </div>
+          </div>
 
-          <div id="game-over-modal" class="absolute inset-0 bg-[#050511]/90 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-6 hidden fade-in">
+          <div id="game-over-modal" class="absolute inset-0 bg-[#050511]/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 hidden fade-in">
             <h2 id="end-title" class="text-3xl font-black text-white mb-2 drop-shadow-[0_0_10px_#00f0ff]">Level Clear!</h2>
             <div class="flex gap-2 mb-4" id="end-stars"></div>
             <p id="end-reward" class="text-sm font-bold text-emerald-400 mb-6 bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/30">+0 XP</p>
+            <p id="end-farm-msg" class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-4 hidden text-center">You already claimed XP for this level.</p>
             <div class="flex gap-3 w-full">
               <button onclick="exitGame()" class="flex-1 py-3 rounded-xl bg-slate-800 text-white font-bold uppercase text-xs tracking-wider">Back</button>
               <button id="end-next-btn" onclick="nextLevel()" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold uppercase text-xs tracking-wider shadow-[0_0_15px_rgba(0,240,255,0.4)]">Next</button>
             </div>
           </div>
         </div>
-
-        <div class="glass-card p-3 rounded-2xl flex justify-center gap-8 items-center shrink-0 z-10 relative">
-          
-          <div class="flex flex-col items-center gap-1 group relative">
-            <button onclick="activatePowerup('bomb')" class="w-14 h-14 rounded-full bg-slate-800/80 border border-slate-600 flex items-center justify-center text-orange-400 active:scale-95 transition-all relative shadow-[0_0_15px_rgba(249,115,22,0.2)]" id="btn-power-bomb">
-              <i class="fa-solid fa-bomb text-xl"></i>
-              <span class="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511]" id="count-bomb">1</span>
-            </button>
-            <span class="text-[9px] uppercase font-bold text-slate-400">Bomb</span>
-          </div>
-
-          <div class="flex flex-col items-center gap-1 group relative">
-            <button onclick="activatePowerup('rocket')" class="w-14 h-14 rounded-full bg-slate-800/80 border border-slate-600 flex items-center justify-center text-red-400 active:scale-95 transition-all relative shadow-[0_0_15px_rgba(239,68,68,0.2)]" id="btn-power-rocket">
-              <i class="fa-solid fa-rocket text-xl"></i>
-              <span class="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511]" id="count-rocket">1</span>
-            </button>
-            <span class="text-[9px] uppercase font-bold text-slate-400">Rocket</span>
-          </div>
-
-        </div>
-
       </div>
     </div>
 
@@ -465,6 +465,7 @@
     </div>
 
     <div id="view-withdraw" class="view-section hidden fade-in space-y-6">
+      
       <div class="glass-card rounded-[2rem] p-6 text-center border-t-2 border-emerald-500/40 bg-gradient-to-b from-emerald-900/30 to-[#050511]">
         <div class="w-14 h-14 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-3 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
           <i class="fa-solid fa-wallet text-xl text-emerald-400"></i>
@@ -620,9 +621,9 @@
 
     const getDefaultMissions = () => ({
       dailyReward: { completed: true, claimed: false, reward: 5, type: 'boolean' },
-      watch5: { target: 5, claimed: false, reward: 20, type: 'progress' },
-      watch10: { target: 10, claimed: false, reward: 50, type: 'progress' },
-      all: { claimed: false, reward: 100, type: 'meta' }
+      watch15: { target: 15, claimed: false, reward: 30, type: 'progress' },
+      watch30: { target: 30, claimed: false, reward: 80, type: 'progress' },
+      all: { claimed: false, reward: 150, type: 'meta' }
     });
 
     let userState = { ...defaultUserState };
@@ -882,8 +883,8 @@
       
       const missionsList = [
         { key: 'dailyReward', label: `Daily Login`, icon: 'fa-gift', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
-        { key: 'watch5', label: 'Watch 5 Ads', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
-        { key: 'watch10', label: 'Watch 10 Ads', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
+        { key: 'watch15', label: 'Watch 15 Ads', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
+        { key: 'watch30', label: 'Watch 30 Ads', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
         { key: 'all', label: 'All Tasks', icon: 'fa-crown', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' }
       ];
 
@@ -898,7 +899,7 @@
         } else if (mission.type === 'boolean') {
             isComplete = mission.completed;
         } else if (mission.type === 'meta') {
-            isComplete = ['dailyReward', 'watch5', 'watch10'].every(k => missionsState[k].claimed);
+            isComplete = ['dailyReward', 'watch15', 'watch30'].every(k => missionsState[k].claimed);
         }
 
         let btnHtml = '';
@@ -1167,7 +1168,7 @@
     // GAME ENGINE: XPVerse Balloon Blast
     // ==========================================
 
-    const LEVEL_REWARDS = [40, 50, 60, 70, 75, 80, 85, 90, 100, 100]; // Total 750 XP for daily 1-10 clear
+    const LEVEL_REWARDS = [40, 50, 60, 70, 75, 80, 85, 90, 95, 105]; 
 
     function getDailyRandom(seed) {
       let t = seed += 0x6D2B79F5;
@@ -1229,15 +1230,15 @@
 
     let gameEngine = {
       canvas: null, ctx: null, isPlaying: false,
-      balloons: [], projectiles: [], particles: [], animations: [], fallingBalloons: [], floatingTexts: [],
+      balloons: [], projectiles: [], particles: [], fallingBalloons: [], scoreTexts: [],
       gridCols: 8, ballRadius: 0,
       grid: [], 
       colors: ['#ef4444', '#3b82f6', '#10b981', '#eab308', '#a855f7', '#06b6d4'],
       launcherColor: '', nextColor: '', activePowerup: null,
+      colorHistory: [],
       currentLevel: 1, score: 0, shotsFired: 0, totalTarget: 0,
-      offsetY: 0, limitY: 0,
-      mouseX: 0, mouseY: 0, rand: null,
-      colorHistory: []
+      offsetY: 0, dropInterval: 5, limitY: 0,
+      mouseX: 0, mouseY: 0, rand: null
     };
 
     function startGame(level) {
@@ -1283,8 +1284,7 @@
       gameEngine.projectiles = [];
       gameEngine.particles = [];
       gameEngine.fallingBalloons = [];
-      gameEngine.floatingTexts = [];
-      gameEngine.animations = [];
+      gameEngine.scoreTexts = [];
       gameEngine.activePowerup = null;
       gameEngine.colorHistory = [];
 
@@ -1299,9 +1299,7 @@
       resizeCanvas();
       generateLevel(level);
       
-      let avail = getAvailableColors();
-      gameEngine.launcherColor = getSafeColor(avail);
-      gameEngine.nextColor = getSafeColor(avail);
+      updateLauncherColors(true);
 
       gameEngine.canvas.addEventListener('touchstart', handleInput, {passive: false});
       gameEngine.canvas.addEventListener('touchmove', handleMove, {passive: false});
@@ -1318,7 +1316,7 @@
       gameEngine.canvas.width = container.clientWidth;
       gameEngine.canvas.height = container.clientHeight;
       gameEngine.ballRadius = (gameEngine.canvas.width / (gameEngine.gridCols + 0.5)) / 2;
-      gameEngine.limitY = gameEngine.canvas.height - 130; 
+      gameEngine.limitY = gameEngine.canvas.height - 150; 
     }
 
     function getAvailableColors() {
@@ -1336,35 +1334,37 @@
       return arr.length > 0 ? arr : gameEngine.colors;
     }
 
-    function getSafeColor(avail) {
-       if(avail.length === 0) return '#ffffff';
-       if(avail.length === 1) return avail[0];
-
-       let hist = gameEngine.colorHistory;
-       if(hist.length >= 2 && hist[hist.length-1] === hist[hist.length-2]) {
-           let blocked = hist[hist.length-1];
-           let safeAvail = avail.filter(c => c !== blocked);
-           if(safeAvail.length > 0) {
-               return safeAvail[Math.floor(Math.random() * safeAvail.length)];
+    function pickValidColor(avail, history) {
+       if (avail.length === 1) return avail[0]; 
+       if (history.length >= 2 && history[0] === history[1]) {
+           let filtered = avail.filter(c => c !== history[0]);
+           if (filtered.length > 0) {
+               return filtered[Math.floor(Math.random() * filtered.length)];
            }
        }
        return avail[Math.floor(Math.random() * avail.length)];
     }
 
-    function updateLauncherColors() {
+    function updateLauncherColors(initial = false) {
        let avail = getAvailableColors();
        if(avail.length === 0) return; 
-       
+
+       if (initial) {
+           gameEngine.launcherColor = avail[Math.floor(gameEngine.rand() * avail.length)];
+           gameEngine.nextColor = avail[Math.floor(gameEngine.rand() * avail.length)];
+           return;
+       }
+
        if(!avail.includes(gameEngine.launcherColor)) {
-           gameEngine.launcherColor = getSafeColor(avail);
+           gameEngine.launcherColor = pickValidColor(avail, gameEngine.colorHistory);
        }
        if(!avail.includes(gameEngine.nextColor)) {
-           gameEngine.nextColor = getSafeColor(avail);
+           gameEngine.nextColor = pickValidColor(avail, [gameEngine.launcherColor, gameEngine.colorHistory[0]]);
        }
     }
 
     function generateLevel(level) {
-      let rows = 3 + Math.floor(level / 3);
+      let rows = 4 + Math.floor(level / 2);
       if (rows > 8) rows = 8;
       
       gameEngine.grid = [];
@@ -1433,16 +1433,15 @@
       ctx.beginPath();
       ctx.arc(x, y, r, 0, Math.PI * 2);
       
-      let grad = ctx.createRadialGradient(x - r*0.2, y - r*0.2, r*0.1, x, y, r);
+      let grad = ctx.createRadialGradient(x - r*0.3, y - r*0.3, r*0.1, x, y, r);
       grad.addColorStop(0, '#ffffff'); 
-      grad.addColorStop(0.3, color);
-      grad.addColorStop(0.8, shadeColor(color, -20));
-      grad.addColorStop(1, shadeColor(color, -50)); 
+      grad.addColorStop(0.4, color);
+      grad.addColorStop(1, shadeColor(color, -60)); 
       ctx.fillStyle = grad;
       ctx.fill();
       
       ctx.beginPath();
-      ctx.ellipse(x - r*0.35, y - r*0.35, r*0.4, r*0.2, Math.PI / -4, 0, Math.PI * 2);
+      ctx.ellipse(x - r*0.3, y - r*0.4, r*0.4, r*0.15, -Math.PI / 6, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
       ctx.fill();
 
@@ -1481,7 +1480,7 @@
       
       const ctx = gameEngine.ctx;
       const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 70; // Launcher yuxarı qaldırılıb
+      const ly = gameEngine.canvas.height - 40;
       
       let dy = gameEngine.mouseY - ly;
       if (dy > -10) return; 
@@ -1524,17 +1523,34 @@
           steps++;
       }
 
-      let endPoint = path[path.length - 1];
-
       if (gameEngine.activePowerup === 'rocket') {
           ctx.beginPath();
           ctx.moveTo(path[0].x, path[0].y);
           for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, path[i].y);
           ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
-          ctx.lineWidth = radius * 2.5;
-          ctx.setLineDash([]);
+          ctx.lineWidth = gameEngine.ballRadius * 2;
           ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(path[0].x, path[0].y);
+          for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, path[i].y);
+          ctx.strokeStyle = '#ef4444';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([8, 8]);
+          ctx.stroke();
+          ctx.setLineDash([]);
       } else if (gameEngine.activePowerup === 'bomb') {
+          let end = path[path.length - 1];
+          ctx.beginPath();
+          ctx.arc(end.x, end.y, gameEngine.ballRadius * 4, 0, Math.PI*2);
+          ctx.fillStyle = 'rgba(249, 115, 22, 0.2)';
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(249, 115, 22, 0.6)';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([5, 5]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
           ctx.beginPath();
           ctx.moveTo(path[0].x, path[0].y);
           for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, path[i].y);
@@ -1542,43 +1558,30 @@
           ctx.lineWidth = 2;
           ctx.setLineDash([8, 8]);
           ctx.stroke();
-          
-          ctx.beginPath();
-          ctx.arc(endPoint.x, endPoint.y, radius * 3.5, 0, Math.PI*2);
-          ctx.fillStyle = 'rgba(249, 115, 22, 0.25)';
-          ctx.fill();
-          ctx.strokeStyle = 'rgba(249, 115, 22, 0.8)';
-          ctx.setLineDash([4, 4]);
-          ctx.lineWidth = 2;
-          ctx.stroke();
+          ctx.setLineDash([]);
       } else {
           ctx.beginPath();
           ctx.moveTo(path[0].x, path[0].y);
-          for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, path[i].y);
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+          for (let i = 1; i < path.length; i++) {
+              ctx.lineTo(path[i].x, path[i].y);
+          }
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
           ctx.lineWidth = 2;
           ctx.setLineDash([8, 8]);
           ctx.stroke();
-          
-          ctx.beginPath();
-          ctx.arc(endPoint.x, endPoint.y, radius*0.8, 0, Math.PI*2);
-          ctx.strokeStyle = gameEngine.launcherColor;
           ctx.setLineDash([]);
-          ctx.lineWidth = 2;
-          ctx.stroke();
       }
-      ctx.setLineDash([]);
     }
 
     function drawLauncher() {
       const ctx = gameEngine.ctx;
       const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 70;
+      const ly = gameEngine.canvas.height - 40;
       
       drawAimLine();
 
       drawBalloon(ctx, lx - 60, ly + 10, gameEngine.ballRadius * 0.6, gameEngine.nextColor, 'normal', 1);
-      ctx.fillStyle = '#64748b'; ctx.font = "10px sans-serif"; ctx.textAlign = 'center'; ctx.fillText("NEXT", lx - 60, ly - 15);
+      ctx.fillStyle = '#64748b'; ctx.font = "10px sans-serif"; ctx.fillText("NEXT", lx - 60, ly - 15);
       
       ctx.beginPath(); ctx.arc(lx, ly, 30, Math.PI, 0); ctx.fillStyle = '#1e293b'; ctx.fill();
       
@@ -1587,34 +1590,49 @@
         let color = gameEngine.activePowerup ? (gameEngine.activePowerup === 'rocket' ? '#ef4444' : (gameEngine.activePowerup === 'bomb' ? '#f97316' : '#ffffff')) : gameEngine.launcherColor;
         
         if (gameEngine.activePowerup === 'rocket') {
-           ctx.font = '24px FontAwesome'; ctx.fillStyle='#ef4444'; ctx.textAlign = 'center'; ctx.textBaseline='middle'; ctx.fillText('\uf135', lx, ly);
+           ctx.font = '24px FontAwesome'; ctx.fillStyle='#ef4444'; ctx.fillText('\uf135', lx, ly);
         } else if (gameEngine.activePowerup === 'bomb') {
-           ctx.font = '24px FontAwesome'; ctx.fillStyle='#f97316'; ctx.textAlign = 'center'; ctx.textBaseline='middle'; ctx.fillText('\uf1e2', lx, ly);
+           ctx.font = '24px FontAwesome'; ctx.fillStyle='#f97316'; ctx.fillText('\uf1e2', lx, ly);
         } else {
            drawBalloon(ctx, lx, ly, gameEngine.ballRadius, color, type, 1);
         }
       }
     }
 
-    function drawBuckets() {
+    function drawContainers() {
       const ctx = gameEngine.ctx;
-      const buckets = [10, 50, 100, 50, 10];
-      let bw = gameEngine.canvas.width / 5;
-      let by = gameEngine.canvas.height - 40;
-      
-      for(let i=0; i<5; i++) {
-         ctx.fillStyle = (i%2===0)? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.06)';
-         ctx.fillRect(i*bw, by, bw, 40);
-         
-         ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-         ctx.strokeRect(i*bw, by, bw, 40);
+      const binWidth = gameEngine.canvas.width / 5;
+      const binHeight = 30;
+      const startY = gameEngine.canvas.height - binHeight;
+      const scores = [10, 50, 100, 50, 10];
 
-         ctx.fillStyle = 'rgba(255,255,255,0.6)';
-         ctx.font = '900 14px sans-serif';
-         ctx.textAlign = 'center';
-         ctx.textBaseline = 'middle';
-         ctx.fillText(buckets[i], i*bw + bw/2, by + 20);
+      for(let i=0; i<5; i++) {
+          let x = i * binWidth;
+          
+          let grad = ctx.createLinearGradient(0, startY, 0, gameEngine.canvas.height);
+          grad.addColorStop(0, `rgba(59, 130, 246, ${i%2===0 ? 0.05 : 0.1})`);
+          grad.addColorStop(1, `rgba(59, 130, 246, 0.01)`);
+          ctx.fillStyle = grad;
+          ctx.fillRect(x, startY, binWidth, binHeight);
+
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+          ctx.font = '900 12px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(scores[i], x + binWidth/2, startY + binHeight/2);
+
+          ctx.beginPath();
+          ctx.moveTo(x, startY);
+          ctx.lineTo(x, gameEngine.canvas.height);
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+          ctx.stroke();
       }
+      
+      ctx.beginPath();
+      ctx.moveTo(0, startY);
+      ctx.lineTo(gameEngine.canvas.width, startY);
+      ctx.strokeStyle = 'rgba(59, 130, 246, 0.3)';
+      ctx.stroke();
     }
 
     function handleInput(e) {
@@ -1623,7 +1641,7 @@
       updateMousePos(e);
       
       const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 70;
+      const ly = gameEngine.canvas.height - 40;
       const dist = Math.hypot(gameEngine.mouseX - (lx - 60), gameEngine.mouseY - (ly + 10));
       const distMain = Math.hypot(gameEngine.mouseX - lx, gameEngine.mouseY - ly);
       
@@ -1647,7 +1665,7 @@
       e.preventDefault();
       
       const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 70;
+      const ly = gameEngine.canvas.height - 40;
       
       let dy = gameEngine.mouseY - ly;
       if (dy > -10) { 
@@ -1660,14 +1678,17 @@
       if (angle > -0.1) angle = -0.1; 
       if (angle < -Math.PI + 0.1) angle = -Math.PI + 0.1;
 
-      let speed = 20;
+      let speed = 18;
       let type = 'normal';
       let color = gameEngine.launcherColor;
 
       if (gameEngine.activePowerup) {
          type = gameEngine.activePowerup;
-         if(type === 'rocket') { speed = 35; color = '#ef4444'; }
+         if(type === 'rocket') { speed = 30; color = '#ef4444'; }
          if(type === 'bomb') { color = '#f97316'; }
+      } else {
+         gameEngine.colorHistory.unshift(gameEngine.launcherColor);
+         if(gameEngine.colorHistory.length > 2) gameEngine.colorHistory.pop();
       }
 
       gameEngine.projectiles.push({ x: lx, y: ly, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, radius: gameEngine.ballRadius, color: color, type: type });
@@ -1678,9 +1699,6 @@
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
       
       if (!gameEngine.activePowerup) {
-         gameEngine.colorHistory.push(gameEngine.launcherColor);
-         if(gameEngine.colorHistory.length > 3) gameEngine.colorHistory.shift();
-         
          gameEngine.launcherColor = gameEngine.nextColor;
          updateLauncherColors(); 
       } else {
@@ -1720,7 +1738,7 @@
                  if(gameEngine.grid[r][c]) {
                     let pos = getGridPos(r, c);
                     if(Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius * 2.5) {
-                       popBalloon(r, c, true);
+                       popBalloon(r, c, true); 
                        hitAny = true;
                     }
                  }
@@ -1758,6 +1776,32 @@
         if (snapped) {
            gameEngine.projectiles.splice(i, 1);
         }
+      }
+
+      for (let i = gameEngine.fallingBalloons.length - 1; i >= 0; i--) {
+          let fb = gameEngine.fallingBalloons[i];
+          fb.vy += 0.2; 
+          fb.x += fb.vx;
+          fb.y += fb.vy;
+
+          if (fb.y > gameEngine.canvas.height - 30) {
+              let binIndex = Math.floor((fb.x / gameEngine.canvas.width) * 5);
+              if (binIndex < 0) binIndex = 0;
+              if (binIndex > 4) binIndex = 4;
+              let pts = [10, 50, 100, 50, 10][binIndex];
+              addScore(pts);
+              
+              gameEngine.scoreTexts.push({x: fb.x, y: fb.y - 20, text: `+${pts}`, life: 1});
+              createParticles(0, 0, fb.color, fb.x, fb.y); 
+              gameEngine.fallingBalloons.splice(i, 1);
+          }
+      }
+
+      for (let i = gameEngine.scoreTexts.length - 1; i >= 0; i--) {
+          let st = gameEngine.scoreTexts[i];
+          st.y -= 1;
+          st.life -= 0.03;
+          if (st.life <= 0) gameEngine.scoreTexts.splice(i, 1);
       }
     }
 
@@ -1856,6 +1900,7 @@
 
         if (matchGroup.length >= 3) { 
             matchGroup.forEach(m => popBalloon(m.r, m.c));
+            addScore(matchGroup.length * 10);
             if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             dropFloaters();
         } else {
@@ -1877,9 +1922,11 @@
        createParticles(r, c, b.color);
        
        gameEngine.fallingBalloons.push({
-           x: pos.x, y: pos.y, 
-           vx: (Math.random() - 0.5) * 6, vy: -2 + Math.random() * -3, 
-           radius: gameEngine.ballRadius, color: b.color, type: b.type
+           x: pos.x, y: pos.y,
+           vx: (Math.random() - 0.5) * 4,
+           vy: -1 - Math.random() * 2,
+           color: b.color, type: b.type,
+           radius: gameEngine.ballRadius
        });
 
        gameEngine.grid[r][c] = null;
@@ -1909,23 +1956,17 @@
             });
         }
 
+        let dropped = 0;
         for(let r=0; r<gameEngine.grid.length; r++) {
             if(!gameEngine.grid[r]) continue;
             for(let c=0; c<gameEngine.grid[r].length; c++) {
                 if(gameEngine.grid[r][c] && !visited.has(`${r},${c}`)) {
-                    let pos = getGridPos(r, c);
-                    createParticles(r, c, gameEngine.grid[r][c].color);
-                    
-                    gameEngine.fallingBalloons.push({
-                        x: pos.x, y: pos.y, 
-                        vx: (Math.random() - 0.5) * 4, vy: 1 + Math.random() * 2, 
-                        radius: gameEngine.ballRadius, color: gameEngine.grid[r][c].color, type: gameEngine.grid[r][c].type
-                    });
-
-                    gameEngine.grid[r][c] = null;
+                    popBalloon(r, c, true);
+                    dropped++;
                 }
             }
         }
+        if(dropped > 0) addScore(dropped * 20);
     }
 
     function spreadVirus() {
@@ -1951,13 +1992,13 @@
         }
     }
 
-    function createParticles(r, c, color) {
-        let pos = getGridPos(r, c);
-        for(let i=0; i<6; i++) {
+    function createParticles(r, c, color, exactX = null, exactY = null) {
+        let pos = exactX !== null ? {x: exactX, y: exactY} : getGridPos(r, c);
+        for(let i=0; i<8; i++) {
             gameEngine.particles.push({
                 x: pos.x, y: pos.y,
-                vx: (Math.random() - 0.5) * 10,
-                vy: (Math.random() - 0.5) * 10,
+                vx: (Math.random() - 0.5) * 12,
+                vy: (Math.random() - 0.5) * 12,
                 life: 1, color: color
             });
         }
@@ -1998,7 +2039,7 @@
             }
         }
 
-        if (isEmpty && gameEngine.fallingBalloons.length === 0) {
+        if (isEmpty) {
             endGame(true);
         } else if (reachedBottom) {
             endGame(false);
@@ -2012,6 +2053,7 @@
         const title = document.getElementById('end-title');
         const endStars = document.getElementById('end-stars');
         const endReward = document.getElementById('end-reward');
+        const farmMsg = document.getElementById('end-farm-msg');
         const nextBtn = document.getElementById('end-next-btn');
 
         modal.classList.remove('hidden');
@@ -2020,12 +2062,22 @@
             let stars = calculateStars();
             let idx = gameEngine.currentLevel - 1;
             
-            let xpEarned = LEVEL_REWARDS[idx] || 75;
-            let alreadyCompleted = gameState.levelsCompleted[idx];
+            let isFirstTime = !gameState.levelsCompleted[idx];
+            let xpEarned = isFirstTime ? (LEVEL_REWARDS[idx] || 50) : 0;
             
             title.innerText = "Level Clear!";
             title.className = "text-3xl font-black text-white mb-2 drop-shadow-[0_0_10px_#00f0ff]";
-            endReward.style.display = 'block';
+            
+            if (isFirstTime) {
+                endReward.innerText = `+${xpEarned} XP`;
+                endReward.style.display = 'block';
+                farmMsg.style.display = 'none';
+                userState.xp += xpEarned;
+                userState.totalXp += xpEarned;
+            } else {
+                endReward.style.display = 'none';
+                farmMsg.style.display = 'block';
+            }
             
             let starsHtml = '';
             for(let i=1; i<=3; i++) {
@@ -2033,17 +2085,8 @@
             }
             endStars.innerHTML = starsHtml;
 
-            if (!alreadyCompleted) {
-                userState.xp += xpEarned;
-                userState.totalXp += xpEarned;
-                gameState.levelsCompleted[idx] = true;
-                checkLevelUp();
-                endReward.innerText = `+${xpEarned} XP`;
-                endReward.className = "text-sm font-bold text-emerald-400 mb-6 bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/30";
-            } else {
-                endReward.innerText = `Level Already Completed`;
-                endReward.className = "text-sm font-bold text-slate-400 mb-6 bg-slate-800/50 px-4 py-2 rounded-xl border border-slate-700/50";
-            }
+            gameState.levelsCompleted[idx] = true;
+            checkLevelUp();
             
             if (stars > gameState.stars[idx]) {
                gameState.stars[idx] = stars;
@@ -2061,6 +2104,7 @@
             title.className = "text-3xl font-black text-red-400 mb-2 drop-shadow-[0_0_10px_#ef4444]";
             endStars.innerHTML = '<i class="fa-solid fa-skull-crossbones text-4xl text-slate-600"></i>';
             endReward.style.display = 'none';
+            farmMsg.style.display = 'none';
             nextBtn.innerText = "Retry";
             nextBtn.onclick = () => { startGame(gameEngine.currentLevel); };
             if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
@@ -2089,8 +2133,8 @@
                let count = gameState.powerups[type];
                el.innerText = count > 0 ? count : '+';
                el.className = count > 0 
-                  ? "absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511]"
-                  : "absolute -top-1 -right-1 bg-emerald-500 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511] animate-pulse";
+                  ? "absolute -top-1 -right-1 bg-blue-600 text-white text-[9px] font-bold w-5 h-5 rounded-full flex items-center justify-center border border-[#050511]"
+                  : "absolute -top-1 -right-1 bg-emerald-500 text-white text-[9px] font-bold w-5 h-5 rounded-full flex items-center justify-center border border-[#050511] animate-pulse";
             }
         });
     }
@@ -2140,52 +2184,15 @@
 
       updatePhysics();
       
-      drawBuckets();
-      
-      for(let i = gameEngine.fallingBalloons.length - 1; i >= 0; i--) {
-          let fb = gameEngine.fallingBalloons[i];
-          fb.vy += 0.3; 
-          fb.x += fb.vx; 
-          fb.y += fb.vy;
-          drawBalloon(ctx, fb.x, fb.y, fb.radius, fb.color, fb.type, 1);
-          
-          if (fb.y > gameEngine.canvas.height - 40) {
-              let bw = gameEngine.canvas.width / 5;
-              let bIdx = Math.floor(fb.x / bw);
-              if(bIdx < 0) bIdx = 0; if(bIdx > 4) bIdx = 4;
-              let pts = [10, 50, 100, 50, 10][bIdx];
-              
-              addScore(pts);
-              gameEngine.floatingTexts.push({x: fb.x, y: gameEngine.canvas.height - 50, text: "+"+pts, life: 1});
-              gameEngine.fallingBalloons.splice(i, 1);
-              
-              let isEmpty = true;
-              for(let r=0; r<gameEngine.grid.length; r++) {
-                  if(!gameEngine.grid[r]) continue;
-                  for(let c=0; c<gameEngine.grid[r].length; c++) {
-                      if(gameEngine.grid[r][c]) isEmpty = false;
-                  }
-              }
-              if(isEmpty && gameEngine.fallingBalloons.length === 0) checkWinLoss();
-          }
-      }
-
+      drawContainers();
       drawGrid();
       
       gameEngine.projectiles.forEach(p => {
-         if (p.type === 'rocket') {
-             ctx.font = '30px FontAwesome'; ctx.fillStyle='#ef4444'; ctx.textAlign = 'center'; ctx.textBaseline='middle'; 
-             ctx.save();
-             ctx.translate(p.x, p.y);
-             ctx.rotate(Math.atan2(p.vy, p.vx) + Math.PI/2);
-             ctx.fillText('\uf135', 0, 0);
-             ctx.restore();
-         } else if (p.type === 'bomb') {
-             ctx.font = '30px FontAwesome'; ctx.fillStyle='#f97316'; ctx.textAlign = 'center'; ctx.textBaseline='middle'; 
-             ctx.fillText('\uf1e2', p.x, p.y);
-         } else {
-             drawBalloon(ctx, p.x, p.y, p.radius, p.color, p.type, 1);
-         }
+         drawBalloon(ctx, p.x, p.y, p.radius, p.color, p.type, 1);
+      });
+
+      gameEngine.fallingBalloons.forEach(fb => {
+         drawBalloon(ctx, fb.x, fb.y, fb.radius, fb.color, fb.type, 1);
       });
 
       for(let i = gameEngine.particles.length - 1; i >= 0; i--) {
@@ -2196,17 +2203,12 @@
           ctx.fillStyle = pt.color; ctx.globalAlpha = pt.life; ctx.fill(); ctx.globalAlpha = 1;
       }
 
-      for(let i = gameEngine.floatingTexts.length - 1; i >= 0; i--) {
-          let ft = gameEngine.floatingTexts[i];
-          ft.y -= 1.5; ft.life -= 0.02;
-          if(ft.life <= 0) { gameEngine.floatingTexts.splice(i, 1); continue; }
-          ctx.globalAlpha = ft.life;
-          ctx.fillStyle = '#f8fafc';
+      gameEngine.scoreTexts.forEach(st => {
           ctx.font = '900 16px sans-serif';
+          ctx.fillStyle = `rgba(255, 184, 0, ${st.life})`;
           ctx.textAlign = 'center';
-          ctx.fillText(ft.text, ft.x, ft.y);
-          ctx.globalAlpha = 1;
-      }
+          ctx.fillText(st.text, st.x, st.y);
+      });
 
       drawLauncher();
 

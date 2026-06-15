@@ -32,7 +32,8 @@
             'blob': 'blob 7s infinite',
             'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             'float-up': 'floatUp 2s ease-out forwards',
-            'pop': 'pop 0.3s ease-out forwards'
+            'pop': 'pop 0.3s ease-out forwards',
+            'shimmer': 'shimmer 2s infinite'
           },
           keyframes: {
             blob: {
@@ -49,6 +50,10 @@
               '0%': { transform: 'scale(1)' },
               '50%': { transform: 'scale(1.3)' },
               '100%': { transform: 'scale(0)', opacity: 0 }
+            },
+            shimmer: {
+              '0%': { transform: 'translateX(-100%)' },
+              '100%': { transform: 'translateX(100%)' }
             }
           }
         }
@@ -191,9 +196,7 @@
     .level-node.current { background: #050511; border: 3px solid #00f0ff; color: #00f0ff; box-shadow: 0 0 20px rgba(0, 240, 255, 0.6); animation: pulse 2s infinite; }
     .level-node.locked { background: #1e293b; border: 2px solid #334155; color: #475569; }
     
-    .path-line {
-      position: absolute; width: 6px; background: #334155; z-index: 5;
-    }
+    .path-line { position: absolute; width: 6px; background: #334155; z-index: 5; }
     .path-line.active { background: linear-gradient(to bottom, #3b82f6, #00f0ff); box-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
 
     .star-icon { color: #334155; font-size: 0.7rem; }
@@ -202,6 +205,18 @@
     #splash-screen {
       background: linear-gradient(180deg, #050511 0%, #0a0b1a 100%);
       z-index: 100;
+    }
+    
+    /* Elegant Powerup Buttons */
+    .powerup-btn {
+      transition: all 0.2s ease-in-out;
+    }
+    .powerup-btn:active {
+      transform: scale(0.9) translateY(4px);
+    }
+    .powerup-active-glow {
+      box-shadow: 0 0 20px var(--glow-color);
+      border-color: var(--glow-color);
     }
   </style>
 </head>
@@ -265,11 +280,10 @@
 
   <main class="flex-1 max-w-md w-full mx-auto p-4 pt-24 relative" id="app-content">
     
+    <!-- HOME VIEW -->
     <div id="view-home" class="view-section fade-in space-y-6">
-      
       <div class="relative glass-card rounded-[2rem] p-6 text-center border-t border-t-blue-400/20 overflow-hidden flex flex-col items-center justify-center min-h-[240px]">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/20 rounded-full filter blur-[40px] pointer-events-none animate-pulse-fast"></div>
-        
         <div class="relative z-10 flex flex-col items-center">
           <div class="w-14 h-14 rounded-full bg-blue-900/40 border border-blue-400/30 flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
              <i class="fa-solid fa-gem text-2xl text-crypto-glow drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]"></i>
@@ -277,7 +291,6 @@
           <p class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-1 opacity-80">Balance</p>
           <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-blue-400 tracking-tighter drop-shadow-2xl" id="main-xp-display">0 XP</h1>
         </div>
-        
         <div class="w-full mt-6 grid grid-cols-2 gap-3">
           <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md">
             <div class="bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/20"><i class="fa-solid fa-clapperboard text-blue-400"></i></div>
@@ -310,8 +323,8 @@
       </div>
     </div>
 
+    <!-- GAMES VIEW -->
     <div id="view-games" class="view-section hidden fade-in space-y-4 pb-4">
-      
       <div id="game-menu-container">
         <div class="text-center pt-2 mb-4">
           <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Games</h2>
@@ -320,22 +333,20 @@
 
         <div class="glass-card rounded-3xl p-6 relative overflow-hidden flex flex-col items-center min-h-[400px]">
           <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-6">Daily Levels Progress</p>
-          
-          <div class="relative w-full max-w-[250px] mx-auto py-4" id="level-map">
-            </div>
+          <div class="relative w-full max-w-[250px] mx-auto py-4" id="level-map"></div>
         </div>
       </div>
 
       <div id="game-play-container" class="hidden flex flex-col gap-3">
-        <div class="glass-card p-3 rounded-2xl flex justify-between items-center border border-blue-500/30 shrink-0">
-          <button onclick="exitGame()" class="w-10 h-10 rounded-xl bg-slate-800/50 flex items-center justify-center text-slate-400 active:scale-95 transition-all">
+        <div class="glass-card p-3 rounded-2xl flex justify-between items-center border border-blue-500/30 shrink-0 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+          <button onclick="exitGame()" class="w-10 h-10 rounded-xl bg-slate-800/50 flex items-center justify-center text-slate-400 hover:text-white active:scale-95 transition-all">
             <i class="fa-solid fa-arrow-left"></i>
           </button>
           <div class="text-center">
             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Level <span id="ingame-level-display">1</span></p>
-            <p class="text-sm font-black text-white" id="ingame-score">0</p>
+            <p class="text-lg font-black text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]" id="ingame-score">0</p>
           </div>
-          <div class="flex gap-1" id="ingame-stars">
+          <div class="flex gap-1 bg-slate-900/50 p-2 rounded-xl border border-slate-700/50" id="ingame-stars">
             <i class="fa-solid fa-star text-slate-700 text-xs"></i>
             <i class="fa-solid fa-star text-slate-700 text-xs"></i>
             <i class="fa-solid fa-star text-slate-700 text-xs"></i>
@@ -353,40 +364,39 @@
           
           <canvas id="balloon-canvas"></canvas>
 
-          <div id="game-over-modal" class="absolute inset-0 bg-[#050511]/90 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-6 hidden fade-in">
-            <h2 id="end-title" class="text-3xl font-black text-white mb-2 drop-shadow-[0_0_10px_#00f0ff]">Level Clear!</h2>
+          <div id="game-over-modal" class="absolute inset-0 bg-[#050511]/95 backdrop-blur-md z-20 flex flex-col items-center justify-center p-6 hidden fade-in">
+            <h2 id="end-title" class="text-4xl font-black text-white mb-2 drop-shadow-[0_0_15px_#00f0ff]">Level Clear!</h2>
             <div class="flex gap-2 mb-4" id="end-stars"></div>
-            <p id="end-reward" class="text-sm font-bold text-emerald-400 mb-6 bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/30">+0 XP</p>
-            <div class="flex gap-3 w-full">
-              <button onclick="exitGame()" class="flex-1 py-3 rounded-xl bg-slate-800 text-white font-bold uppercase text-xs tracking-wider">Back</button>
-              <button id="end-next-btn" onclick="nextLevel()" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold uppercase text-xs tracking-wider shadow-[0_0_15px_rgba(0,240,255,0.4)]">Next</button>
+            <p id="end-reward" class="text-lg font-bold text-emerald-400 mb-8 bg-emerald-500/10 px-6 py-3 rounded-xl border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">+0 XP</p>
+            <div class="flex gap-4 w-full max-w-[250px]">
+              <button onclick="exitGame()" class="flex-1 py-3.5 rounded-xl bg-slate-800 text-white font-black uppercase text-xs tracking-wider shadow-lg active:scale-95 transition-all border border-slate-600">Back</button>
+              <button id="end-next-btn" onclick="nextLevel()" class="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black uppercase text-xs tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.4)] active:scale-95 transition-all">Next</button>
             </div>
           </div>
         </div>
 
-        <div class="glass-card p-3 rounded-2xl flex justify-center gap-8 items-center shrink-0">
-          
-          <div class="flex flex-col items-center gap-1 group relative">
-            <button onclick="activatePowerup('bomb')" class="w-14 h-14 rounded-full bg-slate-800/80 border border-slate-600 flex items-center justify-center text-orange-400 active:scale-95 transition-all relative shadow-[0_0_15px_rgba(249,115,22,0.2)]" id="btn-power-bomb">
-              <i class="fa-solid fa-bomb text-xl"></i>
-              <span class="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511]" id="count-bomb">1</span>
+        <div class="glass-card p-3 rounded-2xl flex justify-center gap-10 items-center shrink-0 border border-slate-700/50">
+          <div class="flex flex-col items-center gap-1.5 group relative">
+            <button onclick="activatePowerup('bomb')" class="powerup-btn w-12 h-12 rounded-2xl bg-slate-800/80 border-2 border-slate-600 flex items-center justify-center text-orange-400 relative shadow-[0_4px_15px_rgba(0,0,0,0.5)]" id="btn-power-bomb" style="--glow-color: rgba(249,115,22,0.6)">
+              <i class="fa-solid fa-bomb text-xl drop-shadow-[0_0_5px_rgba(249,115,22,0.8)]"></i>
+              <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] shadow-lg" id="count-bomb">1</span>
             </button>
-            <span class="text-[9px] uppercase font-bold text-slate-400">Bomb</span>
+            <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Bomb</span>
           </div>
 
-          <div class="flex flex-col items-center gap-1 group relative">
-            <button onclick="activatePowerup('rocket')" class="w-14 h-14 rounded-full bg-slate-800/80 border border-slate-600 flex items-center justify-center text-red-400 active:scale-95 transition-all relative shadow-[0_0_15px_rgba(239,68,68,0.2)]" id="btn-power-rocket">
-              <i class="fa-solid fa-rocket text-xl"></i>
-              <span class="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511]" id="count-rocket">1</span>
+          <div class="flex flex-col items-center gap-1.5 group relative">
+            <button onclick="activatePowerup('rocket')" class="powerup-btn w-12 h-12 rounded-2xl bg-slate-800/80 border-2 border-slate-600 flex items-center justify-center text-red-400 relative shadow-[0_4px_15px_rgba(0,0,0,0.5)]" id="btn-power-rocket" style="--glow-color: rgba(239,68,68,0.6)">
+              <i class="fa-solid fa-rocket text-xl drop-shadow-[0_0_5px_rgba(239,68,68,0.8)]"></i>
+              <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] shadow-lg" id="count-rocket">1</span>
             </button>
-            <span class="text-[9px] uppercase font-bold text-slate-400">Rocket</span>
+            <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Rocket</span>
           </div>
-
         </div>
 
       </div>
     </div>
 
+    <!-- TASKS VIEW -->
     <div id="view-tasks" class="view-section hidden fade-in space-y-6 pb-4">
       <div class="text-center pt-2">
         <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Tasks</h2>
@@ -407,6 +417,7 @@
       </div>
     </div>
 
+    <!-- BOXES VIEW -->
     <div id="view-boxes" class="view-section hidden fade-in space-y-5 pb-4">
       <div class="text-center pt-2 mb-6">
         <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Boxes</h2>
@@ -465,8 +476,8 @@
       </div>
     </div>
 
+    <!-- WITHDRAW VIEW -->
     <div id="view-withdraw" class="view-section hidden fade-in space-y-6">
-      
       <div class="glass-card rounded-[2rem] p-6 text-center border-t-2 border-emerald-500/40 bg-gradient-to-b from-emerald-900/30 to-[#050511]">
         <div class="w-14 h-14 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-3 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
           <i class="fa-solid fa-wallet text-xl text-emerald-400"></i>
@@ -510,6 +521,7 @@
       </div>
     </div>
 
+    <!-- PROFILE VIEW -->
     <div id="view-profile" class="view-section hidden fade-in space-y-6">
       <div class="glass-card rounded-[2.5rem] p-1 text-center relative overflow-hidden border border-slate-700/50">
         <div class="h-32 bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 rounded-t-[2.3rem] relative overflow-hidden">
@@ -623,7 +635,7 @@
     const getDefaultMissions = () => ({
       dailyReward: { completed: true, claimed: false, reward: 5, type: 'boolean' },
       watch5: { target: 5, claimed: false, reward: 20, type: 'progress' },
-      watch10: { target: 10, claimed: false, reward: 50, type: 'progress' },
+      watch30: { target: 30, claimed: false, reward: 50, type: 'progress' },
       all: { claimed: false, reward: 100, type: 'meta' }
     });
 
@@ -768,6 +780,7 @@
         missionsState = getDefaultMissions();
         missionsState.dailyReward.reward = streakRewards[userState.streak - 1]; 
         
+        // Reset Game Daily State
         gameState.seedDate = currentResetDay;
         gameState.levelsCompleted = Array(10).fill(false);
         gameState.stars = Array(10).fill(0);
@@ -885,7 +898,7 @@
       const missionsList = [
         { key: 'dailyReward', label: `Daily Login`, icon: 'fa-gift', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
         { key: 'watch5', label: 'Watch 5 Ads', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
-        { key: 'watch10', label: 'Watch 10 Ads', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
+        { key: 'watch30', label: 'Watch 30 Ads', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
         { key: 'all', label: 'All Tasks', icon: 'fa-crown', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' }
       ];
 
@@ -900,7 +913,7 @@
         } else if (mission.type === 'boolean') {
             isComplete = mission.completed;
         } else if (mission.type === 'meta') {
-            isComplete = ['dailyReward', 'watch5', 'watch10'].every(k => missionsState[k].claimed);
+            isComplete = ['dailyReward', 'watch5', 'watch30'].every(k => missionsState[k].claimed);
         }
 
         let btnHtml = '';
@@ -945,6 +958,7 @@
     }
 
     function watchAd() {
+      // Increased from 10 to 30 Ads
       if (userState.adsWatchedToday >= 30) {
         showToast("Limit", "You have reached the daily limit of 30 ads. Come back tomorrow!", "error");
         return;
@@ -1166,10 +1180,11 @@
     }
 
     // ==========================================
-    // GAME ENGINE: XPVerse Balloon Blast 
+    // GAME ENGINE: XPVerse Balloon Blast
     // ==========================================
 
-    const LEVEL_REWARDS = [40, 50, 60, 70, 80, 90, 100, 120, 150, 200]; // Fixed Level XP Rewards
+    // XP Distribution per level mapping to exactly ~750 per day
+    const LEVEL_REWARDS = [25, 35, 50, 60, 75, 80, 90, 100, 110, 125]; 
 
     function getDailyRandom(seed) {
       let t = seed += 0x6D2B79F5;
@@ -1229,31 +1244,19 @@
       container.innerHTML = html;
     }
 
-    window.gameEngine = {
+    let gameEngine = {
       canvas: null, ctx: null, isPlaying: false,
-      balloons: [], projectiles: [], particles: [], fallingBalloons: [],
+      balloons: [], projectiles: [], particles: [], fallingBalloons: [], floatingTexts: [],
       gridCols: 8, ballRadius: 0,
       grid: [], 
       colors: ['#ef4444', '#3b82f6', '#10b981', '#eab308', '#a855f7', '#06b6d4'],
-      launcherColor: '', nextColor: '', colorHistory: [], activePowerup: null,
+      launcherColor: '', nextColor: '', activePowerup: null,
+      colorHistory: [], // Track history to avoid 3 in a row
       currentLevel: 1, score: 0, shotsFired: 0, totalTarget: 0,
       offsetY: 0, dropInterval: 5, limitY: 0,
       mouseX: 0, mouseY: 0, rand: null,
-      containers: []
+      containers: null
     };
-
-    function initContainers() {
-        let w = gameEngine.canvas.width / 5;
-        let h = 30;
-        let y = gameEngine.canvas.height - h;
-        gameEngine.containers = [
-            { x: 0, w: w, y: y, h: h, multiplier: 2, label: "50" },
-            { x: w, w: w, y: y, h: h, multiplier: 3, label: "100" },
-            { x: w*2, w: w, y: y, h: h, multiplier: 5, label: "200" },
-            { x: w*3, w: w, y: y, h: h, multiplier: 3, label: "100" },
-            { x: w*4, w: w, y: y, h: h, multiplier: 2, label: "50" }
-        ];
-    }
 
     function startGame(level) {
       document.body.classList.add('in-game');
@@ -1272,9 +1275,7 @@
         setTimeout(() => { splash.style.display = 'none'; }, 500);
       }, 1500);
 
-      setTimeout(() => {
-         initGameEngine(level);
-      }, 100); 
+      initGameEngine(level);
     }
 
     function exitGame() {
@@ -1288,44 +1289,10 @@
       renderGameMap();
     }
 
-    function nextLevel() {
-      if (gameEngine.currentLevel < 10) {
-         startGame(gameEngine.currentLevel + 1);
-      } else {
-         showToast("Winner!", "You completed all levels for today!", "success");
-         exitGame();
-      }
-    }
-
-    function shadeColor(color, percent) {
-        let R = parseInt(color.substring(1,3),16);
-        let G = parseInt(color.substring(3,5),16);
-        let B = parseInt(color.substring(5,7),16);
-
-        R = parseInt(R * (100 + percent) / 100);
-        G = parseInt(G * (100 + percent) / 100);
-        B = parseInt(B * (100 + percent) / 100);
-
-        R = (R<255)?R:255;  
-        G = (G<255)?G:255;  
-        B = (B<255)?B:255;  
-
-        let RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
-        let GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
-        let BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
-
-        return "#"+RR+GG+BB;
-    }
-
     function initGameEngine(level) {
       gameEngine.currentLevel = level;
       gameEngine.canvas = document.getElementById('balloon-canvas');
       gameEngine.ctx = gameEngine.canvas.getContext('2d');
-      
-      let rect = gameEngine.canvas.parentElement.getBoundingClientRect();
-      gameEngine.canvas.width = rect.width;
-      gameEngine.canvas.height = rect.height;
-
       gameEngine.isPlaying = true;
       gameEngine.score = 0;
       gameEngine.shotsFired = 0;
@@ -1334,11 +1301,9 @@
       gameEngine.projectiles = [];
       gameEngine.particles = [];
       gameEngine.fallingBalloons = [];
-      gameEngine.colorHistory = [];
+      gameEngine.floatingTexts = [];
       gameEngine.activePowerup = null;
-
-      gameEngine.ballRadius = Math.floor(gameEngine.canvas.width / (gameEngine.gridCols * 2.2));
-      initContainers();
+      gameEngine.colorHistory = [];
 
       document.getElementById('ingame-level-display').innerText = level;
       document.getElementById('ingame-score').innerText = '0';
@@ -1348,41 +1313,41 @@
       const seedStr = gameState.seedDate.replace(/-/g, '') + level.toString();
       gameEngine.rand = getDailyRandom(parseInt(seedStr));
 
-      generateLevel();
-
-      gameEngine.launcherColor = gameEngine.colors[Math.floor(gameEngine.rand() * gameEngine.colors.length)];
-      gameEngine.nextColor = gameEngine.colors[Math.floor(gameEngine.rand() * gameEngine.colors.length)];
-      updateLauncherColors();
-
-      gameEngine.canvas.addEventListener('touchstart', handleInteraction, {passive: false});
-      gameEngine.canvas.addEventListener('touchmove', handleInteraction, {passive: false});
-      gameEngine.canvas.addEventListener('touchend', handleFire, {passive: false});
+      resizeCanvas();
+      generateLevel(level);
       
-      gameEngine.canvas.addEventListener('mousemove', handleInteraction);
-      gameEngine.canvas.addEventListener('mousedown', handleFire);
+      let avail = getAvailableColors();
+      gameEngine.launcherColor = avail[Math.floor(gameEngine.rand() * avail.length)];
+      gameEngine.nextColor = avail[Math.floor(gameEngine.rand() * avail.length)];
+      updateColorHistory(gameEngine.launcherColor);
 
-      requestAnimationFrame(gameLoop);
+      gameEngine.canvas.addEventListener('touchstart', handleInput, {passive: false});
+      gameEngine.canvas.addEventListener('touchmove', handleMove, {passive: false});
+      gameEngine.canvas.addEventListener('touchend', handleFire, {passive: false});
+      gameEngine.canvas.addEventListener('mousedown', handleInput);
+      gameEngine.canvas.addEventListener('mousemove', handleMove);
+      gameEngine.canvas.addEventListener('mouseup', handleFire);
+      
+      window.requestAnimationFrame(gameLoop);
     }
 
-    function generateLevel() {
-      let rows = 4 + Math.floor(gameEngine.currentLevel / 2);
-      gameEngine.grid = [];
-      for(let r=0; r<15; r++) { 
-         let rowArr = [];
-         let colsInRow = (r % 2 === 0) ? gameEngine.gridCols : gameEngine.gridCols - 1;
-         for(let c=0; c<colsInRow; c++) {
-            if (r < rows) {
-               rowArr.push({
-                  color: gameEngine.colors[Math.floor(gameEngine.rand() * gameEngine.colors.length)],
-                  type: 'normal',
-                  hp: 1
-               });
-            } else {
-               rowArr.push(null);
-            }
-         }
-         gameEngine.grid.push(rowArr);
-      }
+    function resizeCanvas() {
+      const container = document.getElementById('game-canvas-container');
+      gameEngine.canvas.width = container.clientWidth;
+      gameEngine.canvas.height = container.clientHeight;
+      gameEngine.ballRadius = (gameEngine.canvas.width / (gameEngine.gridCols + 0.5)) / 2;
+      
+      // Containers Setup
+      let ch = 40;
+      let cy = gameEngine.canvas.height - ch;
+      let cw = gameEngine.canvas.width / 5;
+      gameEngine.containers = {
+        cy: cy, cw: cw, ch: ch,
+        scores: [10, 50, 100, 50, 10],
+        colors: ['#3b82f6', '#10b981', '#ffb800', '#10b981', '#3b82f6']
+      };
+
+      gameEngine.limitY = cy - 80; // Ensure limit line is above containers
     }
 
     function getAvailableColors() {
@@ -1396,671 +1361,981 @@
             }
          }
       }
-      for(let fb of gameEngine.fallingBalloons) {
-         if(fb.type === 'normal') activeColors.add(fb.color);
-      }
       let arr = Array.from(activeColors);
       return arr.length > 0 ? arr : gameEngine.colors;
     }
 
+    function updateColorHistory(color) {
+      gameEngine.colorHistory.unshift(color);
+      if(gameEngine.colorHistory.length > 2) {
+         gameEngine.colorHistory.pop();
+      }
+    }
+
     function updateLauncherColors() {
        let avail = getAvailableColors();
-       if(avail.length === 0) return;
+       if(avail.length === 0) return; 
+       
+       let isColorAllowed = (color) => {
+         // Fix repetitive colors: Check if last two history are this exact color
+         if (gameEngine.colorHistory.length === 2 && 
+             gameEngine.colorHistory[0] === color && 
+             gameEngine.colorHistory[1] === color) {
+            return false;
+         }
+         return true;
+       };
 
-       let prev1 = gameEngine.colorHistory[0] || '';
-       let prev2 = gameEngine.colorHistory[1] || '';
-
-       function getValidColor(targetColor) {
-          if (avail.length === 1) return avail[0];
-          let newCol = targetColor;
-          let attempts = 0;
-          while(attempts < 15) {
-              newCol = avail[Math.floor(Math.random() * avail.length)];
-              if (!(newCol === prev1 && newCol === prev2)) {
-                  break;
-              }
-              attempts++;
-          }
-          return newCol;
-       }
-
-       if(!avail.includes(gameEngine.launcherColor) || (gameEngine.launcherColor === prev1 && gameEngine.launcherColor === prev2)) {
-           gameEngine.launcherColor = getValidColor(gameEngine.launcherColor);
+       if(!avail.includes(gameEngine.launcherColor)) {
+           let safeColors = avail.filter(isColorAllowed);
+           if(safeColors.length === 0) safeColors = avail; // Fallback
+           gameEngine.launcherColor = safeColors[Math.floor(Math.random() * safeColors.length)];
        }
        if(!avail.includes(gameEngine.nextColor)) {
-           gameEngine.nextColor = getValidColor(gameEngine.nextColor);
+           let safeColors = avail.filter(c => c !== gameEngine.launcherColor).filter(isColorAllowed);
+           if(safeColors.length === 0) safeColors = avail; // Fallback
+           gameEngine.nextColor = safeColors[Math.floor(Math.random() * safeColors.length)];
        }
     }
 
-    function handleInteraction(e) {
-      if(e.cancelable) e.preventDefault();
-      let rect = gameEngine.canvas.getBoundingClientRect();
-      let clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      let clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      gameEngine.mouseX = clientX - rect.left;
-      gameEngine.mouseY = clientY - rect.top;
-    }
-
-    function handleFire(e) {
-      if(e && e.cancelable) e.preventDefault();
-      if(!gameEngine.isPlaying || gameEngine.projectiles.length > 0) return;
-
-      let startX = gameEngine.canvas.width / 2;
-      let startY = gameEngine.canvas.height - gameEngine.ballRadius * 2;
+    function generateLevel(level) {
+      let rows = 3 + Math.floor(level / 3);
+      if (rows > 8) rows = 8;
       
-      let dx = gameEngine.mouseX - startX;
-      let dy = gameEngine.mouseY - startY;
+      gameEngine.grid = [];
+      gameEngine.totalTarget = 0;
       
-      if(dy > -20) dy = -20; 
-      
-      let angle = Math.atan2(dy, dx);
-      let speed = 15;
+      let allowLocked = level >= 4;
+      let allowVirus = level >= 7;
+      let allowArmor = level >= 9;
 
-      let type = gameEngine.activePowerup ? gameEngine.activePowerup : 'normal';
-      let color = gameEngine.activePowerup ? null : gameEngine.launcherColor;
+      for (let r = 0; r < rows; r++) {
+        gameEngine.grid[r] = [];
+        let colsInRow = (r % 2 === 0) ? gameEngine.gridCols : gameEngine.gridCols - 1;
+        for (let c = 0; c < colsInRow; c++) {
+          let type = 'normal';
+          let hp = 1;
+          let rVal = gameEngine.rand();
+          
+          if ((r + c) % 2 === 0 && rVal < 0.2) {
+             if (level >= 3 && rVal < 0.05) { gameEngine.grid[r][c] = null; continue; }
+          }
 
-      gameEngine.projectiles.push({
-         x: startX, y: startY,
-         vx: Math.cos(angle) * speed,
-         vy: Math.sin(angle) * speed,
-         type: type, color: color, radius: gameEngine.ballRadius
-      });
-
-      if (!gameEngine.activePowerup) {
-         gameEngine.colorHistory.unshift(gameEngine.launcherColor);
-         if (gameEngine.colorHistory.length > 2) gameEngine.colorHistory.pop();
-         gameEngine.launcherColor = gameEngine.nextColor;
-         gameEngine.nextColor = gameEngine.colors[Math.floor(Math.random() * gameEngine.colors.length)];
-         updateLauncherColors();
-      } else {
-         gameEngine.activePowerup = null;
-         updatePowerupUI();
+          if (level === 10) {
+             if(rVal < 0.1) { type = 'locked'; hp = 2; }
+             else if(rVal < 0.15) type = 'virus';
+             else if(rVal < 0.25) type = 'armored';
+          } else {
+             if (allowArmor && rVal < 0.1) type = 'armored';
+             else if (allowVirus && rVal < 0.1) type = 'virus';
+             else if (allowLocked && rVal < 0.15) { type = 'locked'; hp = 2; }
+          }
+          
+          gameEngine.grid[r][c] = {
+            color: type === 'armored' ? '#64748b' : gameEngine.colors[Math.floor(gameEngine.rand() * gameEngine.colors.length)],
+            type: type, hp: hp, r: r, c: c
+          };
+          gameEngine.totalTarget++;
+        }
       }
-
-      gameEngine.shotsFired++;
     }
 
     function getGridPos(r, c) {
-      let dx = gameEngine.ballRadius * 2;
-      let dy = gameEngine.ballRadius * 1.732; // sqrt(3)
-      let xOffset = (r % 2 === 0) ? dx/2 : dx;
-      return {
-         x: xOffset + c * dx,
-         y: gameEngine.offsetY + gameEngine.ballRadius + r * dy
-      };
-    }
-
-    function drawBalloon(ctx, x, y, radius, color, type, alpha=1) {
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.translate(x, y);
-      
-      ctx.beginPath();
-      ctx.arc(2, 2, radius, 0, Math.PI*2);
-      ctx.fillStyle = 'rgba(0,0,0,0.3)';
-      ctx.fill();
-      
-      let grad = ctx.createRadialGradient(-radius/3, -radius/3, radius/5, 0, 0, radius);
-      grad.addColorStop(0, '#ffffff'); 
-      grad.addColorStop(0.3, color);
-      grad.addColorStop(1, shadeColor(color, -40)); 
-      
-      ctx.beginPath();
-      ctx.arc(0, 0, radius, 0, Math.PI*2);
-      ctx.fillStyle = grad;
-      ctx.fill();
-      
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-      ctx.stroke();
-      
-      ctx.restore();
+      let x = c * gameEngine.ballRadius * 2 + gameEngine.ballRadius;
+      if (r % 2 !== 0) x += gameEngine.ballRadius;
+      let y = r * gameEngine.ballRadius * 1.732 + gameEngine.ballRadius + gameEngine.offsetY;
+      return {x, y};
     }
 
     function drawGrid() {
       const ctx = gameEngine.ctx;
-      for(let r=0; r<gameEngine.grid.length; r++) {
-         if(!gameEngine.grid[r]) continue;
-         for(let c=0; c<gameEngine.grid[r].length; c++) {
-            let b = gameEngine.grid[r][c];
-            if(b) {
-               let pos = getGridPos(r, c);
-               drawBalloon(ctx, pos.x, pos.y, gameEngine.ballRadius, b.color, b.type);
-            }
-         }
-      }
-    }
-
-    function drawContainers() {
-       const ctx = gameEngine.ctx;
-       ctx.save();
-       gameEngine.containers.forEach(c => {
-           ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
-           ctx.fillRect(c.x + 2, c.y, c.w - 4, c.h);
-           
-           ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-           ctx.font = "bold 12px Outfit";
-           ctx.textAlign = "center";
-           ctx.fillText(c.label, c.x + c.w/2, c.y + 20);
-       });
-       ctx.restore();
-    }
-
-    function drawFallingBalloons() {
-       const ctx = gameEngine.ctx;
-       for(let fb of gameEngine.fallingBalloons) {
-           drawBalloon(ctx, fb.x, fb.y, fb.radius, fb.color, fb.type, 0.9);
-       }
-    }
-
-    function createParticles(x, y, color, isText=false) {
-       let count = isText ? 1 : 10;
-       for(let i=0; i<count; i++) {
-           gameEngine.particles.push({
-               x: x, y: y,
-               vx: (Math.random() - 0.5) * 6,
-               vy: (Math.random() - 0.5) * 6 - 2,
-               color: color,
-               life: 1.0,
-               isText: isText
-           });
-       }
-    }
-
-    function drawParticles() {
-       const ctx = gameEngine.ctx;
-       for(let i=gameEngine.particles.length-1; i>=0; i--) {
-           let p = gameEngine.particles[i];
-           p.x += p.vx;
-           p.y += p.vy;
-           p.life -= 0.02;
-           
-           if(p.life <= 0) {
-               gameEngine.particles.splice(i, 1);
-               continue;
-           }
-
-           ctx.globalAlpha = p.life;
-           if(p.isText) {
-               ctx.font = "bold 16px Outfit";
-               ctx.fillStyle = "#10b981"; // Emerald
-               ctx.fillText("+" + p.color, p.x, p.y); // For text, color holds the string
-           } else {
-               ctx.fillStyle = p.color;
-               ctx.beginPath();
-               ctx.arc(p.x, p.y, 4 * p.life, 0, Math.PI*2);
-               ctx.fill();
-           }
-           ctx.globalAlpha = 1.0;
-       }
-    }
-
-    function makeBalloonFall(r, c) {
-        let b = gameEngine.grid[r][c];
-        if (!b) return;
-        let pos = getGridPos(r, c);
-        gameEngine.fallingBalloons.push({
-            x: pos.x, y: pos.y,
-            vx: (Math.random() - 0.5) * 5, vy: -2 - Math.random() * 2,
-            color: b.color, type: b.type, hp: b.hp, radius: gameEngine.ballRadius
-        });
-        gameEngine.grid[r][c] = null;
-    }
-
-    function snapToGrid(x, y) {
-        let dy = gameEngine.ballRadius * 1.732;
-        let dx = gameEngine.ballRadius * 2;
-        
-        let r = Math.round((y - gameEngine.offsetY - gameEngine.ballRadius) / dy);
-        if(r < 0) r = 0;
-        
-        let xOffset = (r % 2 === 0) ? dx/2 : dx;
-        let c = Math.round((x - xOffset) / dx);
-        
-        if (gameEngine.grid[r] === undefined) {
-           gameEngine.grid[r] = new Array((r % 2 === 0) ? gameEngine.gridCols : gameEngine.gridCols - 1).fill(null);
-        }
-        
-        if(c < 0) c = 0;
-        if(c >= gameEngine.grid[r].length) c = gameEngine.grid[r].length - 1;
-        
-        return {r: r, c: c};
-    }
-
-    function checkCollision(px, py, pr) {
-        if(py - pr <= gameEngine.offsetY) return true; // HIt Top
-        
-        for(let r=0; r<gameEngine.grid.length; r++) {
-            if(!gameEngine.grid[r]) continue;
-            for(let c=0; c<gameEngine.grid[r].length; c++) {
-                if(gameEngine.grid[r][c]) {
-                    let pos = getGridPos(r, c);
-                    let dist = Math.hypot(px - pos.x, py - pos.y);
-                    if(dist < pr * 2 - 2) return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    function getNeighbors(r, c) {
-        let n = [];
-        let dirs = (r % 2 === 0) ? 
-            [[0,-1],[0,1],[-1,-1],[-1,0],[1,-1],[1,0]] : 
-            [[0,-1],[0,1],[-1,0],[-1,1],[1,0],[1,1]];
-        
-        for(let d of dirs) {
-            let nr = r + d[0], nc = c + d[1];
-            if(nr >= 0 && nr < gameEngine.grid.length && gameEngine.grid[nr] && nc >= 0 && nc < gameEngine.grid[nr].length) {
-                if(gameEngine.grid[nr][nc]) n.push({r: nr, c: nc});
-            }
-        }
-        return n;
-    }
-
-    function handleCollisions() {
-        for(let i=gameEngine.projectiles.length-1; i>=0; i--) {
-            let p = gameEngine.projectiles[i];
-            
-            if(p.x - p.radius < 0) { p.x = p.radius; p.vx *= -1; }
-            if(p.x + p.radius > gameEngine.canvas.width) { p.x = gameEngine.canvas.width - p.radius; p.vx *= -1; }
-            
-            if(checkCollision(p.x, p.y, p.radius)) {
-                
-                if (p.type === 'rocket') {
-                   // Pop column
-                   let hitC = snapToGrid(p.x, p.y).c;
-                   for(let r=0; r<gameEngine.grid.length; r++) {
-                      if(gameEngine.grid[r] && gameEngine.grid[r][hitC]) {
-                         createParticles(getGridPos(r,hitC).x, getGridPos(r,hitC).y, gameEngine.grid[r][hitC].color);
-                         gameEngine.grid[r][hitC] = null;
-                      }
-                   }
-                } else if (p.type === 'bomb') {
-                   // Pop radius
-                   let center = snapToGrid(p.x, p.y);
-                   for(let r=center.r-2; r<=center.r+2; r++) {
-                      if(r>=0 && r<gameEngine.grid.length && gameEngine.grid[r]) {
-                         for(let c=center.c-2; c<=center.c+2; c++) {
-                            if(c>=0 && c<gameEngine.grid[r].length && gameEngine.grid[r][c]) {
-                               createParticles(getGridPos(r,c).x, getGridPos(r,c).y, gameEngine.grid[r][c].color);
-                               gameEngine.grid[r][c] = null;
-                            }
-                         }
-                      }
-                   }
-                } else {
-                    let cell = snapToGrid(p.x, p.y);
-                    // Adjust if snapped to filled spot
-                    if(gameEngine.grid[cell.r] && gameEngine.grid[cell.r][cell.c]) {
-                       // Basic fallback: just drop it slightly below
-                       cell.r += 1;
-                       if(!gameEngine.grid[cell.r]) {
-                           gameEngine.grid[cell.r] = new Array((cell.r % 2 === 0) ? gameEngine.gridCols : gameEngine.gridCols - 1).fill(null);
-                       }
-                    }
-
-                    gameEngine.grid[cell.r][cell.c] = { color: p.color, type: p.type, hp: 1 };
-                    
-                    // Match logic
-                    let match = findMatch(cell.r, cell.c, p.color);
-                    if(match.length >= 3) {
-                        for(let m of match) {
-                            makeBalloonFall(m.r, m.c);
-                        }
-                    }
-                }
-                
-                dropFloaters();
-                updateLauncherColors();
-                gameEngine.projectiles.splice(i, 1);
-            }
-        }
-    }
-
-    function findMatch(r, c, color) {
-        let visited = new Set();
-        let match = [];
-        let stack = [{r:r, c:c}];
-        
-        while(stack.length > 0) {
-            let curr = stack.pop();
-            let key = curr.r + "," + curr.c;
-            if(visited.has(key)) continue;
-            visited.add(key);
-            match.push(curr);
-            
-            let neighbors = getNeighbors(curr.r, curr.c);
-            for(let n of neighbors) {
-                if(gameEngine.grid[n.r][n.c].color === color && !visited.has(n.r+","+n.c)) {
-                    stack.push(n);
-                }
-            }
-        }
-        return match;
-    }
-
-    function dropFloaters() {
-        let visited = new Set();
-        let stack = [];
-        
-        if(gameEngine.grid[0]) {
-            for(let c=0; c<gameEngine.grid[0].length; c++) {
-                if(gameEngine.grid[0][c]) {
-                    stack.push({r:0, c:c});
-                }
-            }
-        }
-        
-        while(stack.length > 0) {
-            let curr = stack.pop();
-            let key = curr.r + "," + curr.c;
-            if(visited.has(key)) continue;
-            visited.add(key);
-            
-            let neighbors = getNeighbors(curr.r, curr.c);
-            for(let n of neighbors) {
-                if(!visited.has(n.r+","+n.c)) stack.push(n);
-            }
-        }
-        
-        for(let r=0; r<gameEngine.grid.length; r++) {
-            if(!gameEngine.grid[r]) continue;
-            for(let c=0; c<gameEngine.grid[r].length; c++) {
-                if(gameEngine.grid[r][c] && !visited.has(r+","+c)) {
-                    makeBalloonFall(r, c);
-                }
-            }
-        }
-    }
-
-    function updatePhysics() {
-       for(let p of gameEngine.projectiles) {
-           p.x += p.vx;
-           p.y += p.vy;
-       }
-       handleCollisions();
-
-       // Falling Balloons Logic
-       for (let i = gameEngine.fallingBalloons.length - 1; i >= 0; i--) {
-            let fb = gameEngine.fallingBalloons[i];
-            fb.vy += 0.3; // Gravity
-            fb.x += fb.vx;
-            fb.y += fb.vy;
-
-            if (fb.y + fb.radius > gameEngine.canvas.height - 30) {
-                let cIndex = Math.floor(fb.x / (gameEngine.canvas.width / 5));
-                if (cIndex >= 0 && cIndex < 5) {
-                    let scoreVal = parseInt(gameEngine.containers[cIndex].label);
-                    gameEngine.score += scoreVal;
-                    document.getElementById('ingame-score').innerText = gameEngine.score;
-                    createParticles(fb.x, fb.y, scoreVal.toString(), true); 
-                }
-                createParticles(fb.x, fb.y, fb.color);
-                gameEngine.fallingBalloons.splice(i, 1);
-            }
-        }
-    }
-
-    function drawAimLine() {
-      if(!gameEngine.isPlaying || gameEngine.projectiles.length > 0) return;
-      const ctx = gameEngine.ctx;
-      
-      let startX = gameEngine.canvas.width / 2;
-      let startY = gameEngine.canvas.height - gameEngine.ballRadius * 2;
-      
-      let dx = gameEngine.mouseX - startX;
-      let dy = gameEngine.mouseY - startY;
-      if(dy > -20) dy = -20; 
-      
-      let angle = Math.atan2(dy, dx);
-      
-      let px = startX, py = startY;
-      let vx = Math.cos(angle) * 10;
-      let vy = Math.sin(angle) * 10;
-      
-      ctx.beginPath();
-      ctx.moveTo(px, py);
-      
-      let hit = false;
-      let steps = 0;
-      while(!hit && steps < 100) {
-          px += vx;
-          py += vy;
-          if(px - gameEngine.ballRadius < 0) { px = gameEngine.ballRadius; vx *= -1; ctx.lineTo(px, py); }
-          if(px + gameEngine.ballRadius > gameEngine.canvas.width) { px = gameEngine.canvas.width - gameEngine.ballRadius; vx *= -1; ctx.lineTo(px, py); }
-          
-          if(checkCollision(px, py, gameEngine.ballRadius)) {
-              hit = true;
+      for (let r = 0; r < gameEngine.grid.length; r++) {
+        if (!gameEngine.grid[r]) continue;
+        for (let c = 0; c < gameEngine.grid[r].length; c++) {
+          let b = gameEngine.grid[r][c];
+          if (b) {
+            let pos = getGridPos(r, c);
+            drawBalloon(ctx, pos.x, pos.y, gameEngine.ballRadius * 0.95, b.color, b.type, b.hp);
           }
-          steps++;
+        }
       }
-      ctx.lineTo(px, py);
-      
-      ctx.setLineDash([5, 5]);
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = gameEngine.activePowerup ? 'rgba(255,255,255,0.8)' : gameEngine.launcherColor;
-      ctx.stroke();
-      ctx.setLineDash([]);
+    }
 
-      // Draw Ghost Target
-      ctx.globalAlpha = 0.5;
-      if (gameEngine.activePowerup === 'rocket') {
-          ctx.font = '28px "Font Awesome 6 Free"';
-          ctx.fontWeight = 900;
-          ctx.fillStyle='#ef4444'; 
-          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-          ctx.fillText('\uf135', px, py);
-      } else if (gameEngine.activePowerup === 'bomb') {
-          ctx.font = '28px "Font Awesome 6 Free"';
-          ctx.fontWeight = 900;
-          ctx.fillStyle='#f97316'; 
-          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-          ctx.fillText('\uf1e2', px, py);
-      } else {
-          drawBalloon(ctx, px, py, gameEngine.ballRadius, gameEngine.launcherColor, 'normal', 0.5);
+    function drawBalloon(ctx, x, y, r, color, type, hp, isGhost = false) {
+      ctx.globalAlpha = isGhost ? 0.3 : 1.0;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      
+      // Much brighter, shinier balloons
+      let grad = ctx.createRadialGradient(x - r/2, y - r/2, r/10, x, y, r * 1.2);
+      grad.addColorStop(0, '#ffffff'); 
+      grad.addColorStop(0.2, shadeColor(color, 40));
+      grad.addColorStop(0.6, color);
+      grad.addColorStop(1, shadeColor(color, -60)); 
+      ctx.fillStyle = grad;
+      ctx.fill();
+      
+      // Specular Highlight
+      ctx.beginPath();
+      ctx.ellipse(x - r*0.35, y - r*0.35, r*0.4, r*0.2, Math.PI / -4, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.fill();
+
+      // Rim light
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.stroke();
+
+      if (type === 'locked') {
+        ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fill();
+        ctx.fillStyle = '#f8fafc'; ctx.font = `900 ${r}px FontAwesome`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('\uf023', x, y); 
+        if(hp === 2) {
+           ctx.beginPath(); ctx.arc(x, y, r*0.8, 0, Math.PI*2); ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=3; ctx.stroke();
+        }
+      } else if (type === 'virus') {
+        ctx.fillStyle = '#bef264'; ctx.font = `900 ${r}px FontAwesome`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('\uf0e7', x, y); 
+      } else if (type === 'armored') {
+        ctx.beginPath(); ctx.arc(x, y, r*0.7, 0, Math.PI*2); ctx.fillStyle='#1e293b'; ctx.fill();
+        ctx.beginPath(); ctx.arc(x, y, r*0.3, 0, Math.PI*2); ctx.fillStyle='#94a3b8'; ctx.fill();
       }
       ctx.globalAlpha = 1.0;
     }
 
-    function drawProjectiles() {
-       const ctx = gameEngine.ctx;
-       for(let p of gameEngine.projectiles) {
-           if (p.type === 'rocket') {
-               ctx.save();
-               ctx.translate(p.x, p.y);
-               let angle = Math.atan2(p.vy, p.vx);
-               ctx.rotate(angle + Math.PI/2);
-               
-               ctx.font = '28px "Font Awesome 6 Free"';
-               ctx.fontWeight = 900;
-               ctx.fillStyle='#ef4444'; 
-               ctx.textAlign = 'center';
-               ctx.textBaseline = 'middle';
-               ctx.fillText('\uf135', 0, 0);
-               
-               ctx.beginPath();
-               ctx.arc(0, 15, 6 + Math.random()*4, 0, Math.PI*2);
-               ctx.fillStyle = '#f59e0b';
-               ctx.fill();
-               ctx.restore();
-           } else if (p.type === 'bomb') {
-               ctx.save();
-               ctx.translate(p.x, p.y);
-               ctx.rotate(Date.now() / 100);
-               ctx.font = '28px "Font Awesome 6 Free"';
-               ctx.fontWeight = 900;
-               ctx.fillStyle='#f97316'; 
-               ctx.textAlign = 'center';
-               ctx.textBaseline = 'middle';
-               ctx.fillText('\uf1e2', 0, 0);
-               ctx.restore();
-           } else {
-               drawBalloon(ctx, p.x, p.y, p.radius, p.color, p.type, 1);
-           }
-       }
+    function shadeColor(color, percent) {
+      let R = parseInt(color.substring(1,3),16);
+      let G = parseInt(color.substring(3,5),16);
+      let B = parseInt(color.substring(5,7),16);
+      R = parseInt(R * (100 + percent) / 100);
+      G = parseInt(G * (100 + percent) / 100);
+      B = parseInt(B * (100 + percent) / 100);
+      R = (R<255)?R:255; G = (G<255)?G:255; B = (B<255)?B:255;
+      let RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
+      let GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
+      let BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
+      return "#"+RR+GG+BB;
+    }
+
+    function drawAimLine() {
+      if (!gameEngine.mouseX || !gameEngine.mouseY || gameEngine.projectiles.length > 0) return;
+      
+      const ctx = gameEngine.ctx;
+      const lx = gameEngine.canvas.width / 2;
+      const ly = gameEngine.canvas.height - 120; // Launcher raised to make space for containers
+      
+      let dy = gameEngine.mouseY - ly;
+      if (dy > -10) return; 
+
+      let dx = gameEngine.mouseX - lx;
+      let angle = Math.atan2(dy, dx);
+      if (angle > -0.1) angle = -0.1; 
+      if (angle < -Math.PI + 0.1) angle = -Math.PI + 0.1;
+
+      let x = lx; 
+      let y = ly;
+      let vx = Math.cos(angle) * 10;
+      let vy = Math.sin(angle) * 10;
+      let radius = gameEngine.ballRadius;
+      
+      let path = [{x, y}];
+      let steps = 0;
+
+      while (y > radius && steps < 200) {
+          x += vx;
+          y += vy;
+          
+          if (x <= radius) { x = radius; vx *= -1; path.push({x, y}); }
+          if (x >= gameEngine.canvas.width - radius) { x = gameEngine.canvas.width - radius; vx *= -1; path.push({x, y}); }
+          
+          let hit = false;
+          for (let r=0; r<gameEngine.grid.length; r++) {
+              if(!gameEngine.grid[r]) continue;
+              for (let c=0; c<gameEngine.grid[r].length; c++) {
+                  if(gameEngine.grid[r][c]) {
+                      let pos = getGridPos(r, c);
+                      if (Math.hypot(x - pos.x, y - pos.y) <= radius * 1.8) {
+                          hit = true; break;
+                      }
+                  }
+              }
+              if(hit) break;
+          }
+          if(hit) { path.push({x, y}); break; }
+          steps++;
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(path[0].x, path[0].y);
+      for (let i = 1; i < path.length; i++) {
+          ctx.lineTo(path[i].x, path[i].y);
+      }
+      
+      let finalX = path[path.length - 1].x;
+      let finalY = path[path.length - 1].y;
+
+      if (gameEngine.activePowerup === 'rocket') {
+          // Thick corridor highlighting damage
+          ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
+          ctx.lineWidth = radius * 2.5;
+          ctx.setLineDash([]);
+          ctx.lineCap = 'round';
+          ctx.stroke();
+          
+          // Center core
+          ctx.beginPath();
+          ctx.moveTo(path[0].x, path[0].y);
+          for (let i = 1; i < path.length; i++) {
+              ctx.lineTo(path[i].x, path[i].y);
+          }
+          ctx.strokeStyle = '#ef4444';
+          ctx.lineWidth = 3;
+          ctx.stroke();
+
+      } else if (gameEngine.activePowerup === 'bomb') {
+          // Normal line
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([8, 8]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          
+          // Bomb Preview Area
+          ctx.beginPath();
+          ctx.arc(finalX, finalY, radius * 5, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(249, 115, 22, 0.2)';
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = 'rgba(249, 115, 22, 0.8)';
+          ctx.stroke();
+      } else {
+          // Normal Line
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([8, 8]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Ghost Balloon at landing spot
+          drawBalloon(ctx, finalX, finalY, radius, gameEngine.launcherColor, 'normal', 1, true);
+      }
+    }
+
+    function drawContainers() {
+      const ctx = gameEngine.ctx;
+      const c = gameEngine.containers;
+
+      ctx.save();
+      for(let i=0; i<5; i++) {
+         let cx = i * c.cw;
+         
+         // Base glass look
+         ctx.fillStyle = c.colors[i] + '30';
+         ctx.fillRect(cx, c.cy, c.cw, c.ch);
+         
+         // Borders
+         ctx.strokeStyle = c.colors[i] + 'aa';
+         ctx.lineWidth = 2;
+         ctx.strokeRect(cx, c.cy, c.cw, c.ch);
+
+         // Top light
+         ctx.fillStyle = 'rgba(255,255,255,0.2)';
+         ctx.fillRect(cx, c.cy, c.cw, 4);
+
+         // Score Text
+         ctx.fillStyle = '#ffffff';
+         ctx.font = '900 14px "Outfit"';
+         ctx.textAlign = 'center';
+         ctx.textBaseline = 'middle';
+         ctx.shadowColor = c.colors[i];
+         ctx.shadowBlur = 10;
+         ctx.fillText(c.scores[i], cx + c.cw/2, c.cy + c.ch/2);
+         ctx.shadowBlur = 0;
+      }
+      ctx.restore();
     }
 
     function drawLauncher() {
-       const ctx = gameEngine.ctx;
-       let startX = gameEngine.canvas.width / 2;
-       let startY = gameEngine.canvas.height - gameEngine.ballRadius * 2;
+      const ctx = gameEngine.ctx;
+      const lx = gameEngine.canvas.width / 2;
+      const ly = gameEngine.canvas.height - 120; // Adjusted for containers
+      
+      drawAimLine();
 
-       if(gameEngine.projectiles.length === 0) {
-           if (gameEngine.activePowerup === 'rocket') {
-               ctx.font = '28px "Font Awesome 6 Free"';
-               ctx.fontWeight = 900;
-               ctx.fillStyle='#ef4444'; 
-               ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-               ctx.fillText('\uf135', startX, startY);
-           } else if (gameEngine.activePowerup === 'bomb') {
-               ctx.font = '28px "Font Awesome 6 Free"';
-               ctx.fontWeight = 900;
-               ctx.fillStyle='#f97316'; 
-               ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-               ctx.fillText('\uf1e2', startX, startY);
-           } else {
-               drawBalloon(ctx, startX, startY, gameEngine.ballRadius, gameEngine.launcherColor, 'normal');
-           }
-       }
-
-       // Next balloon UI
-       drawBalloon(ctx, startX + 50, startY + 10, gameEngine.ballRadius * 0.6, gameEngine.nextColor, 'normal');
+      // Next Balloon display
+      drawBalloon(ctx, lx - 70, ly + 10, gameEngine.ballRadius * 0.6, gameEngine.nextColor, 'normal', 1);
+      ctx.fillStyle = '#94a3b8'; ctx.font = "bold 10px sans-serif"; ctx.fillText("NEXT", lx - 70, ly - 15);
+      
+      // Launcher Base
+      let grad = ctx.createRadialGradient(lx, ly, 10, lx, ly, 35);
+      grad.addColorStop(0, '#1e293b');
+      grad.addColorStop(1, '#0f172a');
+      ctx.beginPath(); ctx.arc(lx, ly, 35, Math.PI, 0); ctx.fillStyle = grad; ctx.fill();
+      ctx.strokeStyle = '#334155'; ctx.lineWidth = 2; ctx.stroke();
+      
+      if (gameEngine.projectiles.length === 0) {
+        let type = 'normal';
+        let color = gameEngine.activePowerup ? (gameEngine.activePowerup === 'rocket' ? '#ef4444' : (gameEngine.activePowerup === 'bomb' ? '#f97316' : '#ffffff')) : gameEngine.launcherColor;
+        
+        if (gameEngine.activePowerup === 'rocket') {
+           ctx.font = '28px FontAwesome'; ctx.fillStyle='#ef4444'; ctx.fillText('\uf135', lx, ly);
+        } else if (gameEngine.activePowerup === 'bomb') {
+           ctx.font = '28px FontAwesome'; ctx.fillStyle='#f97316'; ctx.fillText('\uf1e2', lx, ly);
+        } else {
+           drawBalloon(ctx, lx, ly, gameEngine.ballRadius, color, type, 1);
+        }
+      }
     }
 
-    function checkWinLoss() {
-      let hasBalloons = false;
-      for(let r=0; r<gameEngine.grid.length; r++) {
-         if(gameEngine.grid[r]) {
-            for(let c=0; c<gameEngine.grid[r].length; c++) {
-               if(gameEngine.grid[r][c]) hasBalloons = true;
-            }
-         }
+    function handleInput(e) {
+      if (!gameEngine.isPlaying) return;
+      e.preventDefault();
+      updateMousePos(e);
+      
+      const lx = gameEngine.canvas.width / 2;
+      const ly = gameEngine.canvas.height - 120;
+      const dist = Math.hypot(gameEngine.mouseX - (lx - 70), gameEngine.mouseY - (ly + 10));
+      const distMain = Math.hypot(gameEngine.mouseX - lx, gameEngine.mouseY - ly);
+      
+      if (dist < 40 || distMain < 40) {
+        let temp = gameEngine.launcherColor;
+        gameEngine.launcherColor = gameEngine.nextColor;
+        gameEngine.nextColor = temp;
+        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+        gameEngine.mouseX = null;
+      }
+    }
+
+    function handleMove(e) {
+      if (!gameEngine.isPlaying) return;
+      e.preventDefault();
+      updateMousePos(e);
+    }
+
+    function handleFire(e) {
+      if (!gameEngine.isPlaying || gameEngine.projectiles.length > 0 || !gameEngine.mouseX) return;
+      e.preventDefault();
+      
+      const lx = gameEngine.canvas.width / 2;
+      const ly = gameEngine.canvas.height - 120;
+      
+      let dy = gameEngine.mouseY - ly;
+      if (dy > -10) { 
+          gameEngine.mouseX = null; 
+          return; 
       }
 
-      if(!hasBalloons && gameEngine.fallingBalloons.length === 0 && gameEngine.projectiles.length === 0) {
-         endGame(true);
-      } else if (hasBalloons) {
-         // Check loss line
-         let lowest = 0;
-         for(let r=0; r<gameEngine.grid.length; r++) {
-             if(!gameEngine.grid[r]) continue;
-             for(let c=0; c<gameEngine.grid[r].length; c++) {
-                 if(gameEngine.grid[r][c] && r > lowest) lowest = r;
-             }
-         }
-         let pos = getGridPos(lowest, 0);
-         if(pos.y + gameEngine.ballRadius * 2 > gameEngine.canvas.height - 80) {
-             endGame(false);
-         }
+      let dx = gameEngine.mouseX - lx;
+      let angle = Math.atan2(dy, dx);
+      if (angle > -0.1) angle = -0.1; 
+      if (angle < -Math.PI + 0.1) angle = -Math.PI + 0.1;
+
+      let speed = 22;
+      let type = 'normal';
+      let color = gameEngine.launcherColor;
+
+      if (gameEngine.activePowerup) {
+         type = gameEngine.activePowerup;
+         if(type === 'rocket') { speed = 35; color = '#ef4444'; }
+         if(type === 'bomb') { color = '#f97316'; }
       }
+
+      gameEngine.projectiles.push({ x: lx, y: ly, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, radius: gameEngine.ballRadius, color: color, type: type });
+      
+      gameEngine.shotsFired++;
+      updateStarsUI(calculateStars());
+      
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+      
+      if (!gameEngine.activePowerup) {
+         updateColorHistory(gameEngine.launcherColor);
+         gameEngine.launcherColor = gameEngine.nextColor;
+         updateLauncherColors();
+      } else {
+         consumePowerup(gameEngine.activePowerup);
+      }
+      
+      gameEngine.mouseX = null;
+    }
+
+    function updateMousePos(e) {
+      const rect = gameEngine.canvas.getBoundingClientRect();
+      if (e.touches && e.touches.length > 0) {
+        gameEngine.mouseX = e.touches[0].clientX - rect.left;
+        gameEngine.mouseY = e.touches[0].clientY - rect.top;
+      } else {
+        gameEngine.mouseX = e.clientX - rect.left;
+        gameEngine.mouseY = e.clientY - rect.top;
+      }
+    }
+
+    function updatePhysics() {
+      // Manage Projectiles
+      for (let i = gameEngine.projectiles.length - 1; i >= 0; i--) {
+        let p = gameEngine.projectiles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x - p.radius < 0) { p.x = p.radius; p.vx *= -1; }
+        if (p.x + p.radius > gameEngine.canvas.width) { p.x = gameEngine.canvas.width - p.radius; p.vx *= -1; }
+
+        let snapped = false;
+
+        if (p.type === 'rocket') {
+           let hitAny = false;
+           for(let r=0; r<gameEngine.grid.length; r++) {
+              if(!gameEngine.grid[r]) continue;
+              for(let c=0; c<gameEngine.grid[r].length; c++) {
+                 if(gameEngine.grid[r][c]) {
+                    let pos = getGridPos(r, c);
+                    if(Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius * 2.5) {
+                       popBalloon(r, c, true);
+                       hitAny = true;
+                    }
+                 }
+              }
+           }
+           
+           if (p.y < -50 || p.x < -50 || p.x > gameEngine.canvas.width + 50) {
+               gameEngine.projectiles.splice(i, 1);
+               if(hitAny) dropFloaters();
+               checkWinLoss();
+               updateLauncherColors();
+           }
+           continue;
+        }
+
+        if (p.y - p.radius <= gameEngine.offsetY) {
+          snapProjectile(p, 0);
+          snapped = true;
+        } else {
+           for(let r=0; r<gameEngine.grid.length; r++) {
+              if(!gameEngine.grid[r] || snapped) continue;
+              for(let c=0; c<gameEngine.grid[r].length; c++) {
+                 if(gameEngine.grid[r][c]) {
+                    let pos = getGridPos(r, c);
+                    if(Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius * 1.8) {
+                       snapProjectile(p);
+                       snapped = true;
+                       break;
+                    }
+                 }
+              }
+           }
+        }
+
+        if (snapped) {
+           gameEngine.projectiles.splice(i, 1);
+        }
+      }
+
+      // Manage Falling Balloons
+      for (let i = gameEngine.fallingBalloons.length - 1; i >= 0; i--) {
+          let fb = gameEngine.fallingBalloons[i];
+          fb.vy += 0.4; // Gravity
+          fb.x += fb.vx;
+          fb.y += fb.vy;
+
+          // Wall bounce
+          if (fb.x - fb.radius < 0) { fb.x = fb.radius; fb.vx *= -0.6; }
+          if (fb.x + fb.radius > gameEngine.canvas.width) { fb.x = gameEngine.canvas.width - fb.radius; fb.vx *= -0.6; }
+
+          // Check collision with containers
+          if (fb.y + fb.radius > gameEngine.containers.cy) {
+              let idx = Math.floor(fb.x / gameEngine.containers.cw);
+              if (idx >= 0 && idx < 5) {
+                  let pts = gameEngine.containers.scores[idx];
+                  addScore(pts);
+                  showFloatingText(`+${pts}`, fb.x, fb.y, gameEngine.containers.colors[idx]);
+                  if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+              }
+              gameEngine.fallingBalloons.splice(i, 1);
+          }
+      }
+
+      // Manage Particles
+      for (let i = gameEngine.particles.length - 1; i >= 0; i--) {
+          let p = gameEngine.particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life -= 0.03;
+          if (p.life <= 0) gameEngine.particles.splice(i, 1);
+      }
+
+      // Manage Floating Texts
+      for (let i = gameEngine.floatingTexts.length - 1; i >= 0; i--) {
+          let ft = gameEngine.floatingTexts[i];
+          ft.y -= 1;
+          ft.life -= 0.02;
+          if (ft.life <= 0) gameEngine.floatingTexts.splice(i, 1);
+      }
+    }
+
+    function showFloatingText(text, x, y, color = '#fff') {
+        gameEngine.floatingTexts.push({text: text, x: x, y: y, life: 1, color: color});
+    }
+
+    function drawPhysicsObjects() {
+      const ctx = gameEngine.ctx;
+
+      // Particles
+      gameEngine.particles.forEach(p => {
+          ctx.globalAlpha = p.life;
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, gameEngine.ballRadius * 0.3, 0, Math.PI * 2);
+          ctx.fill();
+      });
+      ctx.globalAlpha = 1.0;
+
+      // Falling Balloons
+      gameEngine.fallingBalloons.forEach(fb => {
+          drawBalloon(ctx, fb.x, fb.y, fb.radius, fb.color, fb.type, 1);
+      });
+
+      // Floating Texts
+      ctx.textAlign = 'center';
+      ctx.font = '900 16px "Outfit"';
+      gameEngine.floatingTexts.forEach(ft => {
+          ctx.globalAlpha = ft.life;
+          ctx.fillStyle = ft.color;
+          ctx.shadowColor = '#000';
+          ctx.shadowBlur = 4;
+          ctx.fillText(ft.text, ft.x, ft.y);
+      });
+      ctx.globalAlpha = 1.0;
+      ctx.shadowBlur = 0;
+    }
+
+    function snapProjectile(p, forceRow = -1) {
+       let rHeight = gameEngine.ballRadius * 1.732;
+       let targetR = Math.round((p.y - gameEngine.offsetY - gameEngine.ballRadius) / rHeight);
+       if(forceRow !== -1) targetR = forceRow;
+       if(targetR < 0) targetR = 0;
+       
+       let targetC = Math.round((p.x - gameEngine.ballRadius - (targetR % 2 !== 0 ? gameEngine.ballRadius : 0)) / (gameEngine.ballRadius * 2));
+       if (targetC < 0) targetC = 0;
+       let maxC = (targetR % 2 === 0) ? gameEngine.gridCols - 1 : gameEngine.gridCols - 2;
+       if (targetC > maxC) targetC = maxC;
+
+       while(gameEngine.grid.length <= targetR) gameEngine.grid.push([]);
+       
+       if (gameEngine.grid[targetR][targetC]) {
+           let bestD = Infinity, bestR = targetR, bestC = targetC;
+           const dirs = getNeighborsDirs(targetR);
+           dirs.forEach(d => {
+               let nr = targetR + d[0], nc = targetC + d[1];
+               if(nr >=0 && nc >=0 && nc <= ((nr%2===0)?gameEngine.gridCols-1:gameEngine.gridCols-2)) {
+                   if (!gameEngine.grid[nr] || !gameEngine.grid[nr][nc]) {
+                      let nPos = getGridPos(nr, nc);
+                      let dist = Math.hypot(p.x - nPos.x, p.y - nPos.y);
+                      if (dist < bestD) { bestD = dist; bestR = nr; bestC = nc; }
+                   }
+               }
+           });
+           targetR = bestR; targetC = bestC;
+       }
+
+       while(gameEngine.grid.length <= targetR) gameEngine.grid.push([]);
+
+       if (p.type === 'bomb') {
+          triggerExplosion(targetR, targetC);
+       } else {
+          gameEngine.grid[targetR][targetC] = { color: p.color, type: p.type, hp: 1, r: targetR, c: targetC };
+          checkMatches(targetR, targetC);
+       }
+       
+       checkWinLoss();
+       updateLauncherColors(); 
+    }
+
+    function getNeighborsDirs(r) {
+       return r % 2 === 0 
+           ? [[-1,-1], [-1,0], [0,-1], [0,1], [1,-1], [1,0]]
+           : [[-1,0], [-1,1], [0,-1], [0,1], [1,0], [1,1]];
+    }
+
+    function getNeighbors(r, c) {
+       let n = [];
+       getNeighborsDirs(r).forEach(d => {
+           let nr = r + d[0], nc = c + d[1];
+           if (gameEngine.grid[nr] && gameEngine.grid[nr][nc]) n.push({r: nr, c: nc});
+       });
+       return n;
+    }
+
+    function triggerExplosion(r, c) {
+        let toPop = [];
+        for(let ir = r-2; ir <= r+2; ir++) {
+            if(!gameEngine.grid[ir]) continue;
+            for(let ic = c-2; ic <= c+2; ic++) {
+                if(gameEngine.grid[ir][ic]) toPop.push({r:ir, c:ic});
+            }
+        }
+        toPop.forEach(b => popBalloon(b.r, b.c, true));
+        dropFloaters();
+        if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+    }
+
+    function checkMatches(r, c) {
+        let startColor = gameEngine.grid[r][c].color;
+        let matchGroup = [];
+        let visited = new Set();
+        let q = [{r, c}];
+        visited.add(`${r},${c}`);
+
+        while(q.length > 0) {
+            let cur = q.shift();
+            matchGroup.push(cur);
+            let neighbors = getNeighbors(cur.r, cur.c);
+            
+            neighbors.forEach(n => {
+                let cell = gameEngine.grid[n.r][n.c];
+                if (!visited.has(`${n.r},${n.c}`) && cell.type !== 'armored') {
+                    if (cell.color === startColor) {
+                        visited.add(`${n.r},${n.c}`);
+                        q.push({r: n.r, c: n.c});
+                    }
+                }
+            });
+        }
+
+        if (matchGroup.length >= 3) { 
+            matchGroup.forEach(m => popBalloon(m.r, m.c));
+            addScore(matchGroup.length * 10);
+            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            dropFloaters();
+        } else {
+            spreadVirus();
+        }
+    }
+
+    function popBalloon(r, c, force = false) {
+       let b = gameEngine.grid[r][c];
+       if(!b) return;
+       
+       if (b.type === 'locked' && b.hp > 1 && !force) {
+           b.hp--;
+           createParticles(r, c, '#cbd5e1'); 
+           return;
+       }
+
+       let pos = getGridPos(r, c);
+       
+       if (b.type === 'normal') {
+           // Transition to falling balloon
+           gameEngine.fallingBalloons.push({
+               x: pos.x, y: pos.y, 
+               vx: (Math.random() - 0.5) * 6, vy: 0, 
+               radius: gameEngine.ballRadius, color: b.color, type: 'normal'
+           });
+       } else {
+           createParticles(r, c, b.color);
+       }
+       
+       gameEngine.grid[r][c] = null;
+    }
+
+    function dropFloaters() {
+        let visited = new Set();
+        let q = [];
+        
+        if(gameEngine.grid[0]) {
+            for(let c=0; c<gameEngine.grid[0].length; c++) {
+                if(gameEngine.grid[0][c]) {
+                    q.push({r:0, c:c});
+                    visited.add(`0,${c}`);
+                }
+            }
+        }
+
+        while(q.length > 0) {
+            let cur = q.shift();
+            let neighbors = getNeighbors(cur.r, cur.c);
+            neighbors.forEach(n => {
+                if(!visited.has(`${n.r},${n.c}`)) {
+                    visited.add(`${n.r},${n.c}`);
+                    q.push({r: n.r, c: n.c});
+                }
+            });
+        }
+
+        let dropped = 0;
+        for(let r=0; r<gameEngine.grid.length; r++) {
+            if(!gameEngine.grid[r]) continue;
+            for(let c=0; c<gameEngine.grid[r].length; c++) {
+                if(gameEngine.grid[r][c] && !visited.has(`${r},${c}`)) {
+                    popBalloon(r, c, true); // this naturally handles converting to falling items
+                    dropped++;
+                }
+            }
+        }
+        if(dropped > 0) addScore(dropped * 20);
+    }
+
+    function spreadVirus() {
+        let viruses = [];
+        for(let r=0; r<gameEngine.grid.length; r++) {
+            if(!gameEngine.grid[r]) continue;
+            for(let c=0; c<gameEngine.grid[r].length; c++) {
+                if(gameEngine.grid[r][c] && gameEngine.grid[r][c].type === 'virus') {
+                    viruses.push({r,c});
+                }
+            }
+        }
+        
+        if (viruses.length > 0 && gameEngine.shotsFired % 3 === 0) {
+           let v = viruses[Math.floor(Math.random() * viruses.length)];
+           let neighbors = getNeighbors(v.r, v.c);
+           let normalN = neighbors.filter(n => gameEngine.grid[n.r][n.c].type === 'normal');
+           if (normalN.length > 0) {
+              let target = normalN[Math.floor(Math.random() * normalN.length)];
+              gameEngine.grid[target.r][target.c].type = 'virus';
+              createParticles(target.r, target.c, '#bef264');
+           }
+        }
+    }
+
+    function createParticles(r, c, color) {
+        let pos = getGridPos(r, c);
+        for(let i=0; i<8; i++) {
+            gameEngine.particles.push({
+                x: pos.x, y: pos.y,
+                vx: (Math.random() - 0.5) * 12,
+                vy: (Math.random() - 0.5) * 12,
+                life: 1, color: color
+            });
+        }
+    }
+
+    function addScore(pts) {
+       gameEngine.score += pts;
+       document.getElementById('ingame-score').innerText = gameEngine.score;
     }
 
     function calculateStars() {
-        if(gameEngine.shotsFired <= gameEngine.currentLevel * 3) return 3;
-        if(gameEngine.shotsFired <= gameEngine.currentLevel * 5) return 2;
+        let ratio = gameEngine.shotsFired / (gameEngine.totalTarget || 1);
+        if (ratio <= 1.3) return 3; 
+        if (ratio <= 2.0) return 2; 
         return 1;
     }
 
-    function endGame(win) {
-      gameEngine.isPlaying = false;
-      let modal = document.getElementById('game-over-modal');
-      modal.classList.remove('hidden');
-      
-      let nextBtn = document.getElementById('end-next-btn');
+    function updateStarsUI(count) {
+        let html = '';
+        for(let i=1; i<=3; i++) {
+            html += `<i class="fa-solid fa-star ${i<=count ? 'text-crypto-gold drop-shadow-[0_0_5px_#ffb800]' : 'text-slate-700'} text-xs transition-colors duration-300"></i>`;
+        }
+        document.getElementById('ingame-stars').innerHTML = html;
+    }
 
-      if (win) {
-          document.getElementById('end-title').innerText = "Level Clear!";
-          
-          let xpReward = LEVEL_REWARDS[gameEngine.currentLevel - 1] || 50;
-          document.getElementById('end-reward').innerText = `+${xpReward} XP`;
-          document.getElementById('end-reward').className = "text-sm font-bold text-emerald-400 mb-6 bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/30";
-          
-          userState.xp += xpReward;
-          userState.totalXp += xpReward;
-          gameState.levelsCompleted[gameEngine.currentLevel - 1] = true;
-          
-          let stars = calculateStars();
-          gameState.stars[gameEngine.currentLevel - 1] = Math.max(gameState.stars[gameEngine.currentLevel - 1], stars);
-          
-          let starsHtml = '';
-          for(let i=0; i<3; i++) {
-              starsHtml += `<i class="fa-solid fa-star text-3xl ${i < stars ? 'text-crypto-gold drop-shadow-[0_0_10px_#ffb800]' : 'text-slate-700'}"></i>`;
-          }
-          document.getElementById('end-stars').innerHTML = starsHtml;
-          nextBtn.style.display = 'block';
+    function checkWinLoss() {
+        let isEmpty = true;
+        let reachedBottom = false;
 
-          checkLevelUp();
-          saveState();
-          updateUI();
-          
-          if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-      } else {
-          document.getElementById('end-title').innerText = "Game Over";
-          document.getElementById('end-reward').innerText = `Try Again!`;
-          document.getElementById('end-reward').className = "text-sm font-bold text-red-400 mb-6 bg-red-500/10 px-4 py-2 rounded-xl border border-red-500/30";
-          document.getElementById('end-stars').innerHTML = '';
-          nextBtn.style.display = 'none';
-          if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-      }
+        for(let r=0; r<gameEngine.grid.length; r++) {
+            if(!gameEngine.grid[r]) continue;
+            for(let c=0; c<gameEngine.grid[r].length; c++) {
+                if(gameEngine.grid[r][c]) {
+                    isEmpty = false;
+                    let pos = getGridPos(r, c);
+                    if (pos.y + gameEngine.ballRadius > gameEngine.limitY) reachedBottom = true;
+                }
+            }
+        }
+
+        if (isEmpty && gameEngine.fallingBalloons.length === 0) {
+            endGame(true);
+        } else if (reachedBottom) {
+            endGame(false);
+        }
+    }
+
+    function endGame(isWin) {
+        gameEngine.isPlaying = false;
+        
+        const modal = document.getElementById('game-over-modal');
+        const title = document.getElementById('end-title');
+        const endStars = document.getElementById('end-stars');
+        const endReward = document.getElementById('end-reward');
+        const nextBtn = document.getElementById('end-next-btn');
+
+        modal.classList.remove('hidden');
+
+        if (isWin) {
+            let stars = calculateStars();
+            let idx = gameEngine.currentLevel - 1;
+            
+            // Check if level was previously completed
+            let alreadyCompleted = gameState.levelsCompleted[idx];
+            let xpEarned = alreadyCompleted ? 0 : (LEVEL_REWARDS[idx] || 100);
+            
+            title.innerText = "Level Clear!";
+            title.className = "text-4xl font-black text-white mb-2 drop-shadow-[0_0_15px_#00f0ff]";
+            
+            if (!alreadyCompleted) {
+                endReward.innerText = `+${xpEarned} XP`;
+                endReward.className = "text-lg font-bold text-emerald-400 mb-8 bg-emerald-500/10 px-6 py-3 rounded-xl border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]";
+                userState.xp += xpEarned;
+                userState.totalXp += xpEarned;
+                gameState.levelsCompleted[idx] = true;
+                checkLevelUp();
+            } else {
+                endReward.innerText = `+0 XP (Replay)`;
+                endReward.className = "text-sm font-bold text-slate-400 mb-8 bg-slate-800 px-4 py-2 rounded-xl border border-slate-700";
+            }
+            
+            endReward.style.display = 'block';
+            
+            let starsHtml = '';
+            for(let i=1; i<=3; i++) {
+                starsHtml += `<i class="fa-solid fa-star text-4xl ${i<=stars ? 'text-crypto-gold drop-shadow-[0_0_15px_#ffb800] animate-[pop_0.5s_ease-out]' : 'text-slate-800'} mx-1" style="animation-delay: ${i*0.2}s"></i>`;
+            }
+            endStars.innerHTML = starsHtml;
+
+            if (stars > gameState.stars[idx]) {
+               gameState.stars[idx] = stars;
+            }
+
+            nextBtn.innerText = idx < 9 ? "Next Level" : "Finish";
+            nextBtn.onclick = () => { idx < 9 ? startGame(gameEngine.currentLevel + 1) : exitGame(); };
+
+            saveState();
+            updateUI();
+            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            
+        } else {
+            title.innerText = "Level Failed";
+            title.className = "text-4xl font-black text-red-400 mb-2 drop-shadow-[0_0_15px_#ef4444]";
+            endStars.innerHTML = '<i class="fa-solid fa-skull-crossbones text-5xl text-slate-600 drop-shadow-lg"></i>';
+            endReward.style.display = 'none';
+            nextBtn.innerText = "Retry";
+            nextBtn.onclick = () => { startGame(gameEngine.currentLevel); };
+            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+        }
     }
 
     function activatePowerup(type) {
-      if(!gameEngine.isPlaying) return;
-      if (gameState.powerups[type] > 0) {
-         if (gameEngine.activePowerup === type) {
-            gameEngine.activePowerup = null; 
-         } else {
-            gameEngine.activePowerup = type;
-            gameState.powerups[type]--;
-            saveState();
-         }
-         updatePowerupUI();
-      } else {
-         showToast("No Powerups", "Watch ads from the menu to get more powerups!", "error");
-      }
+       if (gameState.powerups[type] > 0) {
+           gameEngine.activePowerup = type;
+       } else {
+           watchAdForPowerup(type);
+       }
+    }
+
+    function consumePowerup(type) {
+        gameState.powerups[type]--;
+        gameEngine.activePowerup = null;
+        saveState();
+        updatePowerupUI();
     }
 
     function updatePowerupUI() {
-       document.getElementById('count-rocket').innerText = gameState.powerups.rocket || 0;
-       document.getElementById('count-bomb').innerText = gameState.powerups.bomb || 0;
-       
-       document.getElementById('btn-power-rocket').classList.toggle('ring-2', gameEngine.activePowerup === 'rocket');
-       document.getElementById('btn-power-rocket').classList.toggle('ring-red-400', gameEngine.activePowerup === 'rocket');
-       document.getElementById('btn-power-bomb').classList.toggle('ring-2', gameEngine.activePowerup === 'bomb');
-       document.getElementById('btn-power-bomb').classList.toggle('ring-orange-400', gameEngine.activePowerup === 'bomb');
+        ['rocket', 'bomb'].forEach(type => {
+            let el = document.getElementById(`count-${type}`);
+            let btn = document.getElementById(`btn-power-${type}`);
+            if(el && btn) {
+               let count = gameState.powerups[type];
+               el.innerText = count > 0 ? count : '+';
+               el.className = count > 0 
+                  ? "absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] shadow-lg"
+                  : "absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] animate-pulse shadow-[0_0_10px_#10b981]";
+               
+               if(gameEngine.activePowerup === type) {
+                  btn.classList.add('powerup-active-glow');
+               } else {
+                  btn.classList.remove('powerup-active-glow');
+               }
+            }
+        });
     }
 
-    function updateStarsUI(starsCount) {
-        let starsHtml = '';
-        for(let i=0; i<3; i++) {
-            starsHtml += `<i class="fa-solid fa-star text-xs ${i < starsCount ? 'text-crypto-gold' : 'text-slate-700'}"></i>`;
-        }
-        document.getElementById('ingame-stars').innerHTML = starsHtml;
+    function watchAdForPowerup(type) {
+       if (gameState.adLimits[type] >= 5) {
+          showToast("Limit Reached", "Max 5 powerup ads per day.", "error");
+          return;
+       }
+
+       if (window.Adsgram) {
+          const AdController = window.Adsgram.init({ blockId: "int-34999" });
+          AdController.show().then(() => {
+             gameState.powerups[type]++;
+             gameState.adLimits[type]++;
+             saveState();
+             updatePowerupUI();
+             showToast("Powerup Received!", `You got 1 ${type.toUpperCase()}!`, "success");
+          }).catch(e => {
+             if(userState.xp >= 500) {
+                userState.xp -= 500;
+                userState.totalXp -= 500;
+                gameState.powerups[type]++;
+                saveState(); updateUI(); updatePowerupUI();
+                showToast("Purchased", `Bought 1 ${type.toUpperCase()} for 500 XP.`, "info");
+             } else {
+                showToast("Error", "Not enough XP or Ads unavailable.", "error");
+             }
+          });
+       } else {
+           if(userState.xp >= 500) {
+                userState.xp -= 500;
+                gameState.powerups[type]++;
+                saveState(); updateUI(); updatePowerupUI();
+                showToast("Purchased", `Bought 1 ${type.toUpperCase()} for 500 XP.`, "info");
+             } else {
+                showToast("Error", "Need 500 XP to buy. Ads offline.", "error");
+             }
+       }
     }
 
     function gameLoop() {
-      if(!gameEngine.isPlaying) return;
-      gameEngine.ctx.clearRect(0,0, gameEngine.canvas.width, gameEngine.canvas.height);
+      if (!gameEngine.isPlaying) return;
       
-      updatePhysics();
-      
-      drawGrid();
+      const ctx = gameEngine.ctx;
+      ctx.clearRect(0, 0, gameEngine.canvas.width, gameEngine.canvas.height);
+
       drawContainers();
-      drawFallingBalloons();
-      drawProjectiles();
-      drawAimLine();
+      drawGrid();
       drawLauncher();
-      drawParticles();
       
-      checkWinLoss();
-      
-      if(gameEngine.isPlaying) {
-          requestAnimationFrame(gameLoop);
+      if(gameEngine.projectiles.length > 0 || gameEngine.fallingBalloons.length > 0 || gameEngine.particles.length > 0) {
+         updatePhysics();
+         drawPhysicsObjects();
       }
+
+      gameEngine.projectiles.forEach(p => {
+         drawBalloon(ctx, p.x, p.y, p.radius, p.color, p.type, 1);
+      });
+
+      // Limit line (Danger Zone indicator)
+      ctx.beginPath();
+      ctx.moveTo(0, gameEngine.limitY);
+      ctx.lineTo(gameEngine.canvas.width, gameEngine.limitY);
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([5, 5]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      
+      // Auto check empty grid fix
+      if(gameEngine.projectiles.length === 0 && gameEngine.fallingBalloons.length === 0) {
+         let empty = true;
+         for(let r=0; r<gameEngine.grid.length; r++) {
+             if(!gameEngine.grid[r]) continue;
+             for(let c=0; c<gameEngine.grid[r].length; c++) {
+                 if(gameEngine.grid[r][c]) { empty = false; break; }
+             }
+         }
+         if (empty) checkWinLoss();
+      }
+
+      updatePowerupUI(); 
+      window.requestAnimationFrame(gameLoop);
     }
 
-    initApp();
+    document.addEventListener("DOMContentLoaded", () => {
+      initApp();
+    });
 
   </script>
 </body>

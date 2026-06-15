@@ -31,7 +31,6 @@
           animation: {
             'blob': 'blob 7s infinite',
             'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'float-up': 'floatUp 3s ease-in forwards',
           },
           keyframes: {
             blob: {
@@ -39,10 +38,6 @@
               '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
               '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
               '100%': { transform: 'translate(0px, 0px) scale(1)' },
-            },
-            floatUp: {
-              '0%': { transform: 'translateY(0) scale(1)', opacity: '1' },
-              '100%': { transform: 'translateY(-100vh) scale(1.5)', opacity: '0' }
             }
           }
         }
@@ -60,6 +55,7 @@
       user-select: none;
     }
 
+    /* Background neon orbs */
     .bg-orb-1 {
       position: fixed; top: -10%; left: -10%; width: 50vw; height: 50vw;
       background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
@@ -75,6 +71,7 @@
     img { pointer-events: none; }
     ::-webkit-scrollbar { width: 0px; background: transparent; }
 
+    /* Ultra Modern Glassmorphism */
     .glass-card {
       background: linear-gradient(145deg, rgba(20, 22, 45, 0.6) 0%, rgba(10, 11, 26, 0.8) 100%);
       backdrop-filter: blur(16px);
@@ -92,44 +89,49 @@
     .fade-in { animation: fadeIn 0.3s ease-out forwards; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+    /* Bottom Menu Active State */
     .nav-active { color: #00f0ff !important; transform: translateY(-2px); }
     .nav-active i { filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.6)); }
     .nav-active::before {
       content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-      width: 20px; height: 4px; background: #00f0ff; border-radius: 4px;
+      width: 24px; height: 4px; background: #00f0ff; border-radius: 4px;
       box-shadow: 0 0 12px #00f0ff, 0 0 20px #3b82f6;
     }
 
-    #bottom-nav { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out; }
-    .nav-hidden { transition: none !important; transform: translate(-50%, 150px) !important; opacity: 0 !important; pointer-events: none !important; }
+    #bottom-nav {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out;
+    }
+    .nav-hidden {
+      transition: none !important; 
+      transform: translate(-50%, 150px) !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
 
+    /* 3D Action Button */
     .btn-3d {
       background: linear-gradient(to bottom, #3b82f6, #2563eb);
       border-bottom: 3px solid #1e3a8a;
       transition: all 0.1s;
     }
-    .btn-3d:active { transform: translateY(3px); border-bottom-width: 0px; margin-bottom: 3px; }
+    .btn-3d:active {
+      transform: translateY(3px);
+      border-bottom-width: 0px;
+      margin-bottom: 3px;
+    }
 
     #toast-container {
       position: fixed; top: 1.5rem; left: 50%; transform: translate(-50%, -150%) scale(0.9);
-      width: 90%; max-width: 380px; z-index: 99999;
+      width: 90%; max-width: 380px; z-index: 9999;
       transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
       opacity: 0; pointer-events: none;
     }
-    .toast-show { transform: translate(-50%, 0) scale(1) !important; opacity: 1 !important; pointer-events: auto; }
+    .toast-show { transform: translate(-50%, 0) scale(1) !important; opacity: 1 !important; }
 
+    /* Box Gradients */
     .box-bronze { background: linear-gradient(135deg, rgba(205,127,50,0.1), rgba(139,69,19,0.2)); border: 1px solid rgba(205,127,50,0.4); }
     .box-silver { background: linear-gradient(135deg, rgba(226,232,240,0.1), rgba(148,163,184,0.2)); border: 1px solid rgba(226,232,240,0.4); }
     .box-gold { background: linear-gradient(135deg, rgba(255,184,0,0.15), rgba(217,119,6,0.25)); border: 1px solid rgba(255,184,0,0.5); }
-
-    /* Game Specific Styles */
-    #game-canvas { touch-action: none; background: radial-gradient(circle at bottom, #0a0b1a 0%, #050511 100%); }
-    .level-node { position: relative; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; z-index: 10; transition: transform 0.2s; }
-    .level-node.locked { background: #1e293b; color: #475569; border: 2px solid #334155; }
-    .level-node.unlocked { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; border: 2px solid #00f0ff; box-shadow: 0 0 15px rgba(0,240,255,0.4); cursor: pointer; }
-    .level-node.completed { background: linear-gradient(135deg, #10b981, #059669); color: white; border: 2px solid #34d399; cursor: pointer; }
-    .level-path { position: absolute; background: #334155; width: 4px; z-index: 5; }
-    .level-path.active { background: #00f0ff; box-shadow: 0 0 8px #00f0ff; }
   </style>
 </head>
 <body class="flex flex-col min-h-screen pb-32">
@@ -146,10 +148,17 @@
       </div>
     </div>
     <h2 class="text-white font-black tracking-[0.25em] text-2xl uppercase bg-clip-text text-transparent bg-gradient-to-r from-crypto-glow via-blue-400 to-indigo-500 mb-2 drop-shadow-lg">XPVerse</h2>
+    <div class="flex gap-1 mt-2">
+      <div class="w-1.5 h-1.5 bg-crypto-glow rounded-full animate-bounce"></div>
+      <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+      <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+    </div>
   </div>
 
   <div id="toast-container" class="glass-card rounded-2xl p-4 flex items-center gap-4">
-    <div id="toast-icon" class="w-12 h-12 rounded-full flex shrink-0 items-center justify-center text-xl shadow-inner"></div>
+    <div id="toast-icon" class="w-12 h-12 rounded-full flex shrink-0 items-center justify-center text-xl shadow-inner">
+      <i class="fa-solid fa-bell"></i>
+    </div>
     <div class="flex-1">
       <h4 id="toast-title" class="text-sm font-black text-white tracking-wide">Notification</h4>
       <p id="toast-message" class="text-xs text-slate-300 mt-0.5 leading-tight">Message goes here</p>
@@ -186,8 +195,10 @@
   <main class="flex-1 max-w-md w-full mx-auto p-4 pt-24 relative" id="app-content">
     
     <div id="view-home" class="view-section fade-in space-y-6">
+      
       <div class="relative glass-card rounded-[2rem] p-6 text-center border-t border-t-blue-400/20 overflow-hidden flex flex-col items-center justify-center min-h-[240px]">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/20 rounded-full filter blur-[40px] pointer-events-none animate-pulse-fast"></div>
+        
         <div class="relative z-10 flex flex-col items-center">
           <div class="w-14 h-14 rounded-full bg-blue-900/40 border border-blue-400/30 flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
              <i class="fa-solid fa-gem text-2xl text-crypto-glow drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]"></i>
@@ -195,6 +206,7 @@
           <p class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-1 opacity-80">Balance</p>
           <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-blue-400 tracking-tighter drop-shadow-2xl" id="main-xp-display">0 XP</h1>
         </div>
+        
         <div class="w-full mt-6 grid grid-cols-2 gap-3">
           <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md">
             <div class="bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/20"><i class="fa-solid fa-clapperboard text-blue-400"></i></div>
@@ -212,14 +224,257 @@
           </div>
         </div>
       </div>
+
       <button onclick="watchAd()" id="watch-ad-btn" class="w-full py-4 rounded-2xl text-white font-black text-sm tracking-[0.15em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(59,130,246,0.3)] btn-3d relative overflow-hidden group">
         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
         <i class="fa-solid fa-play bg-white/20 p-2 rounded-full text-[10px]"></i> 
         <span>Watch Ad <span class="text-cyan-200">+10 XP</span></span>
       </button>
+
       <div class="glass-card rounded-xl p-3 flex justify-between items-center">
-        <div class="flex items-center gap-2 text-slate-400 text-xs"><i class="fa-solid fa-rotate text-blue-400"></i> Resets in:</div>
+        <div class="flex items-center gap-2 text-slate-400 text-xs">
+          <i class="fa-solid fa-rotate text-blue-400"></i> Resets in:
+        </div>
         <span class="text-white font-mono font-bold tracking-widest" id="reset-timer">--:--:--</span>
+      </div>
+    </div>
+
+    <!-- NEW GAMES TAB SECTION -->
+    <div id="view-games" class="view-section hidden fade-in space-y-6 pb-4">
+      <div id="games-hub-screen" class="space-y-6">
+        <div class="text-center pt-2">
+          <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">XPVerse Arcade</h2>
+          <p class="text-xs text-crypto-glow mt-1 uppercase tracking-widest font-bold">Play Premium Games & Maximize Rewards</p>
+        </div>
+
+        <!-- Balloon Blast Adventure Card -->
+        <div onclick="launchBalloonBlast()" class="glass-card rounded-3xl p-5 border-t border-t-cyan-400/40 relative overflow-hidden group cursor-pointer shadow-[0_0_25px_rgba(0,240,255,0.15)] transition-all duration-300 hover:scale-[1.02] active:scale-95">
+          <div class="absolute right-0 bottom-0 top-0 w-1/3 bg-gradient-to-l from-cyan-500/20 to-transparent opacity-60 pointer-events-none"></div>
+          <div class="flex items-center gap-4 relative z-10">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white text-3xl shadow-[0_0_20px_rgba(0,240,255,0.4)]">
+              <i class="fa-solid fa-circle-dot animate-bounce"></i>
+            </div>
+            <div class="flex-1">
+              <span class="text-[9px] font-black bg-cyan-500/20 text-crypto-glow border border-cyan-400/30 px-2 py-0.5 rounded-full uppercase tracking-wider">Premium Mode</span>
+              <h3 class="text-xl font-black text-white tracking-wide mt-1">Balloon Blast Adventure</h3>
+              <p class="text-xs text-slate-400 mt-0.5">Tactical level-based launcher game with unique color grids & huge XP rewards.</p>
+            </div>
+            <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-crypto-glow transition-colors pl-1"></i>
+          </div>
+        </div>
+
+        <!-- Placeholder Cards -->
+        <div>
+          <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">Coming Soon</h3>
+          <div class="space-y-3 opacity-60">
+            <div class="glass-card rounded-2xl p-4 flex justify-between items-center border border-dashed border-slate-800">
+              <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-600 text-lg">
+                  <i class="fa-solid fa-rocket"></i>
+                </div>
+                <div>
+                  <h4 class="text-sm font-black text-slate-400">Space Miner Evolution</h4>
+                  <p class="text-[10px] text-slate-500">Resource deployment loop simulation</p>
+                </div>
+              </div>
+              <span class="text-[9px] font-bold bg-slate-800 text-slate-500 px-2 py-1 rounded-lg uppercase tracking-wider">Locked</span>
+            </div>
+            <div class="glass-card rounded-2xl p-4 flex justify-between items-center border border-dashed border-slate-800">
+              <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-600 text-lg">
+                  <i class="fa-solid fa-brain"></i>
+                </div>
+                <div>
+                  <h4 class="text-sm font-black text-slate-400">Crypto Matrix Solver</h4>
+                  <p class="text-[10px] text-slate-500">Brain teasers & puzzle block chains</p>
+                </div>
+              </div>
+              <span class="text-[9px] font-bold bg-slate-800 text-slate-500 px-2 py-1 rounded-lg uppercase tracking-wider">Locked</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PREMIUM OVERLAY: GAME PORTAL CONTAINER -->
+      <div id="balloon-blast-portal" class="hidden absolute inset-0 z-[1000] bg-[#050511] min-h-screen flex flex-col fade-in">
+        
+        <!-- Splash Layer Overlay inside game portal -->
+        <div id="game-splash" class="absolute inset-0 bg-[#050511] z-[2000] flex flex-col items-center justify-center transition-opacity duration-500">
+          <div class="text-center space-y-4">
+            <div class="relative w-24 h-24 mx-auto flex items-center justify-center">
+              <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-cyan-400 to-indigo-600 animate-spin blur-md opacity-60"></div>
+              <i class="fa-solid fa-circle-dot text-crypto-glow text-5xl relative z-10 drop-shadow-[0_0_15px_#00f0ff]"></i>
+            </div>
+            <div>
+              <h2 class="text-3xl font-black text-white tracking-[0.1em] uppercase">XPVerse Studios</h2>
+              <p class="text-xs font-bold text-cyan-400 uppercase tracking-[0.3em] mt-1">Balloon Blast Adventure</p>
+            </div>
+            <div class="w-48 h-1 bg-slate-900 rounded-full mx-auto overflow-hidden relative border border-slate-800">
+              <div class="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-cyan-400 to-indigo-500 rounded-full animate-[shimmer_2s_infinite]" style="width: 100%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BALLOON BLAST SUB-VIEW 1: LEVEL ROADMAP MAP -->
+        <div id="game-map-screen" class="space-y-6 flex-1 flex flex-col p-4 pt-4 pb-20">
+          <div class="flex justify-between items-center">
+            <button onclick="exitToGamesHub()" class="bg-slate-900 border border-slate-800 text-slate-300 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1">
+              <i class="fa-solid fa-arrow-left"></i> Hub
+            </button>
+            <div class="flex items-center gap-3">
+              <div class="glass-button px-3 py-1 rounded-xl flex items-center gap-1.5">
+                <i class="fa-solid fa-heart text-red-500 drop-shadow-[0_0_5px_#ef4444]"></i>
+                <span id="game-lives-text" class="text-white font-black text-xs">5</span>
+              </div>
+              <button onclick="openRecoveryModal()" class="bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-black text-[10px] uppercase tracking-wider px-2.5 py-1.5 rounded-xl shadow-md">
+                + Life
+              </button>
+            </div>
+          </div>
+
+          <div class="text-center">
+            <h3 class="text-2xl font-black text-white tracking-wide">Daily Level Progression</h3>
+            <p id="game-difficulty-label" class="text-[10px] text-cyan-400 font-bold uppercase tracking-widest mt-0.5">10 Fresh Layouts Active Today</p>
+          </div>
+
+          <!-- Interactive Grid Roadmap Mapping -->
+          <div class="flex-1 grid grid-cols-3 gap-4 items-center justify-center py-2" id="level-roadmap-grid">
+            <!-- Programmatically Built Map Grid Cells -->
+          </div>
+
+          <!-- Lives Recovery Inline Modal / Panel overlay -->
+          <div id="recovery-modal" class="hidden glass-card rounded-2xl p-4 border border-red-500/30 text-center space-y-3">
+            <h4 class="text-sm font-black text-white uppercase tracking-wide">Restore Core Lives</h4>
+            <p class="text-xs text-slate-300">Lose a game layout? Recharge life stats immediately to sustain progression paths.</p>
+            <div class="grid grid-cols-2 gap-3">
+              <button onclick="recoverLifeWithAd()" class="bg-blue-600 hover:bg-blue-700 text-white font-black text-[11px] py-2.5 rounded-xl uppercase tracking-wider flex items-center justify-center gap-1 shadow-md">
+                <i class="fa-solid fa-play"></i> Watch Ad (+1)
+              </button>
+              <button onclick="recoverLifeWithXP()" class="bg-amber-600 hover:bg-amber-700 text-white font-black text-[11px] py-2.5 rounded-xl uppercase tracking-wider flex items-center justify-center gap-1 shadow-md">
+                <i class="fa-solid fa-bolt"></i> 100 XP (+1)
+              </button>
+            </div>
+            <button onclick="closeRecoveryModal()" class="text-slate-500 font-bold text-[10px] uppercase tracking-wider pt-1 block mx-auto">Cancel</button>
+          </div>
+        </div>
+
+        <!-- BALLOON BLAST SUB-VIEW 2: ACTIVE GAME SCREEN -->
+        <div id="game-active-play-screen" class="hidden flex-1 flex flex-col p-4 relative overflow-hidden">
+          
+          <!-- Top Indicators Row -->
+          <div class="flex justify-between items-center bg-[#0a0b1a]/80 backdrop-blur-md p-3 rounded-2xl border border-slate-800 z-10">
+            <div class="text-left">
+              <p id="active-level-title" class="text-xs font-black text-white uppercase tracking-wide">Level 1</p>
+              <span id="active-difficulty-tag" class="text-[9px] font-bold uppercase tracking-widest text-emerald-400">Easy</span>
+            </div>
+            <div class="flex gap-2">
+              <div class="bg-slate-900 border border-slate-800 px-2.5 py-1 rounded-xl text-center">
+                <p class="text-[8px] text-slate-500 font-bold uppercase">Moves Left</p>
+                <p id="active-moves-counter" class="text-xs font-black text-cyan-400">20</p>
+              </div>
+              <div class="bg-slate-900 border border-slate-800 px-2.5 py-1 rounded-xl text-center">
+                <p class="text-[8px] text-slate-500 font-bold uppercase">Score</p>
+                <p id="active-score-counter" class="text-xs font-black text-amber-400">0</p>
+              </div>
+            </div>
+            <button onclick="quitActiveMatch()" class="text-slate-400 hover:text-red-400 p-1 transition-colors">
+              <i class="fa-solid fa-circle-xmark text-lg"></i>
+            </button>
+          </div>
+
+          <!-- Central Canvas Area Wrapper Grid -->
+          <div class="flex-1 flex items-center justify-center py-2 relative">
+            <canvas id="balloon-game-canvas" class="w-full max-w-[360px] aspect-[3/4] bg-[#070816] rounded-2xl border border-slate-800 shadow-2xl relative"></canvas>
+            
+            <!-- Mid-screen absolute Overlay Popups for Combo Chains and Multipliers -->
+            <div id="game-combo-popup" class="absolute pointer-events-none scale-0 transition-transform duration-300 font-black text-2xl text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 uppercase tracking-widest z-20 drop-shadow-[0_0_10px_rgba(251,146,60,0.6)]">
+              Combo x2!
+            </div>
+          </div>
+
+          <!-- Target Powerups Drawer Selector tray -->
+          <div class="grid grid-cols-4 gap-2 bg-[#0a0b1a]/80 backdrop-blur-md p-2 rounded-xl border border-slate-800 z-10 mb-2">
+            <button onclick="triggerPowerup('rocket')" id="powerup-btn-rocket" class="bg-slate-900 border border-slate-800 p-1.5 rounded-lg flex flex-col items-center relative group">
+              <i class="fa-solid fa-rocket text-blue-400 text-xs"></i>
+              <span class="text-[8px] text-slate-400 font-bold mt-0.5">Rocket</span>
+              <span class="absolute -top-1 -right-1 bg-blue-600 text-white font-black text-[7px] px-1 rounded-full border border-slate-900" id="powerup-count-rocket">2</span>
+            </button>
+            <button onclick="triggerPowerup('bomb')" id="powerup-btn-bomb" class="bg-slate-900 border border-slate-800 p-1.5 rounded-lg flex flex-col items-center relative group">
+              <i class="fa-solid fa-bomb text-red-400 text-xs"></i>
+              <span class="text-[8px] text-slate-400 font-bold mt-0.5">Mega Bomb</span>
+              <span class="absolute -top-1 -right-1 bg-red-600 text-white font-black text-[7px] px-1 rounded-full border border-slate-900" id="powerup-count-bomb">2</span>
+            </button>
+            <button onclick="triggerPowerup('color')" id="powerup-btn-color" class="bg-slate-900 border border-slate-800 p-1.5 rounded-lg flex flex-col items-center relative group">
+              <i class="fa-solid fa-palette text-amber-400 text-xs"></i>
+              <span class="text-[8px] text-slate-400 font-bold mt-0.5">Color Blast</span>
+              <span class="absolute -top-1 -right-1 bg-amber-600 text-white font-black text-[7px] px-1 rounded-full border border-slate-900" id="powerup-count-color">2</span>
+            </button>
+            <button onclick="triggerPowerup('lightning')" id="powerup-btn-lightning" class="bg-slate-900 border border-slate-800 p-1.5 rounded-lg flex flex-col items-center relative group">
+              <i class="fa-solid fa-bolt text-purple-400 text-xs"></i>
+              <span class="text-[8px] text-slate-400 font-bold mt-0.5">Lightning</span>
+              <span class="absolute -top-1 -right-1 bg-purple-600 text-white font-black text-[7px] px-1 rounded-full border border-slate-900" id="powerup-count-lightning">2</span>
+            </button>
+          </div>
+
+          <!-- Bottom Queued Launcher Operations Control Block -->
+          <div class="bg-[#0a0b1a]/90 backdrop-blur-md p-3 rounded-2xl border border-slate-800 flex justify-between items-center gap-4 z-10">
+            <div class="flex items-center gap-2">
+              <div class="w-10 h-10 rounded-full border-2 border-dashed border-slate-700 flex items-center justify-center relative bg-slate-900/40">
+                <div id="launcher-next-preview" class="w-6 h-6 rounded-full shadow-inner"></div>
+                <span class="text-[7px] font-black tracking-tighter text-slate-500 uppercase absolute -bottom-1">Next</span>
+              </div>
+              <button onclick="swapLauncherBalloons()" class="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white transition-colors">
+                <i class="fa-solid fa-repeat text-xs"></i>
+              </button>
+            </div>
+            <div class="flex-1 text-center font-bold text-[10px] text-slate-400">
+              <i class="fa-solid fa-arrows-to-dot text-cyan-400 mr-1 animate-pulse"></i> Tap canvas zone overhead to aim and target launcher color matches.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- BALLOON BLAST SUB-VIEW 3: GAME OVER/VICTORY RESOLUTION PANEL -->
+        <div id="game-outcome-overlay" class="hidden absolute inset-0 bg-[#050511]/95 z-[2500] backdrop-blur-md flex flex-col items-center justify-center p-6 text-center fade-in">
+          <div class="glass-card rounded-[2.5rem] p-6 max-w-sm w-full border-t border-t-blue-400/20 space-y-5 flex flex-col items-center">
+            
+            <div id="outcome-icon-frame" class="w-16 h-16 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-3xl shadow-lg">
+              <i class="fa-solid fa-trophy text-amber-400"></i>
+            </div>
+            
+            <div>
+              <h3 id="outcome-heading" class="text-3xl font-black tracking-tight text-white">Victory!</h3>
+              <p id="outcome-subtext" class="text-xs text-crypto-glow uppercase tracking-wider font-bold mt-0.5">Level Completed Successfully</p>
+            </div>
+
+            <div class="flex gap-1 text-2xl text-amber-400 drop-shadow-[0_0_8px_#ffb800]" id="outcome-stars-frame">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+
+            <div class="w-full bg-[#050511]/60 rounded-2xl p-4 border border-slate-800 text-left space-y-2">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-slate-400 font-medium">Final Match Score:</span>
+                <span id="outcome-score-val" class="font-black text-white">1,250</span>
+              </div>
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-slate-400 font-medium">Accuracy Rating:</span>
+                <span id="outcome-accuracy-val" class="font-black text-cyan-400">92%</span>
+              </div>
+              <hr class="border-slate-800">
+              <div class="flex justify-between items-center text-sm">
+                <span class="text-white font-bold">Reward Allocated:</span>
+                <span id="outcome-xp-val" class="font-black text-emerald-400 animate-pulse">+50 XP</span>
+              </div>
+            </div>
+
+            <button onclick="closeOutcomePanel()" class="w-full py-3 rounded-xl text-white font-black text-xs tracking-wider uppercase bg-gradient-to-r from-blue-600 to-cyan-500 shadow-md transform active:scale-95 transition-transform">
+              Continue
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -228,23 +483,31 @@
         <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Tasks</h2>
         <p class="text-xs text-crypto-glow mt-1 uppercase tracking-widest font-bold">Complete to Earn XP</p>
       </div>
+      
       <div class="glass-card rounded-3xl p-5 relative overflow-hidden border-t-2 border-t-blue-500/30">
+        <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl"></div>
         <h3 class="text-xs font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
           <i class="fa-solid fa-calendar-check text-blue-400 text-lg"></i> 7-Day Streak
         </h3>
-        <div class="relative flex justify-between items-center" id="streak-tracker-container"></div>
+        
+        <div class="relative flex justify-between items-center" id="streak-tracker-container">
+          </div>
       </div>
+
       <div>
         <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">Daily Missions</h3>
-        <div id="missions-container" class="space-y-3"></div>
+        <div id="missions-container" class="space-y-3">
+          </div>
       </div>
     </div>
 
+    <!-- UPDATED PREMIUM BOX PRICES LAYOUT DISPLAY -->
     <div id="view-boxes" class="view-section hidden fade-in space-y-5 pb-4">
       <div class="text-center pt-2 mb-6">
         <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Boxes</h2>
         <p class="text-xs text-amber-400 mt-1 uppercase tracking-widest font-bold">Try Your Luck, Win Dollars</p>
       </div>
+      
       <div class="box-bronze glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
         <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-crypto-bronze/10 rounded-full blur-2xl"></div>
         <div class="flex items-center gap-4 relative z-10">
@@ -261,6 +524,7 @@
         </div>
         <button onclick="openBox('bronze')" class="relative z-10 bg-gradient-to-b from-orange-600 to-orange-800 text-white shadow-[0_4px_15px_rgba(205,127,50,0.4)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
       </div>
+
       <div class="box-silver glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
         <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-crypto-silver/10 rounded-full blur-2xl"></div>
         <div class="flex items-center gap-4 relative z-10">
@@ -277,6 +541,7 @@
         </div>
         <button onclick="openBox('silver')" class="relative z-10 bg-gradient-to-b from-slate-400 to-slate-600 text-crypto-dark shadow-[0_4px_15px_rgba(226,232,240,0.3)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
       </div>
+
       <div class="box-gold glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center border border-crypto-gold shadow-[0_0_20px_rgba(255,184,0,0.15)] transition-transform hover:scale-[1.02]">
         <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-crypto-gold/20 rounded-full blur-xl animate-pulse"></div>
         <div class="flex items-center gap-4 relative z-10">
@@ -296,52 +561,68 @@
     </div>
 
     <div id="view-withdraw" class="view-section hidden fade-in space-y-6">
+      
       <div class="glass-card rounded-[2rem] p-6 text-center border-t-2 border-emerald-500/40 bg-gradient-to-b from-emerald-900/30 to-[#050511]">
-        <div class="w-14 h-14 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-3 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]"><i class="fa-solid fa-wallet text-xl text-emerald-400"></i></div>
+        <div class="w-14 h-14 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-3 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+          <i class="fa-solid fa-wallet text-xl text-emerald-400"></i>
+        </div>
         <p class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-1 opacity-80">Withdrawal Balance</p>
         <h1 class="text-5xl font-black text-white tracking-tighter mb-3">$<span id="withdraw-balance-display">0.00</span></h1>
         <div class="inline-block bg-[#050511]/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-700/50">
           <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> Minimum: $5.00</p>
         </div>
       </div>
+
       <div class="glass-card rounded-[1.5rem] p-5 space-y-4 border-slate-800">
         <div>
           <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">TON Wallet Address</label>
           <div class="relative group">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="w-5 h-5 opacity-70" alt="TON"></div>
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="w-5 h-5 opacity-70 group-focus-within:opacity-100 transition-opacity" alt="TON">
+            </div>
             <input type="text" id="wallet-address" placeholder="UQ..." class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-sm font-medium text-white focus:outline-none focus:border-blue-500 transition-colors placeholder-slate-600 shadow-inner">
           </div>
         </div>
+        
         <div>
           <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">Amount (USD)</label>
           <div class="relative group">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i class="fa-solid fa-dollar-sign text-slate-500 text-lg"></i></div>
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <i class="fa-solid fa-dollar-sign text-slate-500 group-focus-within:text-emerald-400 transition-colors text-lg"></i>
+            </div>
             <input type="number" id="withdraw-amount" placeholder="5.00" min="5" step="0.5" class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-sm font-bold text-emerald-400 focus:outline-none focus:border-emerald-500 transition-colors placeholder-slate-600 shadow-inner">
           </div>
         </div>
+
         <button onclick="requestWithdrawal()" id="withdraw-btn" class="w-full py-3.5 mt-2 bg-gradient-to-r from-emerald-600 to-teal-500 hover:brightness-110 active:scale-95 transition-all text-white font-black rounded-xl text-sm uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-[0_10px_20px_rgba(16,185,129,0.3)]">
           <i class="fa-solid fa-money-bill-transfer"></i> Request Withdrawal
         </button>
       </div>
+
       <div>
         <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">History</h3>
-        <div id="withdraw-history-container" class="space-y-3"></div>
+        <div id="withdraw-history-container" class="space-y-3">
+          </div>
       </div>
     </div>
 
     <div id="view-profile" class="view-section hidden fade-in space-y-6">
+      
       <div class="glass-card rounded-[2.5rem] p-1 text-center relative overflow-hidden border border-slate-700/50">
         <div class="h-32 bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 rounded-t-[2.3rem] relative overflow-hidden">
            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
            <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 w-full h-20 bg-gradient-to-t from-[#0a0b1a] to-transparent"></div>
         </div>
+        
         <div class="px-6 pb-8 -mt-16 relative z-10">
           <div class="relative w-24 h-24 mx-auto rounded-full bg-gradient-to-b from-crypto-glow to-blue-600 p-1 mb-3 shadow-[0_0_30px_rgba(0,240,255,0.4)]">
              <img id="profile-photo-large" src="https://via.placeholder.com/150" class="w-full h-full rounded-full border-4 border-[#0a0b1a] object-cover">
              <div class="absolute -bottom-2 -right-2 bg-gradient-to-br from-[#0a0b1a] to-blue-900 border-2 border-crypto-glow text-white w-8 h-8 rounded-full flex items-center justify-center font-black text-xs shadow-[0_0_15px_#00f0ff]" id="profile-badge-level">1</div>
           </div>
+          
           <h2 id="profile-name" class="text-2xl font-black text-white tracking-tight">User</h2>
           <p id="profile-tgid" class="text-[10px] text-blue-400 font-mono mt-1 tracking-widest bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20">ID: 00000000</p>
+          
           <div class="mt-6">
             <div class="flex justify-between items-end mb-1.5 px-1">
                <span class="text-[10px] font-black text-crypto-glow uppercase tracking-wider">Level Progress</span>
@@ -358,144 +639,49 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <div id="view-games" class="view-section hidden fade-in space-y-6 pb-4">
-      <div class="text-center pt-2">
-        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Games</h2>
-        <p class="text-xs text-crypto-glow mt-1 uppercase tracking-widest font-bold">Premium Experiences</p>
-      </div>
-
-      <div class="glass-card rounded-[2rem] p-1 relative overflow-hidden border border-blue-500/40 shadow-[0_0_20px_rgba(59,130,246,0.2)] group transition-transform hover:scale-[1.02]">
-        <div class="h-32 bg-gradient-to-tr from-purple-900 via-blue-900 to-[#0a0b1a] rounded-t-[1.8rem] relative overflow-hidden flex items-center justify-center">
-           <div class="absolute inset-0 opacity-30 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500 via-transparent to-transparent"></div>
-           <i class="fa-solid fa-bowling-ball text-5xl text-crypto-glow drop-shadow-[0_0_15px_#00f0ff] z-10 animate-bounce"></i>
-           <div class="absolute bottom-0 w-full h-12 bg-gradient-to-t from-[#0a0b1a] to-transparent"></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-blue-500/30">
+          <div class="w-10 h-10 mx-auto bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center mb-2 text-lg shadow-[0_0_15px_rgba(59,130,246,0.2)inset]"><i class="fa-solid fa-chart-line"></i></div>
+          <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Total Earned</p>
+          <p id="profile-total-xp" class="text-xl font-black text-white">0</p>
         </div>
-        <div class="p-5 relative z-10 bg-[#0a0b1a] rounded-b-[1.8rem]">
-          <h3 class="text-xl font-black text-white tracking-wide">Balloon Blast Adventure</h3>
-          <p class="text-[11px] text-slate-400 mt-1 font-medium">Match colors, use powerups, and clear daily levels to earn huge XP rewards!</p>
-          <div class="flex justify-between items-center mt-4">
-            <span class="text-[10px] font-black bg-blue-500/20 text-blue-400 px-3 py-1 rounded-lg border border-blue-500/30">10 Daily Levels</span>
-            <button onclick="launchBalloonGame()" class="bg-gradient-to-r from-blue-600 to-crypto-glow text-white px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider shadow-[0_0_15px_rgba(0,240,255,0.4)] active:scale-95 transition-all">Play Now</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="glass-card rounded-[2rem] p-5 relative overflow-hidden border border-slate-700/50 opacity-70">
-        <div class="flex items-center gap-4">
-          <div class="w-14 h-14 rounded-2xl bg-slate-800/80 border border-slate-600 flex items-center justify-center">
-            <i class="fa-solid fa-car-side text-2xl text-slate-500"></i>
-          </div>
-          <div>
-            <h3 class="text-lg font-black text-slate-300 tracking-wide">Crypto Racer</h3>
-            <span class="text-[10px] font-black bg-slate-800 text-slate-400 px-2 py-0.5 rounded border border-slate-600 uppercase tracking-widest mt-1 inline-block">Coming Soon</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="view-game-balloon" class="fixed inset-0 z-[99999] bg-[#050511] hidden flex-col">
-      <div id="bb-splash" class="absolute inset-0 z-50 bg-[#050511] flex flex-col items-center justify-center transition-opacity duration-500">
-        <i class="fa-solid fa-bowling-ball text-6xl text-crypto-glow mb-4 animate-pulse drop-shadow-[0_0_20px_#00f0ff]"></i>
-        <h1 class="text-3xl font-black text-white tracking-tighter uppercase mb-1">Balloon Blast</h1>
-        <p class="text-[10px] font-bold text-slate-500 tracking-[0.3em] uppercase">XPVerse Studios</p>
-        <div class="w-32 h-1 bg-slate-800 rounded-full mt-8 overflow-hidden">
-          <div class="h-full bg-crypto-glow animate-[pulse_1s_ease-in-out_infinite] w-1/2 rounded-full"></div>
-        </div>
-      </div>
-
-      <div class="p-4 flex justify-between items-center glass-card border-b border-slate-800 rounded-none relative z-20">
-        <button onclick="exitBalloonGame()" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 active:scale-90 transition-transform">
-          <i class="fa-solid fa-chevron-left"></i>
-        </button>
-        <div class="flex items-center gap-4">
-          <div class="flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/30 px-3 py-1.5 rounded-full">
-            <i class="fa-solid fa-star text-amber-400 text-xs"></i>
-            <span id="bb-total-stars" class="text-amber-400 font-black text-sm">0</span>
-          </div>
-          <div class="flex items-center gap-1.5 bg-red-500/10 border border-red-500/30 px-3 py-1.5 rounded-full" onclick="promptExtraLife()">
-            <i class="fa-solid fa-heart text-red-500 text-xs animate-pulse"></i>
-            <span id="bb-lives" class="text-red-400 font-black text-sm">5</span>
-            <i class="fa-solid fa-plus text-slate-400 text-[10px] ml-1"></i>
-          </div>
-        </div>
-      </div>
-
-      <div id="bb-map-view" class="flex-1 overflow-y-auto relative p-8 flex flex-col items-center pb-20">
-        <h2 class="text-xl font-black text-white tracking-widest uppercase mb-8 drop-shadow-md">Daily Campaign</h2>
-        <div id="bb-level-container" class="relative w-full max-w-[300px] flex flex-col items-center gap-10">
-          </div>
-      </div>
-
-      <div id="bb-play-view" class="flex-1 relative hidden bg-[#0a0b1a]">
-        <div class="absolute top-4 left-4 z-10 flex gap-2">
-          <div class="bg-blue-500/20 border border-blue-500/40 px-3 py-1 rounded-lg text-white font-black text-xs shadow-md">
-            Lvl <span id="bb-current-level">1</span>
-          </div>
-          <div class="bg-slate-800 border border-slate-600 px-3 py-1 rounded-lg text-slate-300 font-bold text-xs shadow-md">
-            Score: <span id="bb-score">0</span>
-          </div>
-        </div>
-        <div class="absolute top-4 right-4 z-10 bg-crypto-glow/20 border border-crypto-glow/40 px-3 py-1 rounded-lg text-crypto-glow font-black text-xs shadow-[0_0_10px_rgba(0,240,255,0.3)]">
-          <i class="fa-solid fa-bowling-ball mr-1"></i> <span id="bb-shots-left">20</span>
-        </div>
-        
-        <canvas id="game-canvas" class="w-full h-full block"></canvas>
-
-        <div class="absolute bottom-6 left-0 w-full px-6 flex justify-between items-end pointer-events-none">
-          <div class="flex gap-2 pointer-events-auto">
-             <button class="w-12 h-12 rounded-full bg-slate-800/80 border border-slate-600 text-slate-400 flex items-center justify-center active:scale-90" onclick="alert('Powerups coming soon! (Requires XP)')"><i class="fa-solid fa-rocket"></i></button>
-             <button class="w-12 h-12 rounded-full bg-slate-800/80 border border-slate-600 text-slate-400 flex items-center justify-center active:scale-90" onclick="alert('Powerups coming soon! (Requires XP)')"><i class="fa-solid fa-bomb"></i></button>
-          </div>
-          <div class="pointer-events-auto bg-slate-800/80 border border-slate-600 px-4 py-2 rounded-full text-xs font-bold text-white shadow-lg flex items-center gap-2 active:scale-95" onclick="bbGame.swapBalloons()">
-            <i class="fa-solid fa-rotate text-crypto-glow"></i> Swap
-          </div>
-        </div>
-        
-        <div id="bb-end-modal" class="absolute inset-0 bg-[#050511]/90 backdrop-blur-sm z-50 flex items-center justify-center hidden">
-          <div class="glass-card p-6 rounded-3xl max-w-[300px] w-full text-center transform transition-transform scale-95 border-t-2">
-            <h2 id="bb-end-title" class="text-3xl font-black text-white mb-2 tracking-tight">Victory!</h2>
-            <div id="bb-end-stars" class="flex justify-center gap-2 mb-4 text-3xl text-slate-700">
-               <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-            </div>
-            <p id="bb-end-reward" class="text-sm font-bold text-crypto-glow bg-blue-500/10 inline-block px-4 py-1.5 rounded-full border border-blue-500/30 mb-6">+50 XP</p>
-            <div class="flex gap-3">
-              <button onclick="closeBbModal()" class="flex-1 py-3 rounded-xl bg-slate-800 text-white font-bold text-xs uppercase tracking-wider">Map</button>
-              <button id="bb-end-action-btn" onclick="bbNextAction()" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-crypto-glow text-white font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(0,240,255,0.4)]">Next</button>
-            </div>
-          </div>
+        <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-amber-500/30">
+          <div class="w-10 h-10 mx-auto bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center mb-2 text-lg shadow-[0_0_15px_rgba(245,158,11,0.2)inset]"><i class="fa-solid fa-box-open"></i></div>
+          <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Boxes Opened</p>
+          <p id="profile-boxes" class="text-xl font-black text-white">0</p>
         </div>
       </div>
     </div>
 
   </main>
 
-  <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] max-w-[420px] glass-card rounded-2xl pb-safe z-40 shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-slate-700/50 backdrop-blur-xl">
+  <!-- UPDATED NAV TAB SYSTEM EMBEDDING GAMES BUTTON -->
+  <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] glass-card rounded-2xl pb-safe z-50 shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-slate-700/50 backdrop-blur-xl">
     <div class="flex justify-between items-center px-2 py-2.5 relative">
-      <button onclick="switchTab('home')" class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="home">
-        <i class="fa-solid fa-house text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Home</span>
+      <button onclick="switchTab('home')" class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1 w-12 transition-all duration-300 relative group" data-target="home">
+        <i class="fa-solid fa-house text-base transition-transform group-active:scale-90"></i>
+        <span class="text-[7px] font-black uppercase tracking-widest">Home</span>
       </button>
-      <button onclick="switchTab('tasks')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="tasks">
-        <i class="fa-solid fa-list-check text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Tasks</span>
+      <button onclick="switchTab('games')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-12 transition-all duration-300 relative group" data-target="games">
+        <i class="fa-solid fa-gamepad text-base transition-transform group-active:scale-90"></i>
+        <span class="text-[7px] font-black uppercase tracking-widest">Games</span>
       </button>
-      <button onclick="switchTab('boxes')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="boxes">
-        <i class="fa-solid fa-box-open text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Box</span>
+      <button onclick="switchTab('tasks')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-12 transition-all duration-300 relative group" data-target="tasks">
+        <i class="fa-solid fa-list-check text-base transition-transform group-active:scale-90"></i>
+        <span class="text-[7px] font-black uppercase tracking-widest">Tasks</span>
       </button>
-      <button onclick="switchTab('games')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="games">
-        <i class="fa-solid fa-gamepad text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Games</span>
+      <button onclick="switchTab('boxes')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-12 transition-all duration-300 relative group" data-target="boxes">
+        <i class="fa-solid fa-box-open text-base transition-transform group-active:scale-90"></i>
+        <span class="text-[7px] font-black uppercase tracking-widest">Box</span>
       </button>
-      <button onclick="switchTab('withdraw')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="withdraw">
-        <i class="fa-solid fa-wallet text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Cash</span>
+      <button onclick="switchTab('withdraw')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-12 transition-all duration-300 relative group" data-target="withdraw">
+        <i class="fa-solid fa-wallet text-base transition-transform group-active:scale-90"></i>
+        <span class="text-[7px] font-black uppercase tracking-widest">Withdraw</span>
       </button>
-      <button onclick="switchTab('profile')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="profile">
-        <i class="fa-solid fa-user-astronaut text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Profile</span>
+      <button onclick="switchTab('profile')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-12 transition-all duration-300 relative group" data-target="profile">
+        <i class="fa-solid fa-user-astronaut text-base transition-transform group-active:scale-90"></i>
+        <span class="text-[7px] font-black uppercase tracking-widest">Profile</span>
       </button>
     </div>
   </nav>
@@ -522,9 +708,13 @@
       streak: 1,
       lastResetDay: "",
       withdrawHistory: [],
-      bbLives: 5,
-      bbLevelsCompleted: 0,
-      bbStars: 0
+      // Balloon Blast State Expansion
+      balloonBlastGame: {
+        lives: 5,
+        unlockedLevel: 1,
+        stars: {},
+        powerups: { rocket: 2, bomb: 2, color: 2, lightning: 2 }
+      }
     };
 
     const getDefaultMissions = () => ({
@@ -542,28 +732,37 @@
     let accurateTimeOffset = null;
     let headerTimeout; 
 
-    // Box Costs exactly as requested
-    const boxCosts = { bronze: 10000, silver: 50000, gold: 100000 };
-
     const bottomNavElement = document.getElementById('bottom-nav');
     let maxViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
     function handleKeyboardState() {
       let currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      if (currentHeight > maxViewportHeight) maxViewportHeight = currentHeight;
-      if (maxViewportHeight - currentHeight > 100) bottomNavElement.classList.add('nav-hidden');
-      else bottomNavElement.classList.remove('nav-hidden');
+      if (currentHeight > maxViewportHeight) {
+        maxViewportHeight = currentHeight;
+      }
+      if (maxViewportHeight - currentHeight > 100) {
+        bottomNavElement.classList.add('nav-hidden');
+      } else {
+        bottomNavElement.classList.remove('nav-hidden');
+      }
     }
 
-    if (window.visualViewport) window.visualViewport.addEventListener('resize', handleKeyboardState);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleKeyboardState);
+    }
     window.addEventListener('resize', handleKeyboardState);
-    if (tg.onEvent) tg.onEvent('viewportChanged', handleKeyboardState);
+    
+    if (tg.onEvent) {
+       tg.onEvent('viewportChanged', handleKeyboardState);
+    }
 
     async function fetchServerTime() {
       const apis = [
         async () => { let res = await fetch('https://api.binance.com/api/v3/time'); let data = await res.json(); return data.serverTime; },
-        async () => { let res = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC'); let data = await res.json(); return new Date(data.utc_datetime).getTime(); }
+        async () => { let res = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC'); let data = await res.json(); return new Date(data.utc_datetime).getTime(); },
+        async () => { let res = await fetch('https://timeapi.io/api/Time/current/zone?timeZone=UTC'); let data = await res.json(); return new Date(data.dateTime + 'Z').getTime(); }
       ];
+
       for (let apiFunc of apis) {
         try {
           const serverTime = await apiFunc();
@@ -571,12 +770,17 @@
             accurateTimeOffset = serverTime - performance.now();
             return true;
           }
-        } catch (e) { }
+        } catch (e) {
+          console.warn("Time API failed, falling back...");
+        }
       }
       return false;
     }
 
-    function getNow() { return accurateTimeOffset ? new Date(accurateTimeOffset + performance.now()) : new Date(); }
+    function getNow() {
+      if (!accurateTimeOffset) return new Date(); 
+      return new Date(accurateTimeOffset + performance.now());
+    }
 
     function showToast(title, message, type = 'info') {
       const toast = document.getElementById('toast-container');
@@ -607,7 +811,6 @@
       icon.innerHTML = iconHtml;
       icon.className = `w-12 h-12 rounded-xl flex shrink-0 items-center justify-center text-xl ${iconClass}`;
       toast.style.border = borderStyle;
-
       toast.classList.add('toast-show');
       
       if (tg.HapticFeedback) {
@@ -627,34 +830,49 @@
     function loadState() {
       const savedUser = localStorage.getItem(`xpverse_user_${userState.tgId}`);
       const savedMissions = localStorage.getItem(`xpverse_missions_${userState.tgId}`);
+
       if (savedUser) {
-          let parsed = JSON.parse(savedUser);
-          // Migrate old saves that don't have game data
-          if(parsed.bbLives === undefined) parsed.bbLives = 5;
-          if(parsed.bbLevelsCompleted === undefined) parsed.bbLevelsCompleted = 0;
-          if(parsed.bbStars === undefined) parsed.bbStars = 0;
-          userState = { ...userState, ...parsed };
+        const parsed = JSON.parse(savedUser);
+        // Guarantee safety of game object extension properties inside architecture mapping
+        if (!parsed.balloonBlastGame) {
+          parsed.balloonBlastGame = { ...defaultUserState.balloonBlastGame };
+        }
+        userState = { ...userState, ...parsed };
       }
       if (savedMissions) missionsState = { ...getDefaultMissions(), ...JSON.parse(savedMissions) };
     }
 
+    function getResetDay(serverDate) { return serverDate.toISOString().split('T')[0]; }
+
     function checkDailyReset() {
       const now = getNow();
       if (!now) return false;
-      const currentResetDay = now.toISOString().split('T')[0];
+      const currentResetDay = getResetDay(now);
       
       if (userState.lastResetDay !== currentResetDay) {
         if (userState.lastResetDay) {
-            let diff = Math.floor((new Date(currentResetDay) - new Date(userState.lastResetDay)) / (1000 * 3600 * 24));
-            if (diff === 1) { userState.streak = (userState.streak % 7) + 1; } else { userState.streak = 1; }
-        } else { userState.streak = 1; }
+            let last = new Date(userState.lastResetDay);
+            let curr = new Date(currentResetDay);
+            let diff = Math.floor((curr - last) / (1000 * 3600 * 24));
+            
+            if (diff === 1) {
+                userState.streak += 1;
+                if (userState.streak > 7) userState.streak = 1;
+            } else if (diff > 1) {
+                userState.streak = 1;
+            }
+        } else {
+            userState.streak = 1;
+        }
 
         userState.adsWatchedToday = 0;
         userState.lastResetDay = currentResetDay;
-        userState.bbLevelsCompleted = 0; // Reset daily game levels
-        if(userState.bbLives < 5) userState.bbLives = 5; // Refill lives
         missionsState = getDefaultMissions();
         missionsState.dailyReward.reward = streakRewards[userState.streak - 1]; 
+        
+        // Refresh daily balloon configuration architecture safely on reset loops
+        userState.balloonBlastGame.unlockedLevel = 1;
+        userState.balloonBlastGame.stars = {};
         
         saveState();
         return true; 
@@ -680,14 +898,19 @@
 
     function updateProfileProgress() {
       const xp = userState.totalXp;
-      let nextLvlXp = 250, prevLvlXp = 0;
+      let nextLvlXp = 250;
+      let prevLvlXp = 0;
+      
       if (xp >= 20000) { nextLvlXp = 20000; prevLvlXp = 20000; }
       else if (xp >= 3000) { nextLvlXp = 20000; prevLvlXp = 3000; }
       else if (xp >= 1500) { nextLvlXp = 3000; prevLvlXp = 1500; }
       else if (xp >= 750) { nextLvlXp = 1500; prevLvlXp = 750; }
       else if (xp >= 250) { nextLvlXp = 750; prevLvlXp = 250; }
 
-      let progress = nextLvlXp !== prevLvlXp ? ((xp - prevLvlXp) / (nextLvlXp - prevLvlXp)) * 100 : 100;
+      let progress = 100;
+      if (nextLvlXp !== prevLvlXp) {
+        progress = ((xp - prevLvlXp) / (nextLvlXp - prevLvlXp)) * 100;
+      }
 
       document.getElementById('profile-xp-progress').style.width = `${progress}%`;
       document.getElementById('profile-current-xp-text').innerText = `${xp.toLocaleString()} XP`;
@@ -699,434 +922,995 @@
       document.getElementById('user-name').innerText = userState.firstName;
       document.getElementById('user-xp').innerHTML = `${userState.xp.toLocaleString()} <span class="text-[10px] text-crypto-glow font-bold">XP</span>`;
       document.getElementById('user-usd').innerText = userState.usdBalance.toFixed(2);
-      if (userState.photoUrl) { document.getElementById('user-photo').src = userState.photoUrl; document.getElementById('profile-photo-large').src = userState.photoUrl; }
+      
+      if (userState.photoUrl) {
+        document.getElementById('user-photo').src = userState.photoUrl;
+        document.getElementById('profile-photo-large').src = userState.photoUrl;
+      }
+
       document.getElementById('main-xp-display').innerText = `${userState.xp.toLocaleString()} XP`;
       document.getElementById('ads-watched').innerText = userState.adsWatchedToday;
       document.getElementById('streak-days').innerText = userState.streak;
+
       document.getElementById('withdraw-balance-display').innerText = userState.usdBalance.toFixed(2);
-      
+      renderWithdrawHistory();
+
       document.getElementById('profile-name').innerText = userState.firstName;
       document.getElementById('profile-tgid').innerText = `ID: ${userState.tgId}`;
       document.getElementById('profile-total-xp').innerText = userState.totalXp.toLocaleString();
       document.getElementById('profile-boxes').innerText = userState.boxesOpened;
       
-      document.getElementById('bb-lives').innerText = userState.bbLives;
-      document.getElementById('bb-total-stars').innerText = userState.bbStars;
-
       updateProfileProgress();
       renderMissions();
       renderStreakTracker();
-      renderWithdrawHistory();
+      
+      // Update new game tracking state details
+      document.getElementById('game-lives-text').innerText = userState.balloonBlastGame.lives;
+      document.getElementById('powerup-count-rocket').innerText = userState.balloonBlastGame.powerups.rocket;
+      document.getElementById('powerup-count-bomb').innerText = userState.balloonBlastGame.powerups.bomb;
+      document.getElementById('powerup-count-color').innerText = userState.balloonBlastGame.powerups.color;
+      document.getElementById('powerup-count-lightning').innerText = userState.balloonBlastGame.powerups.lightning;
     }
 
-    // --- (Streak, Missions, Boxes, Withdraw logic remain unchanged, omitted explicit repeated code string rendering for brevity, keeping functionality) ---
-    function renderStreakTracker() { /* Same logic as original */ }
-    function renderMissions() { /* Same logic as original */ }
-    function claimMission(key) { /* Same logic as original */ }
-    function watchAd() { /* Same logic as original */ }
+    function renderStreakTracker() {
+      const container = document.getElementById('streak-tracker-container');
+      container.innerHTML = '';
+      
+      for (let i = 1; i <= 7; i++) {
+        const isPast = i < userState.streak || (i === userState.streak && missionsState.dailyReward.claimed);
+        const isToday = i === userState.streak && !missionsState.dailyReward.claimed;
+        const reward = streakRewards[i-1];
+        
+        let styles = "bg-[#050511] border-slate-700 text-slate-600";
+        let icon = `<span class="text-[9px] font-black">${reward}</span>`;
+        let lineStyle = "bg-slate-800";
+        
+        if (isPast) {
+          styles = "bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]";
+          icon = `<i class="fa-solid fa-check text-xs"></i>`;
+          lineStyle = "bg-emerald-500/50 shadow-[0_0_5px_#34d399]";
+        } else if (isToday) {
+          styles = "bg-blue-600/30 border-crypto-glow shadow-[0_0_20px_rgba(0,240,255,0.5)] text-white";
+        }
+
+        container.innerHTML += `
+          <div class="relative flex flex-col items-center gap-1.5 z-10 flex-1">
+            <div class="w-9 h-9 rounded-xl border-2 flex items-center justify-center transition-all duration-300 ${styles} z-10 relative bg-[#0a0b1a]">
+              ${icon}
+            </div>
+            <span class="text-[8px] font-black tracking-widest ${isToday ? 'text-crypto-glow drop-shadow-[0_0_5px_#00f0ff]' : 'text-slate-500'}">DAY ${i}</span>
+            ${i < 7 ? `<div class="absolute top-4 left-[50%] w-full h-1 -z-0 ${lineStyle} rounded-full"></div>` : ''}
+          </div>
+        `;
+      }
+    }
+
+    function renderMissions() {
+      const container = document.getElementById('missions-container');
+      container.innerHTML = '';
+      
+      const missionsList = [
+        { key: 'dailyReward', label: `Daily Login`, icon: 'fa-gift', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
+        { key: 'watch5', label: 'Watch 5 Ads', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
+        { key: 'watch10', label: 'Watch 10 Ads', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
+        { key: 'watch20', label: 'Watch 20 Ads', icon: 'fa-clapperboard', color: 'text-cyan-400', bg: 'bg-cyan-500/10 border-cyan-500/20' },
+        { key: 'all', label: 'All Tasks', icon: 'fa-crown', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' }
+      ];
+
+      missionsList.forEach(m => {
+        const mission = missionsState[m.key];
+        let isComplete = false;
+        let progressText = '';
+        
+        if (mission.type === 'progress') {
+            isComplete = userState.adsWatchedToday >= mission.target;
+            progressText = `(${Math.min(userState.adsWatchedToday, mission.target)}/${mission.target})`;
+        } else if (mission.type === 'boolean') {
+            isComplete = mission.completed;
+        } else if (mission.type === 'meta') {
+            isComplete = ['dailyReward', 'watch5', 'watch10', 'watch20'].every(k => missionsState[k].claimed);
+        }
+
+        let btnHtml = '';
+        if (mission.claimed) {
+            btnHtml = `<span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/30 flex items-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]"><i class="fa-solid fa-check-double"></i> Claimed</span>`;
+        } else if (isComplete) {
+            btnHtml = `<button onclick="claimMission('${m.key}')" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-1.5 rounded-xl shadow-[0_0_15px_rgba(0,240,255,0.4)] active:scale-95 transition-all uppercase tracking-wider">Claim</button>`;
+        } else {
+            btnHtml = `<span class="text-[10px] font-black bg-slate-800/50 text-slate-200 px-3 py-1.5 rounded-xl border border-slate-600 shadow-inner">+${mission.reward} XP</span>`;
+        }
+
+        container.innerHTML += `
+          <div class="glass-card rounded-2xl p-3 flex justify-between items-center transition-transform hover:-translate-y-0.5 border border-slate-800">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl border ${m.bg} flex items-center justify-center">
+                 <i class="fa-solid ${m.icon} ${m.color} text-lg"></i>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-xs font-black text-white tracking-wide">${m.label}</span>
+                <span class="text-crypto-glow text-[10px] font-bold tracking-widest uppercase opacity-80 mt-0.5">${progressText}</span>
+              </div>
+            </div>
+            ${btnHtml}
+          </div>
+        `;
+      });
+    }
+
+    function claimMission(key) {
+        const mission = missionsState[key];
+        if (mission.claimed) return;
+        
+        mission.claimed = true;
+        userState.xp += mission.reward;
+        userState.totalXp += mission.reward;
+        
+        checkLevelUp();
+        saveState();
+        updateUI();
+        
+        showToast("Task Completed!", `You earned ${mission.reward} XP!`, "success");
+    }
+
+    function watchAd() {
+      if (userState.adsWatchedToday >= 30) {
+        showToast("Limit", "You have reached the daily limit of 30 ads. Come back tomorrow!", "error");
+        return;
+      }
+
+      const btn = document.getElementById('watch-ad-btn');
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Loading Ad...</span>';
+      btn.classList.add('opacity-80', 'pointer-events-none');
+
+      if (window.Adsgram) {
+        const AdController = window.Adsgram.init({ blockId: "int-34999" });
+        
+        AdController.show().then((result) => {
+          userState.xp += 10;
+          userState.totalXp += 10;
+          userState.adsWatchedToday += 1;
+          
+          checkLevelUp();
+          saveState();
+          updateUI();
+          
+          showToast("Reward Granted!", "You successfully watched the ad and earned +10 XP.", "success");
+          
+          btn.innerHTML = originalHTML;
+          btn.classList.remove('opacity-80', 'pointer-events-none');
+        }).catch((error) => {
+          btn.innerHTML = originalHTML;
+          btn.classList.remove('opacity-80', 'pointer-events-none');
+        });
+      } else {
+        // Fallback for simulation testing sandbox
+        userState.xp += 10;
+        userState.totalXp += 10;
+        userState.adsWatchedToday += 1;
+        checkLevelUp();
+        saveState();
+        updateUI();
+        showToast("Reward Granted!", "Simulated Ad watch success: +10 XP added.", "success");
+        btn.innerHTML = originalHTML;
+        btn.classList.remove('opacity-80', 'pointer-events-none');
+      }
+    }
+
+    // UPDATED BOX COST STRUCT - BRONZE 10000, SILVER 50000, GOLD 100000
+    const boxCosts = { bronze: 10000, silver: 50000, gold: 100000 };
+    
     function openBox(type) {
       const cost = boxCosts[type];
-      if (userState.xp < cost) { showToast("Not enough XP", `You need ${cost.toLocaleString()} XP to open this box.`, "error"); return; }
-      userState.xp -= cost; userState.boxesOpened += 1;
-      let reward = 0; const isJackpot = Math.random() >= 0.9999; 
-      if (type === 'bronze') reward = isJackpot ? 1.00 : 0.10; else if (type === 'silver') reward = isJackpot ? 7.00 : 0.50; else if (type === 'gold') reward = isJackpot ? 15.00 : 1.00;
-      userState.usdBalance += reward; saveState(); updateUI();
-      if (isJackpot) showToast("🎉 HUGE JACKPOT! 🎉", `Incredible! You won $${reward.toFixed(2)}!`, "jackpot");
-      else showToast("🎁 Box Opened!", `Congratulations! You won $${reward.toFixed(2)} from the box!`, "success");
+      if (userState.xp < cost) {
+        showToast("Not enough XP", `You need ${cost.toLocaleString()} XP to open this box.`, "error");
+        return;
+      }
+
+      userState.xp -= cost;
+      userState.boxesOpened += 1;
+      
+      let reward = 0;
+      const isJackpot = Math.random() >= 0.95; // Balanced distribution simulation matrix
+
+      if (type === 'bronze') reward = isJackpot ? 1.00 : 0.10;
+      else if (type === 'silver') reward = isJackpot ? 7.00 : 0.50;
+      else if (type === 'gold') reward = isJackpot ? 15.00 : 1.00;
+
+      userState.usdBalance += reward;
+
+      saveState();
+      updateUI();
+
+      if (isJackpot) {
+         showToast("🎉 HUGE JACKPOT! 🎉", `Incredible! You won $${reward.toFixed(2)}!`, "jackpot");
+      } else {
+         showToast("🎁 Box Opened!", `Congratulations! You won $${reward.toFixed(2)} from the box!`, "success");
+      }
     }
-    function requestWithdrawal() { /* Same logic as original */ }
-    function renderWithdrawHistory() { /* Same logic as original */ }
+
+    function requestWithdrawal() {
+      const address = document.getElementById('wallet-address').value;
+      const amount = parseFloat(document.getElementById('withdraw-amount').value);
+
+      if (!address || address.length < 10) {
+        showToast("Invalid Address", "Please enter a valid TON wallet address.", "error");
+        return;
+      }
+
+      if (isNaN(amount) || amount < 5) {
+        showToast("Invalid Amount", "The minimum withdrawal amount is $5.00.", "error");
+        return;
+      }
+
+      if (amount > userState.usdBalance) {
+        showToast("Insufficient balance", "You do not have enough funds to withdraw this amount.", "error");
+        return;
+      }
+
+      userState.usdBalance -= amount;
+      
+      const now = getNow() || new Date(); 
+      const withdrawalRecord = {
+        id: '#' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+        date: now.toLocaleDateString(),
+        amount: amount,
+        address: address.substring(0, 6) + '...' + address.substring(address.length - 4),
+        status: 'Pending'
+      };
+
+      userState.withdrawHistory.unshift(withdrawalRecord); 
+      
+      saveState();
+      updateUI();
+      
+      document.getElementById('wallet-address').value = '';
+      document.getElementById('withdraw-amount').value = '';
+
+      showToast("Withdrawal Requested", `Your request for $${amount.toFixed(2)} has been submitted.`, "success");
+    }
+
+    function renderWithdrawHistory() {
+      const container = document.getElementById('withdraw-history-container');
+      if (!container) return;
+      
+      if (userState.withdrawHistory.length === 0) {
+        container.innerHTML = `
+          <div class="glass-card rounded-2xl p-6 text-center border-dashed border-2 border-slate-700">
+            <i class="fa-solid fa-clock-rotate-left text-3xl text-slate-600 mb-2"></i>
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">History is Empty</p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = '';
+      userState.withdrawHistory.forEach(record => {
+        container.innerHTML += `
+          <div class="glass-card rounded-2xl p-4 flex justify-between items-center transition-transform hover:-translate-y-0.5">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
+                 <i class="fa-solid fa-arrow-right-arrow-left text-slate-400"></i>
+              </div>
+              <div>
+                <p class="text-xs font-black text-white">${record.id} <span class="text-[9px] text-slate-400 ml-1 font-bold">${record.date}</span></p>
+                <p class="text-[10px] text-blue-400 mt-0.5 font-mono bg-blue-500/10 inline-block px-1.5 py-0.5 rounded stream-add">${record.address}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-sm font-black text-emerald-400 drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">-$${record.amount.toFixed(2)}</p>
+              <p class="text-[9px] font-black text-amber-400 uppercase tracking-widest mt-0.5 bg-amber-500/10 inline-block px-2 py-0.5 rounded-full border border-amber-500/20">${record.status}</p>
+            </div>
+          </div>
+        `;
+      });
+    }
 
     function switchTab(tabId) {
       document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('nav-active'));
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('nav-active');
+      });
+
       document.getElementById(`view-${tabId}`).classList.remove('hidden');
-      document.querySelector(`[data-target="${tabId}"]`).classList.add('nav-active');
+      const activeBtn = document.querySelector(`[data-target="${tabId}"]`);
+      if (activeBtn) activeBtn.classList.add('nav-active');
+      
       const header = document.getElementById('main-header');
       const mainContent = document.getElementById('app-content');
+
       clearTimeout(headerTimeout);
+
       if (tabId === 'withdraw' || tabId === 'profile' || tabId === 'games') {
         header.style.transform = 'translateY(-100%)';
         headerTimeout = setTimeout(() => header.style.display = 'none', 300);
-        mainContent.classList.remove('pt-24'); mainContent.classList.add('pt-4');
+        mainContent.classList.remove('pt-24');
+        mainContent.classList.add('pt-4');
       } else {
         header.style.display = 'block'; 
         setTimeout(() => header.style.transform = 'translateY(0)', 10);
-        mainContent.classList.remove('pt-4'); mainContent.classList.add('pt-24');
+        mainContent.classList.remove('pt-4');
+        mainContent.classList.add('pt-24');
       }
+      
       if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // ==========================================
-    // BALLOON BLAST ADVENTURE GAME LOGIC
-    // ==========================================
-    
-    function launchBalloonGame() {
-      document.getElementById('view-game-balloon').classList.remove('hidden');
-      document.getElementById('view-game-balloon').classList.add('flex');
-      
-      const splash = document.getElementById('bb-splash');
-      splash.style.opacity = '1';
-      splash.style.display = 'flex';
-      
-      setTimeout(() => {
-        splash.style.opacity = '0';
-        setTimeout(() => { splash.style.display = 'none'; drawMap(); }, 500);
-      }, 2000);
-    }
-
-    function exitBalloonGame() {
-      if(!document.getElementById('bb-play-view').classList.contains('hidden')) {
-        if(confirm("Exit game? You will lose 1 life.")) {
-           userState.bbLives = Math.max(0, userState.bbLives - 1);
-           saveState(); updateUI();
-           document.getElementById('bb-play-view').classList.add('hidden');
-           document.getElementById('bb-map-view').classList.remove('hidden');
-        }
-      } else {
-        document.getElementById('view-game-balloon').classList.add('hidden');
-        document.getElementById('view-game-balloon').classList.remove('flex');
-      }
-    }
-
-    function promptExtraLife() {
-      if(confirm("Refill 1 Life for 100 XP?")) {
-        if(userState.xp >= 100) {
-          userState.xp -= 100; userState.bbLives += 1;
-          saveState(); updateUI(); showToast("Life Added", "+1 Life", "success");
-        } else showToast("Error", "Not enough XP", "error");
-      }
-    }
-
-    // Map Generation
-    function drawMap() {
-      document.getElementById('bb-play-view').classList.add('hidden');
-      document.getElementById('bb-map-view').classList.remove('hidden');
-      const container = document.getElementById('bb-level-container');
-      container.innerHTML = '';
-      
-      for(let i = 10; i >= 1; i--) {
-        const isCompleted = i <= userState.bbLevelsCompleted;
-        const isUnlocked = i === userState.bbLevelsCompleted + 1;
-        const isLocked = i > userState.bbLevelsCompleted + 1;
-        
-        let classes = isCompleted ? 'completed' : (isUnlocked ? 'unlocked' : 'locked');
-        let icon = isCompleted ? '<i class="fa-solid fa-check"></i>' : (isLocked ? '<i class="fa-solid fa-lock text-sm"></i>' : i);
-        
-        // Path line connecting nodes
-        if(i < 10) {
-          container.innerHTML += `<div class="level-path ${isCompleted || isUnlocked ? 'active' : ''}" style="height: 40px; margin-top: -40px; margin-bottom: -40px;"></div>`;
-        }
-        
-        container.innerHTML += `<div class="level-node ${classes}" ${isUnlocked || isCompleted ? `onclick="startLevel(${i})"` : ''}>${icon}</div>`;
-      }
-    }
-
-    // Simple Bubble Shooter Engine
-    const canvas = document.getElementById('game-canvas');
-    const ctx = canvas.getContext('2d');
-    let bbGame = { active: false, reqId: null };
-
-    const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'];
-    
-    function startLevel(lvl) {
-      if(userState.bbLives <= 0) { promptExtraLife(); return; }
-      
-      document.getElementById('bb-map-view').classList.add('hidden');
-      document.getElementById('bb-play-view').classList.remove('hidden');
-      document.getElementById('bb-current-level').innerText = lvl;
-      
-      // Setup Canvas
-      const rect = document.getElementById('bb-play-view').getBoundingClientRect();
-      canvas.width = rect.width;
-      canvas.height = rect.height;
-      
-      // Difficulty Scaling
-      const numColors = Math.min(5, 2 + Math.floor(lvl / 3));
-      const activeColors = colors.slice(0, numColors);
-      const rows = 4 + Math.floor(lvl / 2);
-      const shots = 20 + (lvl * 5);
-      
-      bbGame = {
-        active: true, lvl: lvl, score: 0, shots: shots, radius: 16,
-        grid: [], particles: [],
-        cols: Math.floor(canvas.width / 32),
-        shooter: null, nextColor: activeColors[Math.floor(Math.random()*activeColors.length)],
-        activeColors: activeColors,
-        state: 'ready', // ready, firing, animating
-        bullet: null
-      };
-      
-      document.getElementById('bb-shots-left').innerText = shots;
-      document.getElementById('bb-score').innerText = '0';
-      
-      // Populate Grid
-      for(let r=0; r<rows; r++) {
-        let row = [];
-        let colsInRow = r % 2 === 0 ? bbGame.cols : bbGame.cols - 1;
-        for(let c=0; c<colsInRow; c++) {
-          row.push({
-            c: activeColors[Math.floor(Math.random()*activeColors.length)],
-            x: (c * bbGame.radius * 2) + bbGame.radius + (r % 2 === 0 ? 0 : bbGame.radius),
-            y: (r * bbGame.radius * 1.732) + bbGame.radius + 60,
-            active: true
-          });
-        }
-        bbGame.grid.push(row);
-      }
-      
-      loadShooter();
-      
-      canvas.addEventListener('pointerdown', handleShoot);
-      if(bbGame.reqId) cancelAnimationFrame(bbGame.reqId);
-      gameLoop();
-    }
-
-    function loadShooter() {
-      bbGame.shooter = { x: canvas.width/2, y: canvas.height - 40, c: bbGame.nextColor };
-      bbGame.nextColor = bbGame.activeColors[Math.floor(Math.random()*bbGame.activeColors.length)];
-    }
-
-    bbGame.swapBalloons = function() {
-      if(bbGame.state !== 'ready') return;
-      let temp = bbGame.shooter.c;
-      bbGame.shooter.c = bbGame.nextColor;
-      bbGame.nextColor = temp;
-    }
-
-    function handleShoot(e) {
-      if(bbGame.state !== 'ready' || bbGame.shots <= 0) return;
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      
-      const angle = Math.atan2(y - bbGame.shooter.y, x - bbGame.shooter.x);
-      // Prevent shooting downwards
-      if(angle > -0.1) return;
-
-      bbGame.bullet = { x: bbGame.shooter.x, y: bbGame.shooter.y, c: bbGame.shooter.c, dx: Math.cos(angle)*15, dy: Math.sin(angle)*15 };
-      bbGame.shots--;
-      document.getElementById('bb-shots-left').innerText = bbGame.shots;
-      bbGame.state = 'firing';
-      if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-    }
-
-    function gameLoop() {
-      if(!bbGame.active) return;
-      updateGame();
-      drawGame();
-      bbGame.reqId = requestAnimationFrame(gameLoop);
-    }
-
-    function updateGame() {
-      // Particles
-      for(let i = bbGame.particles.length-1; i>=0; i--) {
-        let p = bbGame.particles[i];
-        p.x += p.dx; p.y += p.dy; p.life--;
-        if(p.life <= 0) bbGame.particles.splice(i, 1);
-      }
-
-      if(bbGame.state === 'firing' && bbGame.bullet) {
-        bbGame.bullet.x += bbGame.bullet.dx;
-        bbGame.bullet.y += bbGame.bullet.dy;
-        
-        // Wall Bounce
-        if(bbGame.bullet.x <= bbGame.radius || bbGame.bullet.x >= canvas.width - bbGame.radius) bbGame.bullet.dx *= -1;
-        
-        // Collision Detection (simplified)
-        let hit = false;
-        if(bbGame.bullet.y <= 60 + bbGame.radius) hit = true; // Hit ceiling
-        else {
-          for(let r=0; r<bbGame.grid.length; r++) {
-            for(let c=0; c<bbGame.grid[r].length; c++) {
-              let b = bbGame.grid[r][c];
-              if(b && b.active) {
-                let dist = Math.hypot(bbGame.bullet.x - b.x, bbGame.bullet.y - b.y);
-                if(dist < bbGame.radius * 2) { hit = true; break; }
-              }
-            }
-            if(hit) break;
-          }
-        }
-
-        if(hit) {
-          // Snap to grid (Simplified: visual snap only, treat as pop trigger)
-          createExplosion(bbGame.bullet.x, bbGame.bullet.y, bbGame.bullet.c);
-          bbGame.score += 10;
-          
-          // Basic Pop Mechanic (Destroy clicked area + randomness for demo)
-          let popped = 0;
-          for(let r=bbGame.grid.length-1; r>=0; r--) {
-            for(let c=0; c<bbGame.grid[r].length; c++) {
-              let b = bbGame.grid[r][c];
-              if(b && b.active) {
-                let dist = Math.hypot(bbGame.bullet.x - b.x, bbGame.bullet.y - b.y);
-                if(dist < bbGame.radius * 3.5 && (b.c === bbGame.bullet.c || Math.random() > 0.7)) {
-                  b.active = false; popped++;
-                  createExplosion(b.x, b.y, b.c);
-                  bbGame.score += 20;
-                }
-              }
-            }
-          }
-          if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-          document.getElementById('bb-score').innerText = bbGame.score;
-
-          bbGame.bullet = null;
-          bbGame.state = 'ready';
-          loadShooter();
-          checkWinLoss();
-        }
-      }
-    }
-
-    function createExplosion(x, y, color) {
-      for(let i=0; i<8; i++) {
-        bbGame.particles.push({
-          x: x, y: y, c: color,
-          dx: (Math.random()-0.5)*10, dy: (Math.random()-0.5)*10,
-          life: 20 + Math.random()*10
-        });
-      }
-    }
-
-    function drawGame() {
-      ctx.clearRect(0,0, canvas.width, canvas.height);
-      
-      // Grid
-      let empty = true;
-      for(let r=0; r<bbGame.grid.length; r++) {
-        for(let c=0; c<bbGame.grid[r].length; c++) {
-          let b = bbGame.grid[r][c];
-          if(b && b.active) {
-            empty = false;
-            drawBubble(b.x, b.y, b.c);
-          }
-        }
-      }
-      if(empty) checkWinLoss(true); // Force win if cleared
-
-      // Particles
-      bbGame.particles.forEach(p => {
-        ctx.globalAlpha = p.life / 30;
-        ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
-        ctx.fillStyle = p.c; ctx.fill();
-        ctx.globalAlpha = 1;
-      });
-
-      // Shooter Area
-      if(bbGame.state === 'ready' && bbGame.shooter) {
-        drawBubble(bbGame.shooter.x, bbGame.shooter.y, bbGame.shooter.c);
-        // Trajectory line
-        ctx.beginPath(); ctx.moveTo(bbGame.shooter.x, bbGame.shooter.y); ctx.lineTo(bbGame.shooter.x, bbGame.shooter.y - 30);
-        ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.setLineDash([5,5]); ctx.lineWidth=2; ctx.stroke(); ctx.setLineDash([]);
-      }
-
-      // Next Bubble
-      ctx.beginPath(); ctx.arc(canvas.width/2 - 50, canvas.height - 20, 10, 0, Math.PI*2);
-      ctx.fillStyle = bbGame.nextColor; ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='rgba(255,255,255,0.5)'; ctx.stroke();
-      ctx.fillStyle='white'; ctx.font='10px sans-serif'; ctx.fillText('Next', canvas.width/2 - 60, canvas.height - 35);
-
-      // Bullet
-      if(bbGame.bullet) drawBubble(bbGame.bullet.x, bbGame.bullet.y, bbGame.bullet.c);
-    }
-
-    function drawBubble(x, y, c) {
-      const grad = ctx.createRadialGradient(x-5, y-5, 2, x, y, bbGame.radius);
-      grad.addColorStop(0, '#ffffff'); grad.addColorStop(0.3, c); grad.addColorStop(1, '#000000');
-      ctx.beginPath(); ctx.arc(x, y, bbGame.radius, 0, Math.PI*2);
-      ctx.fillStyle = grad; ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth=1; ctx.stroke();
-    }
-
-    function checkWinLoss(forcedWin = false) {
-      let activeBubbles = bbGame.grid.flat().filter(b => b.active).length;
-      
-      if(activeBubbles <= 0 || forcedWin) { endGame(true); } 
-      else if(bbGame.shots <= 0 && bbGame.state === 'ready') { endGame(false); }
-    }
-
-    function endGame(win) {
-      bbGame.active = false;
-      canvas.removeEventListener('pointerdown', handleShoot);
-      
-      const modal = document.getElementById('bb-end-modal');
-      const title = document.getElementById('bb-end-title');
-      const rewardEl = document.getElementById('bb-end-reward');
-      const starsEl = document.getElementById('bb-end-stars');
-      const btn = document.getElementById('bb-end-action-btn');
-      
-      modal.classList.remove('hidden');
-      
-      if(win) {
-        if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-        title.innerText = "Level Cleared!";
-        title.className = "text-3xl font-black text-emerald-400 mb-2 tracking-tight";
-        modal.querySelector('.glass-card').style.borderColor = '#10b981';
-        
-        let stars = bbGame.shots > 10 ? 3 : (bbGame.shots > 4 ? 2 : 1);
-        starsEl.innerHTML = '';
-        for(let i=0; i<3; i++) starsEl.innerHTML += `<i class="fa-solid fa-star ${i<stars ? 'text-amber-400 drop-shadow-[0_0_10px_#ffb800]' : 'text-slate-700'}"></i>`;
-        
-        // Calculate dynamic reward based on difficulty
-        let baseXP = bbGame.lvl < 4 ? 20 : (bbGame.lvl < 8 ? 50 : 100);
-        let reward = baseXP + (stars * 10);
-        rewardEl.innerText = `+${reward} XP`;
-        
-        // Give Rewards
-        userState.xp += reward; userState.totalXp += reward;
-        userState.bbStars += stars;
-        if(bbGame.lvl > userState.bbLevelsCompleted) userState.bbLevelsCompleted = bbGame.lvl;
-        
-        btn.innerText = "Next Level";
-        btn.className = "flex-1 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-400 text-white font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(16,185,129,0.4)]";
-        btn.onclick = () => { closeBbModal(); startLevel(bbGame.lvl + 1); };
-        
-      } else {
-        if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-        userState.bbLives = Math.max(0, userState.bbLives - 1);
-        title.innerText = "Out of Moves";
-        title.className = "text-3xl font-black text-red-500 mb-2 tracking-tight";
-        modal.querySelector('.glass-card').style.borderColor = '#ef4444';
-        starsEl.innerHTML = `<i class="fa-solid fa-heart-crack text-red-500 drop-shadow-[0_0_10px_#ef4444]"></i>`;
-        rewardEl.innerText = "Try Again!";
-        
-        btn.innerText = "Retry (-1 Life)";
-        btn.className = "flex-1 py-3 rounded-xl bg-gradient-to-r from-red-600 to-orange-500 text-white font-black text-xs uppercase tracking-wider shadow-[0_0_15px_rgba(239,68,68,0.4)]";
-        btn.onclick = () => { closeBbModal(); startLevel(bbGame.lvl); };
-      }
-      
-      saveState(); updateUI(); checkLevelUp();
-    }
-
-    function closeBbModal() {
-      document.getElementById('bb-end-modal').classList.add('hidden');
-      drawMap();
-    }
-
-    // ==========================================
-    // INITIALIZATION & TIMERS
-    // ==========================================
-
     function updateTimer() {
         const now = getNow();
         if (!now) return;
-        const tomorrow = new Date(now); tomorrow.setUTCHours(24, 0, 0, 0); 
+
+        const tomorrow = new Date(now);
+        tomorrow.setUTCHours(24, 0, 0, 0); 
+        
         const diff = tomorrow.getTime() - now.getTime();
+        const h = Math.floor(diff / 1000 / 60 / 60);
+        const m = Math.floor((diff / 1000 / 60) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        
         const timerEl = document.getElementById('reset-timer');
-        if (timerEl) timerEl.innerText = `${String(Math.floor(diff/3600000)).padStart(2,'0')}:${String(Math.floor((diff/60000)%60)).padStart(2,'0')}:${String(Math.floor((diff/1000)%60)).padStart(2,'0')}`;
-        if (checkDailyReset()) { updateUI(); showToast("New Day Started!", "Limits and campaigns reset.", "info"); }
+        if (timerEl) {
+            timerEl.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        if (checkDailyReset()) {
+            updateUI();
+            showToast("New Day Started!", "Daily limits and tasks have been reset.", "info");
+        }
     }
-    
+
+    // ==========================================
+    // BALLOON BLAST ADVENTURE IMPLEMENTATION CORE
+    // ==========================================
+    let gameCanvas, ctx;
+    let currentMatchLevel = 1;
+    let maxShooterBalloons = 20;
+    let balloonsQueue = [];
+    let stationaryBalloons = [];
+    let movingProjectile = null;
+    let gameScore = 0;
+    let launchedBalloonsCount = 0;
+    let consecutivePopCombo = 0;
+    let isAiming = false;
+    let aimAngle = 0;
+    let loopAnimationId = null;
+    let targetBlastPowerupActive = null;
+
+    const balloonColorsMap = {
+      'red': '#ef4444',
+      'blue': '#3b82f6',
+      'green': '#10b981',
+      'yellow': '#eab308',
+      'purple': '#a855f7'
+    };
+    const specialTypesMap = ['virus', 'locked', 'frozen', 'bomb', 'rainbow', 'stone', 'electric'];
+
+    function launchBalloonBlast() {
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+      const portal = document.getElementById('balloon-blast-portal');
+      const splash = document.getElementById('game-splash');
+      
+      portal.classList.remove('hidden');
+      splash.style.opacity = '1';
+      splash.style.display = 'flex';
+
+      renderRoadmapLevels();
+
+      setTimeout(() => {
+        splash.style.opacity = '0';
+        setTimeout(() => splash.style.display = 'none', 500);
+      }, 2500);
+    }
+
+    function exitToGamesHub() {
+      document.getElementById('balloon-blast-portal').classList.add('hidden');
+      quitActiveMatch();
+    }
+
+    function openRecoveryModal() {
+      document.getElementById('recovery-modal').classList.remove('hidden');
+    }
+    function closeRecoveryModal() {
+      document.getElementById('recovery-modal').classList.add('hidden');
+    }
+
+    function recoverLifeWithAd() {
+      userState.balloonBlastGame.lives += 1;
+      showToast("Life Restored", "Watched ad. +1 Life credited.", "success");
+      saveState();
+      updateUI();
+      closeRecoveryModal();
+    }
+
+    function recoverLifeWithXP() {
+      if (userState.xp < 100) {
+        showToast("Insufficient XP", "Requires 100 XP to purchase life.", "error");
+        return;
+      }
+      userState.xp -= 100;
+      userState.balloonBlastGame.lives += 1;
+      showToast("Life Purchased", "Spent 100 XP. +1 Life credited.", "success");
+      saveState();
+      updateUI();
+      closeRecoveryModal();
+    }
+
+    function getLevelSpecs(lvl) {
+      let difficulty = 'Easy';
+      let baseMoves = 20 + (lvl * 3);
+      if (lvl > 3 && lvl <= 6) difficulty = 'Medium';
+      if (lvl > 6 && lvl <= 8) difficulty = 'Hard';
+      if (lvl > 8) difficulty = 'Extreme';
+      return { difficulty, moves: baseMoves };
+    }
+
+    function renderRoadmapLevels() {
+      const grid = document.getElementById('level-roadmap-grid');
+      grid.innerHTML = '';
+      
+      for (let i = 1; i <= 10; i++) {
+        const isLocked = i > userState.balloonBlastGame.unlockedLevel;
+        const starsCount = userState.balloonBlastGame.stars[i] || 0;
+        const specs = getLevelSpecs(i);
+        
+        let cardBg = "glass-card border-slate-800 text-slate-400";
+        let statusIcon = '<i class="fa-solid fa-lock text-slate-600"></i>';
+        let actionAttr = '';
+
+        if (!isLocked) {
+          cardBg = "bg-gradient-to-br from-slate-900 to-[#0e112a] border border-cyan-500/30 text-white shadow-md";
+          statusIcon = starsCount > 0 ? '<i class="fa-solid fa-circle-check text-emerald-400 text-xs"></i>' : '<i class="fa-solid fa-circle-play text-cyan-400 text-xs"></i>';
+          actionAttr = `onclick="startActiveLevel(${i})"`;
+        }
+
+        let starsHtml = '';
+        for (let s = 1; s <= 3; s++) {
+          starsHtml += `<i class="fa-solid fa-star text-[9px] ${s <= starsCount ? 'text-amber-400' : 'text-slate-700'}"></i>`;
+        }
+
+        grid.innerHTML += `
+          <div ${actionAttr} class="p-3 rounded-2xl text-center flex flex-col items-center justify-between min-h-[95px] cursor-pointer relative transition-transform active:scale-95 ${cardBg}">
+            <div class="flex justify-between w-full items-center">
+              <span class="text-[9px] font-black tracking-wider text-slate-500">Lvl ${i}</span>
+              ${statusIcon}
+            </div>
+            <div class="my-1">
+              <span class="text-xs font-black block">${specs.difficulty}</span>
+            </div>
+            <div class="flex gap-0.5 mt-0.5">
+              ${starsHtml}
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function startActiveLevel(lvlNum) {
+      if (userState.balloonBlastGame.lives <= 0) {
+        showToast("No Lives Left", "Please restore core life counts using watch ad or spending XP.", "error");
+        openRecoveryModal();
+        return;
+      }
+
+      currentMatchLevel = lvlNum;
+      const specs = getLevelSpecs(lvlNum);
+      maxShooterBalloons = specs.moves;
+      launchedBalloonsCount = 0;
+      gameScore = 0;
+      consecutivePopCombo = 0;
+      targetBlastPowerupActive = null;
+
+      document.getElementById('game-map-screen').classList.add('hidden');
+      document.getElementById('game-active-play-screen').classList.remove('hidden');
+      
+      document.getElementById('active-level-title').innerText = `Level ${lvlNum}`;
+      document.getElementById('active-difficulty-tag').innerText = specs.difficulty;
+      document.getElementById('active-difficulty-tag').className = `text-[9px] font-bold uppercase tracking-widest ${lvlNum > 7 ? 'text-red-400' : lvlNum > 3 ? 'text-amber-400' : 'text-emerald-400'}`;
+      document.getElementById('active-moves-counter').innerText = maxShooterBalloons;
+      document.getElementById('active-score-counter').innerText = "0";
+
+      initAudioEngine();
+      initCanvasPlayfield();
+    }
+
+    function quitActiveMatch() {
+      document.getElementById('game-active-play-screen').classList.add('hidden');
+      document.getElementById('game-map-screen').classList.remove('hidden');
+      if (loopAnimationId) cancelAnimationFrame(loopAnimationId);
+    }
+
+    function initCanvasPlayfield() {
+      gameCanvas = document.getElementById('balloon-game-canvas');
+      ctx = gameCanvas.getContext('2d');
+      
+      // Dynamic coordinate canvas allocation mapping
+      gameCanvas.width = 320;
+      gameCanvas.height = 420;
+
+      // Initialize Stationary Upper Balloon Row layout
+      stationaryBalloons = [];
+      const rows = currentMatchLevel > 7 ? 6 : currentMatchLevel > 3 ? 5 : 4;
+      const cols = 8;
+      const radius = 16;
+      const colors = Object.keys(balloonColorsMap);
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          let randomColor = colors[Math.floor(Math.random() * colors.length)];
+          let specialType = null;
+          let health = 1;
+
+          // Introduce specialized obstacle matrices progressively
+          if (currentMatchLevel > 2 && Math.random() > 0.85) {
+            const index = Math.min(Math.floor(Math.random() * specialTypesMap.length), currentMatchLevel - 2);
+            specialType = specialTypesMap[index];
+            if (specialType === 'stone' || specialType === 'locked') health = 2;
+          }
+
+          let xOffset = (r % 2 === 0) ? 0 : radius; 
+          stationaryBalloons.push({
+            x: c * (radius * 2) + radius + xOffset,
+            y: r * (radius * 2) + radius + 15,
+            radius: radius - 1,
+            color: randomColor,
+            type: specialType,
+            health: health,
+            frozen: specialType === 'frozen',
+            infected: false
+          });
+        }
+      }
+
+      // Prepopulate primary launch queue channels
+      balloonsQueue = [
+        colors[Math.floor(Math.random() * colors.length)],
+        colors[Math.floor(Math.random() * colors.length)]
+      ];
+      movingProjectile = null;
+
+      refreshLauncherPreview();
+
+      // Hook touch events for physics interaction mapping inside canvas boundaries
+      gameCanvas.removeEventListener('click', handleCanvasClick);
+      gameCanvas.addEventListener('click', handleCanvasClick);
+
+      // Launch physical update cycles
+      if (loopAnimationId) cancelAnimationFrame(loopAnimationId);
+      renderCycleTick();
+    }
+
+    function refreshLauncherPreview() {
+      const preview = document.getElementById('launcher-next-preview');
+      if (balloonsQueue[1]) {
+        preview.style.backgroundColor = balloonColorsMap[balloonsQueue[1]];
+      }
+    }
+
+    function swapLauncherBalloons() {
+      if (movingProjectile) return; 
+      let tmp = balloonsQueue[0];
+      balloonsQueue[0] = balloonsQueue[1];
+      balloonsQueue[1] = tmp;
+      refreshLauncherPreview();
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
+
+    function triggerPowerup(type) {
+      if (userState.balloonBlastGame.powerups[type] <= 0) {
+        showToast("Powerup Locked", "Watch ads or complete higher maps to accrue premium items.", "error");
+        return;
+      }
+      targetBlastPowerupActive = type;
+      showToast("Powerup Armed", `Tap row target to detonate premium ${type} burst!`, "info");
+    }
+
+    function handleCanvasClick(e) {
+      if (movingProjectile) return;
+
+      const rect = gameCanvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      // Execution handler loop for armed powerup strategies
+      if (targetBlastPowerupActive) {
+        userState.balloonBlastGame.powerups[targetBlastPowerupActive] -= 1;
+        executePowerupDetonation(targetBlastPowerupActive, clickY);
+        targetBlastPowerupActive = null;
+        updateUI();
+        return;
+      }
+
+      const launchX = gameCanvas.width / 2;
+      const launchY = gameCanvas.height - 30;
+
+      const angle = Math.atan2(clickY - launchY, clickX - launchX);
+      const speed = 7;
+
+      movingProjectile = {
+        x: launchX,
+        y: launchY,
+        radius: 12,
+        color: balloonsQueue[0],
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed
+      };
+
+      triggerSynthSound('shoot');
+
+      // Refresh standard queue tracking pipelines
+      launchedBalloonsCount++;
+      document.getElementById('active-moves-counter').innerText = Math.max(0, maxShooterBalloons - launchedBalloonsCount);
+
+      balloonsQueue[0] = balloonsQueue[1];
+      const colors = Object.keys(balloonColorsMap);
+      balloonsQueue[1] = colors[Math.floor(Math.random() * colors.length)];
+      refreshLauncherPreview();
+    }
+
+    function executePowerupDetonation(type, clickY) {
+      triggerSynthSound('pop');
+      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+
+      if (type === 'rocket' || type === 'lightning') {
+        // Clear matching vertical row arrays completely
+        stationaryBalloons = stationaryBalloons.filter(b => Math.abs(b.y - clickY) > 35);
+        gameScore += 400;
+      } else if (type === 'bomb') {
+        // Broad radius blast simulation pattern
+        stationaryBalloons = stationaryBalloons.filter(b => Math.abs(b.y - clickY) > 65);
+        gameScore += 600;
+      } else if (type === 'color') {
+        // Universal clear color grid
+        stationaryBalloons = stationaryBalloons.slice(8);
+        gameScore += 500;
+      }
+      document.getElementById('active-score-counter').innerText = gameScore;
+      evaluateMatchConclusion();
+    }
+
+    function renderCycleTick() {
+      ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+
+      // Render structural limits buffer line bounds
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(0, gameCanvas.height - 80);
+      ctx.lineTo(gameCanvas.width, gameCanvas.height - 80);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Process and render active upper bubble configurations
+      stationaryBalloons.forEach(b => {
+        ctx.beginPath();
+        let colorGrad = ctx.createRadialGradient(b.x - 4, b.y - 4, 2, b.x, b.y, b.radius);
+        
+        let baseColor = balloonColorsMap[b.color] || '#cbd5e1';
+        if (b.type === 'stone') baseColor = '#64748b';
+        if (b.type === 'rainbow') baseColor = '#ec4899';
+
+        colorGrad.addColorStop(0, '#ffffff');
+        colorGrad.addColorStop(0.4, baseColor);
+        colorGrad.addColorStop(1, '#000000');
+
+        ctx.fillStyle = colorGrad;
+        ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Render Special Type Icon indicators visually inside target bounds
+        if (b.type) {
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '9px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          let iconText = b.type[0].toUpperCase();
+          ctx.fillText(iconText, b.x, b.y);
+        }
+      });
+
+      // Render Active Launcher Node
+      ctx.beginPath();
+      let launcherGrad = ctx.createRadialGradient(gameCanvas.width / 2 - 3, gameCanvas.height - 33, 2, gameCanvas.width / 2, gameCanvas.height - 30, 14);
+      launcherGrad.addColorStop(0, '#ffffff');
+      launcherGrad.addColorStop(0.5, balloonColorsMap[balloonsQueue[0]]);
+      launcherGrad.addColorStop(1, '#020617');
+      ctx.fillStyle = launcherGrad;
+      ctx.arc(gameCanvas.width / 2, gameCanvas.height - 30, 14, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Process dynamic projectile mechanics mapping loops
+      if (movingProjectile) {
+        movingProjectile.x += movingProjectile.vx;
+        movingProjectile.y += movingProjectile.vy;
+
+        // Wall deflection geometry
+        if (movingProjectile.x - movingProjectile.radius <= 0 || movingProjectile.x + movingProjectile.radius >= gameCanvas.width) {
+          movingProjectile.vx *= -1;
+          if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+        }
+
+        // Draw traveling projectile node
+        ctx.beginPath();
+        ctx.fillStyle = balloonColorsMap[movingProjectile.color];
+        ctx.arc(movingProjectile.x, movingProjectile.y, movingProjectile.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Check bounds logic or collision attachment loops
+        let hitDetected = false;
+        if (movingProjectile.y <= 0) {
+          hitDetected = true;
+        } else {
+          for (let i = 0; i < stationaryBalloons.length; i++) {
+            let sb = stationaryBalloons[i];
+            let dist = Math.hypot(movingProjectile.x - sb.x, movingProjectile.y - sb.y);
+            if (dist < movingProjectile.radius + sb.radius) {
+              hitDetected = true;
+              break;
+            }
+          }
+        }
+
+        if (hitDetected) {
+          snapProjectileToGrid(movingProjectile);
+          movingProjectile = null;
+        }
+      }
+
+      loopAnimationId = requestAnimationFrame(renderCycleTick);
+    }
+
+    function snapProjectileToGrid(proj) {
+      // Affix item inside active coordinates matrix arrays
+      let targetNode = {
+        x: proj.x,
+        y: Math.max(16, proj.y),
+        radius: 15,
+        color: proj.color,
+        type: null,
+        health: 1
+      };
+      
+      stationaryBalloons.push(targetNode);
+      triggerSynthSound('pop');
+
+      // Scan recursive match components via flood fill loops
+      let matchedCluster = [];
+      findColorMatchesRecursive(targetNode, proj.color, matchedCluster);
+
+      if (matchedCluster.length >= 3) {
+        consecutivePopCombo++;
+        let bonusMultiplier = consecutivePopCombo > 1 ? consecutivePopCombo : 1;
+        
+        matchedCluster.forEach(node => {
+          // Process individual items health thresholds safely
+          node.health--;
+          if (node.health <= 0) {
+            stationaryBalloons = stationaryBalloons.filter(b => b !== node);
+          }
+          gameScore += 100 * bonusMultiplier;
+        });
+
+        // Trigger visual screen overlay updates dynamically
+        if (bonusMultiplier > 1) {
+          const comboPop = document.getElementById('game-combo-popup');
+          comboPop.innerText = `Combo x${bonusMultiplier}!`;
+          comboPop.classList.remove('scale-0');
+          comboPop.classList.add('scale-110');
+          setTimeout(() => comboPop.classList.remove('scale-110'), 400);
+        }
+
+        // Clean up unattached structural islands floating downwards
+        dropDetachedFloatingBalloons();
+      } else {
+        consecutivePopCombo = 0;
+      }
+
+      document.getElementById('active-score-counter').innerText = gameScore;
+      evaluateMatchConclusion();
+    }
+
+    function findColorMatchesRecursive(currNode, color, cluster) {
+      if (cluster.includes(currNode)) return;
+      cluster.push(currNode);
+
+      stationaryBalloons.forEach(neighbor => {
+        if (neighbor.color === color || neighbor.type === 'rainbow') {
+          let distance = Math.hypot(currNode.x - neighbor.x, currNode.y - neighbor.y);
+          if (distance <= 34) { 
+            findColorMatchesRecursive(neighbor, color, cluster);
+          }
+        }
+      });
+    }
+
+    function dropDetachedFloatingBalloons() {
+      // Filter out elements disconnected from ceiling framework systems arrays safely
+      let attached = [];
+      let ceilingNodes = stationaryBalloons.filter(b => b.y <= 35);
+      
+      ceilingNodes.forEach(n => markAttachedCluster(n, attached));
+      stationaryBalloons = stationaryBalloons.filter(b => attached.includes(b));
+    }
+
+    function markAttachedCluster(node, attachedList) {
+      if (attachedList.includes(node)) return;
+      attachedList.push(node);
+
+      stationaryBalloons.forEach(n => {
+        let d = Math.hypot(node.x - n.x, node.y - n.y);
+        if (d <= 35) {
+          markAttachedCluster(n, attachedList);
+        }
+      });
+    }
+
+    function evaluateMatchConclusion() {
+      // Evaluation loops determining win/loss conditions parameters
+      if (stationaryBalloons.length === 0) {
+        triggerEndLevelSequence(true);
+        return;
+      }
+
+      // Check boundary loss threshold penetration mappings
+      let basePassed = stationaryBalloons.some(b => b.y >= (gameCanvas.height - 85));
+      let outOfMoves = launchedBalloonsCount >= maxShooterBalloons;
+
+      if (basePassed || outOfMoves) {
+        triggerEndLevelSequence(false);
+      }
+    }
+
+    function triggerEndLevelSequence(isVictory) {
+      if (loopAnimationId) cancelAnimationFrame(loopAnimationId);
+      
+      const overlay = document.getElementById('game-outcome-overlay');
+      const heading = document.getElementById('outcome-heading');
+      const subtext = document.getElementById('outcome-subtext');
+      const xpVal = document.getElementById('outcome-xp-val');
+      const scoreVal = document.getElementById('outcome-score-val');
+      const accuracyVal = document.getElementById('outcome-accuracy-val');
+      const starsFrame = document.getElementById('outcome-stars-frame');
+      const iconFrame = document.getElementById('outcome-icon-frame');
+
+      overlay.classList.remove('hidden');
+      scoreVal.innerText = gameScore.toLocaleString();
+      
+      let accuracy = Math.max(40, Math.floor(100 - (launchedBalloonsCount * 1.5)));
+      accuracyVal.innerText = `${accuracy}%`;
+
+      if (isVictory) {
+        triggerSynthSound('win');
+        heading.innerText = "Victory!";
+        heading.className = "text-3xl font-black tracking-tight text-emerald-400";
+        subtext.innerText = "Level Completed Successfully";
+        iconFrame.innerHTML = '<i class="fa-solid fa-trophy text-amber-400 text-3xl"></i>';
+
+        // Star calculations
+        let starsGained = 1;
+        if (accuracy > 75 && (maxShooterBalloons - launchedBalloonsCount) > 5) starsGained = 3;
+        else if (accuracy > 55) starsGained = 2;
+
+        let starsHtml = '';
+        for (let s = 1; s <= 3; s++) {
+          starsHtml += `<i class="fa-solid fa-star text-2xl ${s <= starsGained ? 'text-amber-400' : 'text-slate-800'}"></i>`;
+        }
+        starsFrame.innerHTML = starsHtml;
+
+        // Rewards scale matrix
+        let baseReward = currentMatchLevel > 8 ? 150 : currentMatchLevel > 6 ? 75 : currentMatchLevel > 3 ? 35 : 15;
+        xpVal.innerText = `+${baseReward} XP`;
+        xpVal.className = "font-black text-emerald-400 animate-pulse";
+
+        // Commit progression configurations safely inside state mapping layers
+        userState.xp += baseReward;
+        userState.totalXp += baseReward;
+        userState.balloonBlastGame.stars[currentMatchLevel] = Math.max(userState.balloonBlastGame.stars[currentMatchLevel] || 0, starsGained);
+        
+        if (currentMatchLevel === userState.balloonBlastGame.unlockedLevel && currentMatchLevel < 10) {
+          userState.balloonBlastGame.unlockedLevel++;
+        }
+
+      } else {
+        triggerSynthSound('fail');
+        heading.innerText = "Defeat";
+        heading.className = "text-3xl font-black tracking-tight text-red-500";
+        subtext.innerText = "Layout Failed or Out of Moves";
+        iconFrame.innerHTML = '<i class="fa-solid fa-heart-broken text-red-500 text-3xl"></i>';
+        starsFrame.innerHTML = '<i class="fa-solid fa-star text-slate-800 text-2xl"></i><i class="fa-solid fa-star text-slate-800 text-2xl"></i><i class="fa-solid fa-star text-slate-800 text-2xl"></i>';
+        
+        xpVal.innerText = "+0 XP";
+        xpVal.className = "font-black text-slate-500";
+
+        userState.balloonBlastGame.lives = Math.max(0, userState.balloonBlastGame.lives - 1);
+      }
+
+      saveState();
+      updateUI();
+    }
+
+    function closeOutcomePanel() {
+      document.getElementById('game-outcome-overlay').add('hidden');
+      quitActiveMatch();
+    }
+
+    // WEB AUDIO API NATIVE SOUND GENERATION ENGINE UTILITIES
+    let audioCtx = null;
+    function initAudioEngine() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function triggerSynthSound(type) {
+      if (!audioCtx) return;
+      try {
+        let osc = audioCtx.createOscillator();
+        let gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        let now = audioCtx.currentTime;
+
+        if (type === 'shoot') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(150, now);
+          osc.frequency.exponentialRampToValueAtTime(450, now + 0.12);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+          osc.start(now);
+          osc.stop(now + 0.12);
+        } else if (type === 'pop') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(600, now);
+          osc.frequency.exponentialRampToValueAtTime(1200, now + 0.08);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+          osc.start(now);
+          osc.stop(now + 0.08);
+        } else if (type === 'win') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(300, now);
+          osc.frequency.setValueAtTime(400, now + 0.1);
+          osc.frequency.setValueAtTime(500, now + 0.2);
+          osc.frequency.setValueAtTime(650, now + 0.3);
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.55);
+          osc.start(now);
+          osc.stop(now + 0.55);
+        } else if (type === 'fail') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.linearRampToValueAtTime(80, now + 0.4);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+          osc.start(now);
+          osc.stop(now + 0.4);
+        }
+      } catch (e) {
+        console.warn("Audio Context playback suspended: platform compatibility checks.");
+      }
+    }
+
+    // ==========================================
+    // APP INITIALIZATION INTEGRATION ROUTINES
+    // ==========================================
     async function initApp() {
       fetchServerTime(); 
+      
       setTimeout(() => {
         document.getElementById('loading-overlay').style.opacity = '0';
-        setTimeout(() => document.getElementById('loading-overlay').style.display = 'none', 500); 
-      }, 2000);
-      loadState(); checkDailyReset(); updateUI();
-      setInterval(updateTimer, 1000); updateTimer();
+        setTimeout(() => {
+          document.getElementById('loading-overlay').style.display = 'none';
+        }, 500); 
+      }, 3000);
+
+      loadState();
+      checkDailyReset();
+      updateUI();
+      
+      setInterval(updateTimer, 1000);
+      updateTimer();
     }
 
     initApp();

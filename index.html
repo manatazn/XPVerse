@@ -32,8 +32,7 @@
             'blob': 'blob 7s infinite',
             'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             'float-up': 'floatUp 2s ease-out forwards',
-            'pop': 'pop 0.3s ease-out forwards',
-            'shimmer': 'shimmer 2s infinite'
+            'pop': 'pop 0.3s ease-out forwards'
           },
           keyframes: {
             blob: {
@@ -50,10 +49,6 @@
               '0%': { transform: 'scale(1)' },
               '50%': { transform: 'scale(1.3)' },
               '100%': { transform: 'scale(0)', opacity: 0 }
-            },
-            shimmer: {
-              '0%': { transform: 'translateX(-100%)' },
-              '100%': { transform: 'translateX(100%)' }
             }
           }
         }
@@ -161,7 +156,6 @@
     .box-silver { background: linear-gradient(135deg, rgba(226,232,240,0.1), rgba(148,163,184,0.2)); border: 1px solid rgba(226,232,240,0.4); }
     .box-gold { background: linear-gradient(135deg, rgba(255,184,0,0.15), rgba(217,119,6,0.25)); border: 1px solid rgba(255,184,0,0.5); }
 
-    /* Game Specific Styles */
     #game-play-container.fullscreen-mode {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -196,7 +190,9 @@
     .level-node.current { background: #050511; border: 3px solid #00f0ff; color: #00f0ff; box-shadow: 0 0 20px rgba(0, 240, 255, 0.6); animation: pulse 2s infinite; }
     .level-node.locked { background: #1e293b; border: 2px solid #334155; color: #475569; }
     
-    .path-line { position: absolute; width: 6px; background: #334155; z-index: 5; }
+    .path-line {
+      position: absolute; width: 6px; background: #334155; z-index: 5;
+    }
     .path-line.active { background: linear-gradient(to bottom, #3b82f6, #00f0ff); box-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
 
     .star-icon { color: #334155; font-size: 0.7rem; }
@@ -205,18 +201,6 @@
     #splash-screen {
       background: linear-gradient(180deg, #050511 0%, #0a0b1a 100%);
       z-index: 100;
-    }
-    
-    /* Elegant Powerup Buttons */
-    .powerup-btn {
-      transition: all 0.2s ease-in-out;
-    }
-    .powerup-btn:active {
-      transform: scale(0.9) translateY(4px);
-    }
-    .powerup-active-glow {
-      box-shadow: 0 0 20px var(--glow-color);
-      border-color: var(--glow-color);
     }
   </style>
 </head>
@@ -280,10 +264,11 @@
 
   <main class="flex-1 max-w-md w-full mx-auto p-4 pt-24 relative" id="app-content">
     
-    <!-- HOME VIEW -->
     <div id="view-home" class="view-section fade-in space-y-6">
+      
       <div class="relative glass-card rounded-[2rem] p-6 text-center border-t border-t-blue-400/20 overflow-hidden flex flex-col items-center justify-center min-h-[240px]">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/20 rounded-full filter blur-[40px] pointer-events-none animate-pulse-fast"></div>
+        
         <div class="relative z-10 flex flex-col items-center">
           <div class="w-14 h-14 rounded-full bg-blue-900/40 border border-blue-400/30 flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
              <i class="fa-solid fa-gem text-2xl text-crypto-glow drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]"></i>
@@ -291,6 +276,7 @@
           <p class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-1 opacity-80">Balance</p>
           <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-blue-400 tracking-tighter drop-shadow-2xl" id="main-xp-display">0 XP</h1>
         </div>
+        
         <div class="w-full mt-6 grid grid-cols-2 gap-3">
           <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md">
             <div class="bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/20"><i class="fa-solid fa-clapperboard text-blue-400"></i></div>
@@ -323,8 +309,8 @@
       </div>
     </div>
 
-    <!-- GAMES VIEW -->
     <div id="view-games" class="view-section hidden fade-in space-y-4 pb-4">
+      
       <div id="game-menu-container">
         <div class="text-center pt-2 mb-4">
           <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Games</h2>
@@ -333,20 +319,22 @@
 
         <div class="glass-card rounded-3xl p-6 relative overflow-hidden flex flex-col items-center min-h-[400px]">
           <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-6">Daily Levels Progress</p>
-          <div class="relative w-full max-w-[250px] mx-auto py-4" id="level-map"></div>
+          
+          <div class="relative w-full max-w-[250px] mx-auto py-4" id="level-map">
+            </div>
         </div>
       </div>
 
       <div id="game-play-container" class="hidden flex flex-col gap-3">
-        <div class="glass-card p-3 rounded-2xl flex justify-between items-center border border-blue-500/30 shrink-0 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
-          <button onclick="exitGame()" class="w-10 h-10 rounded-xl bg-slate-800/50 flex items-center justify-center text-slate-400 hover:text-white active:scale-95 transition-all">
+        <div class="glass-card p-3 rounded-2xl flex justify-between items-center border border-blue-500/30 shrink-0 z-10">
+          <button onclick="exitGame()" class="w-10 h-10 rounded-xl bg-slate-800/50 flex items-center justify-center text-slate-400 active:scale-95 transition-all">
             <i class="fa-solid fa-arrow-left"></i>
           </button>
           <div class="text-center">
             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Level <span id="ingame-level-display">1</span></p>
-            <p class="text-lg font-black text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]" id="ingame-score">0</p>
+            <p class="text-sm font-black text-white" id="ingame-score">0</p>
           </div>
-          <div class="flex gap-1 bg-slate-900/50 p-2 rounded-xl border border-slate-700/50" id="ingame-stars">
+          <div class="flex gap-1" id="ingame-stars">
             <i class="fa-solid fa-star text-slate-700 text-xs"></i>
             <i class="fa-solid fa-star text-slate-700 text-xs"></i>
             <i class="fa-solid fa-star text-slate-700 text-xs"></i>
@@ -364,39 +352,40 @@
           
           <canvas id="balloon-canvas"></canvas>
 
-          <div id="game-over-modal" class="absolute inset-0 bg-[#050511]/95 backdrop-blur-md z-20 flex flex-col items-center justify-center p-6 hidden fade-in">
-            <h2 id="end-title" class="text-4xl font-black text-white mb-2 drop-shadow-[0_0_15px_#00f0ff]">Level Clear!</h2>
+          <div id="game-over-modal" class="absolute inset-0 bg-[#050511]/90 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-6 hidden fade-in">
+            <h2 id="end-title" class="text-3xl font-black text-white mb-2 drop-shadow-[0_0_10px_#00f0ff]">Level Clear!</h2>
             <div class="flex gap-2 mb-4" id="end-stars"></div>
-            <p id="end-reward" class="text-lg font-bold text-emerald-400 mb-8 bg-emerald-500/10 px-6 py-3 rounded-xl border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">+0 XP</p>
-            <div class="flex gap-4 w-full max-w-[250px]">
-              <button onclick="exitGame()" class="flex-1 py-3.5 rounded-xl bg-slate-800 text-white font-black uppercase text-xs tracking-wider shadow-lg active:scale-95 transition-all border border-slate-600">Back</button>
-              <button id="end-next-btn" onclick="nextLevel()" class="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black uppercase text-xs tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.4)] active:scale-95 transition-all">Next</button>
+            <p id="end-reward" class="text-sm font-bold text-emerald-400 mb-6 bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/30">+0 XP</p>
+            <div class="flex gap-3 w-full">
+              <button onclick="exitGame()" class="flex-1 py-3 rounded-xl bg-slate-800 text-white font-bold uppercase text-xs tracking-wider">Back</button>
+              <button id="end-next-btn" onclick="nextLevel()" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold uppercase text-xs tracking-wider shadow-[0_0_15px_rgba(0,240,255,0.4)]">Next</button>
             </div>
           </div>
         </div>
 
-        <div class="glass-card p-3 rounded-2xl flex justify-center gap-10 items-center shrink-0 border border-slate-700/50">
-          <div class="flex flex-col items-center gap-1.5 group relative">
-            <button onclick="activatePowerup('bomb')" class="powerup-btn w-12 h-12 rounded-2xl bg-slate-800/80 border-2 border-slate-600 flex items-center justify-center text-orange-400 relative shadow-[0_4px_15px_rgba(0,0,0,0.5)]" id="btn-power-bomb" style="--glow-color: rgba(249,115,22,0.6)">
-              <i class="fa-solid fa-bomb text-xl drop-shadow-[0_0_5px_rgba(249,115,22,0.8)]"></i>
-              <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] shadow-lg" id="count-bomb">1</span>
+        <div class="glass-card p-3 rounded-2xl flex justify-center gap-8 items-center shrink-0 z-10 relative">
+          
+          <div class="flex flex-col items-center gap-1 group relative">
+            <button onclick="activatePowerup('bomb')" class="w-14 h-14 rounded-full bg-slate-800/80 border border-slate-600 flex items-center justify-center text-orange-400 active:scale-95 transition-all relative shadow-[0_0_15px_rgba(249,115,22,0.2)]" id="btn-power-bomb">
+              <i class="fa-solid fa-bomb text-xl"></i>
+              <span class="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511]" id="count-bomb">1</span>
             </button>
-            <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Bomb</span>
+            <span class="text-[9px] uppercase font-bold text-slate-400">Bomb</span>
           </div>
 
-          <div class="flex flex-col items-center gap-1.5 group relative">
-            <button onclick="activatePowerup('rocket')" class="powerup-btn w-12 h-12 rounded-2xl bg-slate-800/80 border-2 border-slate-600 flex items-center justify-center text-red-400 relative shadow-[0_4px_15px_rgba(0,0,0,0.5)]" id="btn-power-rocket" style="--glow-color: rgba(239,68,68,0.6)">
-              <i class="fa-solid fa-rocket text-xl drop-shadow-[0_0_5px_rgba(239,68,68,0.8)]"></i>
-              <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] shadow-lg" id="count-rocket">1</span>
+          <div class="flex flex-col items-center gap-1 group relative">
+            <button onclick="activatePowerup('rocket')" class="w-14 h-14 rounded-full bg-slate-800/80 border border-slate-600 flex items-center justify-center text-red-400 active:scale-95 transition-all relative shadow-[0_0_15px_rgba(239,68,68,0.2)]" id="btn-power-rocket">
+              <i class="fa-solid fa-rocket text-xl"></i>
+              <span class="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511]" id="count-rocket">1</span>
             </button>
-            <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Rocket</span>
+            <span class="text-[9px] uppercase font-bold text-slate-400">Rocket</span>
           </div>
+
         </div>
 
       </div>
     </div>
 
-    <!-- TASKS VIEW -->
     <div id="view-tasks" class="view-section hidden fade-in space-y-6 pb-4">
       <div class="text-center pt-2">
         <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Tasks</h2>
@@ -417,7 +406,6 @@
       </div>
     </div>
 
-    <!-- BOXES VIEW -->
     <div id="view-boxes" class="view-section hidden fade-in space-y-5 pb-4">
       <div class="text-center pt-2 mb-6">
         <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Boxes</h2>
@@ -476,7 +464,6 @@
       </div>
     </div>
 
-    <!-- WITHDRAW VIEW -->
     <div id="view-withdraw" class="view-section hidden fade-in space-y-6">
       <div class="glass-card rounded-[2rem] p-6 text-center border-t-2 border-emerald-500/40 bg-gradient-to-b from-emerald-900/30 to-[#050511]">
         <div class="w-14 h-14 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-3 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
@@ -521,7 +508,6 @@
       </div>
     </div>
 
-    <!-- PROFILE VIEW -->
     <div id="view-profile" class="view-section hidden fade-in space-y-6">
       <div class="glass-card rounded-[2.5rem] p-1 text-center relative overflow-hidden border border-slate-700/50">
         <div class="h-32 bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 rounded-t-[2.3rem] relative overflow-hidden">
@@ -635,7 +621,7 @@
     const getDefaultMissions = () => ({
       dailyReward: { completed: true, claimed: false, reward: 5, type: 'boolean' },
       watch5: { target: 5, claimed: false, reward: 20, type: 'progress' },
-      watch30: { target: 30, claimed: false, reward: 50, type: 'progress' },
+      watch10: { target: 10, claimed: false, reward: 50, type: 'progress' },
       all: { claimed: false, reward: 100, type: 'meta' }
     });
 
@@ -780,7 +766,6 @@
         missionsState = getDefaultMissions();
         missionsState.dailyReward.reward = streakRewards[userState.streak - 1]; 
         
-        // Reset Game Daily State
         gameState.seedDate = currentResetDay;
         gameState.levelsCompleted = Array(10).fill(false);
         gameState.stars = Array(10).fill(0);
@@ -898,7 +883,7 @@
       const missionsList = [
         { key: 'dailyReward', label: `Daily Login`, icon: 'fa-gift', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
         { key: 'watch5', label: 'Watch 5 Ads', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
-        { key: 'watch30', label: 'Watch 30 Ads', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
+        { key: 'watch10', label: 'Watch 10 Ads', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
         { key: 'all', label: 'All Tasks', icon: 'fa-crown', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' }
       ];
 
@@ -913,7 +898,7 @@
         } else if (mission.type === 'boolean') {
             isComplete = mission.completed;
         } else if (mission.type === 'meta') {
-            isComplete = ['dailyReward', 'watch5', 'watch30'].every(k => missionsState[k].claimed);
+            isComplete = ['dailyReward', 'watch5', 'watch10'].every(k => missionsState[k].claimed);
         }
 
         let btnHtml = '';
@@ -958,7 +943,6 @@
     }
 
     function watchAd() {
-      // Increased from 10 to 30 Ads
       if (userState.adsWatchedToday >= 30) {
         showToast("Limit", "You have reached the daily limit of 30 ads. Come back tomorrow!", "error");
         return;
@@ -1183,8 +1167,7 @@
     // GAME ENGINE: XPVerse Balloon Blast
     // ==========================================
 
-    // XP Distribution per level mapping to exactly ~750 per day
-    const LEVEL_REWARDS = [25, 35, 50, 60, 75, 80, 90, 100, 110, 125]; 
+    const LEVEL_REWARDS = [40, 50, 60, 70, 75, 80, 85, 90, 100, 100]; // Total 750 XP for daily 1-10 clear
 
     function getDailyRandom(seed) {
       let t = seed += 0x6D2B79F5;
@@ -1246,16 +1229,15 @@
 
     let gameEngine = {
       canvas: null, ctx: null, isPlaying: false,
-      balloons: [], projectiles: [], particles: [], fallingBalloons: [], floatingTexts: [],
+      balloons: [], projectiles: [], particles: [], animations: [], fallingBalloons: [], floatingTexts: [],
       gridCols: 8, ballRadius: 0,
       grid: [], 
       colors: ['#ef4444', '#3b82f6', '#10b981', '#eab308', '#a855f7', '#06b6d4'],
       launcherColor: '', nextColor: '', activePowerup: null,
-      colorHistory: [], // Track history to avoid 3 in a row
       currentLevel: 1, score: 0, shotsFired: 0, totalTarget: 0,
-      offsetY: 0, dropInterval: 5, limitY: 0,
+      offsetY: 0, limitY: 0,
       mouseX: 0, mouseY: 0, rand: null,
-      containers: null
+      colorHistory: []
     };
 
     function startGame(level) {
@@ -1302,6 +1284,7 @@
       gameEngine.particles = [];
       gameEngine.fallingBalloons = [];
       gameEngine.floatingTexts = [];
+      gameEngine.animations = [];
       gameEngine.activePowerup = null;
       gameEngine.colorHistory = [];
 
@@ -1317,9 +1300,8 @@
       generateLevel(level);
       
       let avail = getAvailableColors();
-      gameEngine.launcherColor = avail[Math.floor(gameEngine.rand() * avail.length)];
-      gameEngine.nextColor = avail[Math.floor(gameEngine.rand() * avail.length)];
-      updateColorHistory(gameEngine.launcherColor);
+      gameEngine.launcherColor = getSafeColor(avail);
+      gameEngine.nextColor = getSafeColor(avail);
 
       gameEngine.canvas.addEventListener('touchstart', handleInput, {passive: false});
       gameEngine.canvas.addEventListener('touchmove', handleMove, {passive: false});
@@ -1336,18 +1318,7 @@
       gameEngine.canvas.width = container.clientWidth;
       gameEngine.canvas.height = container.clientHeight;
       gameEngine.ballRadius = (gameEngine.canvas.width / (gameEngine.gridCols + 0.5)) / 2;
-      
-      // Containers Setup
-      let ch = 40;
-      let cy = gameEngine.canvas.height - ch;
-      let cw = gameEngine.canvas.width / 5;
-      gameEngine.containers = {
-        cy: cy, cw: cw, ch: ch,
-        scores: [10, 50, 100, 50, 10],
-        colors: ['#3b82f6', '#10b981', '#ffb800', '#10b981', '#3b82f6']
-      };
-
-      gameEngine.limitY = cy - 80; // Ensure limit line is above containers
+      gameEngine.limitY = gameEngine.canvas.height - 130; 
     }
 
     function getAvailableColors() {
@@ -1365,36 +1336,30 @@
       return arr.length > 0 ? arr : gameEngine.colors;
     }
 
-    function updateColorHistory(color) {
-      gameEngine.colorHistory.unshift(color);
-      if(gameEngine.colorHistory.length > 2) {
-         gameEngine.colorHistory.pop();
-      }
+    function getSafeColor(avail) {
+       if(avail.length === 0) return '#ffffff';
+       if(avail.length === 1) return avail[0];
+
+       let hist = gameEngine.colorHistory;
+       if(hist.length >= 2 && hist[hist.length-1] === hist[hist.length-2]) {
+           let blocked = hist[hist.length-1];
+           let safeAvail = avail.filter(c => c !== blocked);
+           if(safeAvail.length > 0) {
+               return safeAvail[Math.floor(Math.random() * safeAvail.length)];
+           }
+       }
+       return avail[Math.floor(Math.random() * avail.length)];
     }
 
     function updateLauncherColors() {
        let avail = getAvailableColors();
        if(avail.length === 0) return; 
        
-       let isColorAllowed = (color) => {
-         // Fix repetitive colors: Check if last two history are this exact color
-         if (gameEngine.colorHistory.length === 2 && 
-             gameEngine.colorHistory[0] === color && 
-             gameEngine.colorHistory[1] === color) {
-            return false;
-         }
-         return true;
-       };
-
        if(!avail.includes(gameEngine.launcherColor)) {
-           let safeColors = avail.filter(isColorAllowed);
-           if(safeColors.length === 0) safeColors = avail; // Fallback
-           gameEngine.launcherColor = safeColors[Math.floor(Math.random() * safeColors.length)];
+           gameEngine.launcherColor = getSafeColor(avail);
        }
        if(!avail.includes(gameEngine.nextColor)) {
-           let safeColors = avail.filter(c => c !== gameEngine.launcherColor).filter(isColorAllowed);
-           if(safeColors.length === 0) safeColors = avail; // Fallback
-           gameEngine.nextColor = safeColors[Math.floor(Math.random() * safeColors.length)];
+           gameEngine.nextColor = getSafeColor(avail);
        }
     }
 
@@ -1415,6 +1380,7 @@
         for (let c = 0; c < colsInRow; c++) {
           let type = 'normal';
           let hp = 1;
+          
           let rVal = gameEngine.rand();
           
           if ((r + c) % 2 === 0 && rVal < 0.2) {
@@ -1433,7 +1399,9 @@
           
           gameEngine.grid[r][c] = {
             color: type === 'armored' ? '#64748b' : gameEngine.colors[Math.floor(gameEngine.rand() * gameEngine.colors.length)],
-            type: type, hp: hp, r: r, c: c
+            type: type,
+            hp: hp,
+            r: r, c: c
           };
           gameEngine.totalTarget++;
         }
@@ -1455,54 +1423,43 @@
           let b = gameEngine.grid[r][c];
           if (b) {
             let pos = getGridPos(r, c);
-            drawBalloon(ctx, pos.x, pos.y, gameEngine.ballRadius * 0.95, b.color, b.type, b.hp);
+            drawBalloon(ctx, pos.x, pos.y, gameEngine.ballRadius * 0.9, b.color, b.type, b.hp);
           }
         }
       }
     }
 
-    function drawBalloon(ctx, x, y, r, color, type, hp, isGhost = false) {
-      ctx.globalAlpha = isGhost ? 0.3 : 1.0;
+    function drawBalloon(ctx, x, y, r, color, type, hp) {
       ctx.beginPath();
       ctx.arc(x, y, r, 0, Math.PI * 2);
       
-      // Much brighter, shinier balloons
-      let grad = ctx.createRadialGradient(x - r/2, y - r/2, r/10, x, y, r * 1.2);
+      let grad = ctx.createRadialGradient(x - r*0.2, y - r*0.2, r*0.1, x, y, r);
       grad.addColorStop(0, '#ffffff'); 
-      grad.addColorStop(0.2, shadeColor(color, 40));
-      grad.addColorStop(0.6, color);
-      grad.addColorStop(1, shadeColor(color, -60)); 
+      grad.addColorStop(0.3, color);
+      grad.addColorStop(0.8, shadeColor(color, -20));
+      grad.addColorStop(1, shadeColor(color, -50)); 
       ctx.fillStyle = grad;
       ctx.fill();
       
-      // Specular Highlight
       ctx.beginPath();
       ctx.ellipse(x - r*0.35, y - r*0.35, r*0.4, r*0.2, Math.PI / -4, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
       ctx.fill();
 
-      // Rim light
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-      ctx.stroke();
-
       if (type === 'locked') {
-        ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fill();
-        ctx.fillStyle = '#f8fafc'; ctx.font = `900 ${r}px FontAwesome`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fill();
+        ctx.fillStyle = '#cbd5e1'; ctx.font = `900 ${r}px FontAwesome`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText('\uf023', x, y); 
         if(hp === 2) {
-           ctx.beginPath(); ctx.arc(x, y, r*0.8, 0, Math.PI*2); ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=3; ctx.stroke();
+           ctx.beginPath(); ctx.arc(x, y, r*0.8, 0, Math.PI*2); ctx.strokeStyle='#94a3b8'; ctx.lineWidth=3; ctx.stroke();
         }
       } else if (type === 'virus') {
         ctx.fillStyle = '#bef264'; ctx.font = `900 ${r}px FontAwesome`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText('\uf0e7', x, y); 
       } else if (type === 'armored') {
-        ctx.beginPath(); ctx.arc(x, y, r*0.7, 0, Math.PI*2); ctx.fillStyle='#1e293b'; ctx.fill();
+        ctx.beginPath(); ctx.arc(x, y, r*0.7, 0, Math.PI*2); ctx.fillStyle='#334155'; ctx.fill();
         ctx.beginPath(); ctx.arc(x, y, r*0.3, 0, Math.PI*2); ctx.fillStyle='#94a3b8'; ctx.fill();
       }
-      ctx.globalAlpha = 1.0;
     }
 
     function shadeColor(color, percent) {
@@ -1524,7 +1481,7 @@
       
       const ctx = gameEngine.ctx;
       const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 120; // Launcher raised to make space for containers
+      const ly = gameEngine.canvas.height - 70; // Launcher yuxarı qaldırılıb
       
       let dy = gameEngine.mouseY - ly;
       if (dy > -10) return; 
@@ -1543,7 +1500,7 @@
       let path = [{x, y}];
       let steps = 0;
 
-      while (y > radius && steps < 200) {
+      while (y > radius && steps < 150) {
           x += vx;
           y += vy;
           
@@ -1567,125 +1524,96 @@
           steps++;
       }
 
-      ctx.beginPath();
-      ctx.moveTo(path[0].x, path[0].y);
-      for (let i = 1; i < path.length; i++) {
-          ctx.lineTo(path[i].x, path[i].y);
-      }
-      
-      let finalX = path[path.length - 1].x;
-      let finalY = path[path.length - 1].y;
+      let endPoint = path[path.length - 1];
 
       if (gameEngine.activePowerup === 'rocket') {
-          // Thick corridor highlighting damage
+          ctx.beginPath();
+          ctx.moveTo(path[0].x, path[0].y);
+          for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, path[i].y);
           ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
           ctx.lineWidth = radius * 2.5;
           ctx.setLineDash([]);
-          ctx.lineCap = 'round';
           ctx.stroke();
-          
-          // Center core
+      } else if (gameEngine.activePowerup === 'bomb') {
           ctx.beginPath();
           ctx.moveTo(path[0].x, path[0].y);
-          for (let i = 1; i < path.length; i++) {
-              ctx.lineTo(path[i].x, path[i].y);
-          }
-          ctx.strokeStyle = '#ef4444';
-          ctx.lineWidth = 3;
-          ctx.stroke();
-
-      } else if (gameEngine.activePowerup === 'bomb') {
-          // Normal line
+          for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, path[i].y);
           ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
           ctx.lineWidth = 2;
           ctx.setLineDash([8, 8]);
           ctx.stroke();
-          ctx.setLineDash([]);
           
-          // Bomb Preview Area
           ctx.beginPath();
-          ctx.arc(finalX, finalY, radius * 5, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(249, 115, 22, 0.2)';
+          ctx.arc(endPoint.x, endPoint.y, radius * 3.5, 0, Math.PI*2);
+          ctx.fillStyle = 'rgba(249, 115, 22, 0.25)';
           ctx.fill();
-          ctx.lineWidth = 2;
           ctx.strokeStyle = 'rgba(249, 115, 22, 0.8)';
+          ctx.setLineDash([4, 4]);
+          ctx.lineWidth = 2;
           ctx.stroke();
       } else {
-          // Normal Line
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+          ctx.beginPath();
+          ctx.moveTo(path[0].x, path[0].y);
+          for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, path[i].y);
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
           ctx.lineWidth = 2;
           ctx.setLineDash([8, 8]);
           ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.arc(endPoint.x, endPoint.y, radius*0.8, 0, Math.PI*2);
+          ctx.strokeStyle = gameEngine.launcherColor;
           ctx.setLineDash([]);
-
-          // Ghost Balloon at landing spot
-          drawBalloon(ctx, finalX, finalY, radius, gameEngine.launcherColor, 'normal', 1, true);
+          ctx.lineWidth = 2;
+          ctx.stroke();
       }
-    }
-
-    function drawContainers() {
-      const ctx = gameEngine.ctx;
-      const c = gameEngine.containers;
-
-      ctx.save();
-      for(let i=0; i<5; i++) {
-         let cx = i * c.cw;
-         
-         // Base glass look
-         ctx.fillStyle = c.colors[i] + '30';
-         ctx.fillRect(cx, c.cy, c.cw, c.ch);
-         
-         // Borders
-         ctx.strokeStyle = c.colors[i] + 'aa';
-         ctx.lineWidth = 2;
-         ctx.strokeRect(cx, c.cy, c.cw, c.ch);
-
-         // Top light
-         ctx.fillStyle = 'rgba(255,255,255,0.2)';
-         ctx.fillRect(cx, c.cy, c.cw, 4);
-
-         // Score Text
-         ctx.fillStyle = '#ffffff';
-         ctx.font = '900 14px "Outfit"';
-         ctx.textAlign = 'center';
-         ctx.textBaseline = 'middle';
-         ctx.shadowColor = c.colors[i];
-         ctx.shadowBlur = 10;
-         ctx.fillText(c.scores[i], cx + c.cw/2, c.cy + c.ch/2);
-         ctx.shadowBlur = 0;
-      }
-      ctx.restore();
+      ctx.setLineDash([]);
     }
 
     function drawLauncher() {
       const ctx = gameEngine.ctx;
       const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 120; // Adjusted for containers
+      const ly = gameEngine.canvas.height - 70;
       
       drawAimLine();
 
-      // Next Balloon display
-      drawBalloon(ctx, lx - 70, ly + 10, gameEngine.ballRadius * 0.6, gameEngine.nextColor, 'normal', 1);
-      ctx.fillStyle = '#94a3b8'; ctx.font = "bold 10px sans-serif"; ctx.fillText("NEXT", lx - 70, ly - 15);
+      drawBalloon(ctx, lx - 60, ly + 10, gameEngine.ballRadius * 0.6, gameEngine.nextColor, 'normal', 1);
+      ctx.fillStyle = '#64748b'; ctx.font = "10px sans-serif"; ctx.textAlign = 'center'; ctx.fillText("NEXT", lx - 60, ly - 15);
       
-      // Launcher Base
-      let grad = ctx.createRadialGradient(lx, ly, 10, lx, ly, 35);
-      grad.addColorStop(0, '#1e293b');
-      grad.addColorStop(1, '#0f172a');
-      ctx.beginPath(); ctx.arc(lx, ly, 35, Math.PI, 0); ctx.fillStyle = grad; ctx.fill();
-      ctx.strokeStyle = '#334155'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.beginPath(); ctx.arc(lx, ly, 30, Math.PI, 0); ctx.fillStyle = '#1e293b'; ctx.fill();
       
       if (gameEngine.projectiles.length === 0) {
         let type = 'normal';
         let color = gameEngine.activePowerup ? (gameEngine.activePowerup === 'rocket' ? '#ef4444' : (gameEngine.activePowerup === 'bomb' ? '#f97316' : '#ffffff')) : gameEngine.launcherColor;
         
         if (gameEngine.activePowerup === 'rocket') {
-           ctx.font = '28px FontAwesome'; ctx.fillStyle='#ef4444'; ctx.fillText('\uf135', lx, ly);
+           ctx.font = '24px FontAwesome'; ctx.fillStyle='#ef4444'; ctx.textAlign = 'center'; ctx.textBaseline='middle'; ctx.fillText('\uf135', lx, ly);
         } else if (gameEngine.activePowerup === 'bomb') {
-           ctx.font = '28px FontAwesome'; ctx.fillStyle='#f97316'; ctx.fillText('\uf1e2', lx, ly);
+           ctx.font = '24px FontAwesome'; ctx.fillStyle='#f97316'; ctx.textAlign = 'center'; ctx.textBaseline='middle'; ctx.fillText('\uf1e2', lx, ly);
         } else {
            drawBalloon(ctx, lx, ly, gameEngine.ballRadius, color, type, 1);
         }
+      }
+    }
+
+    function drawBuckets() {
+      const ctx = gameEngine.ctx;
+      const buckets = [10, 50, 100, 50, 10];
+      let bw = gameEngine.canvas.width / 5;
+      let by = gameEngine.canvas.height - 40;
+      
+      for(let i=0; i<5; i++) {
+         ctx.fillStyle = (i%2===0)? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.06)';
+         ctx.fillRect(i*bw, by, bw, 40);
+         
+         ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+         ctx.strokeRect(i*bw, by, bw, 40);
+
+         ctx.fillStyle = 'rgba(255,255,255,0.6)';
+         ctx.font = '900 14px sans-serif';
+         ctx.textAlign = 'center';
+         ctx.textBaseline = 'middle';
+         ctx.fillText(buckets[i], i*bw + bw/2, by + 20);
       }
     }
 
@@ -1695,8 +1623,8 @@
       updateMousePos(e);
       
       const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 120;
-      const dist = Math.hypot(gameEngine.mouseX - (lx - 70), gameEngine.mouseY - (ly + 10));
+      const ly = gameEngine.canvas.height - 70;
+      const dist = Math.hypot(gameEngine.mouseX - (lx - 60), gameEngine.mouseY - (ly + 10));
       const distMain = Math.hypot(gameEngine.mouseX - lx, gameEngine.mouseY - ly);
       
       if (dist < 40 || distMain < 40) {
@@ -1719,7 +1647,7 @@
       e.preventDefault();
       
       const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 120;
+      const ly = gameEngine.canvas.height - 70;
       
       let dy = gameEngine.mouseY - ly;
       if (dy > -10) { 
@@ -1732,7 +1660,7 @@
       if (angle > -0.1) angle = -0.1; 
       if (angle < -Math.PI + 0.1) angle = -Math.PI + 0.1;
 
-      let speed = 22;
+      let speed = 20;
       let type = 'normal';
       let color = gameEngine.launcherColor;
 
@@ -1750,9 +1678,11 @@
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
       
       if (!gameEngine.activePowerup) {
-         updateColorHistory(gameEngine.launcherColor);
+         gameEngine.colorHistory.push(gameEngine.launcherColor);
+         if(gameEngine.colorHistory.length > 3) gameEngine.colorHistory.shift();
+         
          gameEngine.launcherColor = gameEngine.nextColor;
-         updateLauncherColors();
+         updateLauncherColors(); 
       } else {
          consumePowerup(gameEngine.activePowerup);
       }
@@ -1772,7 +1702,6 @@
     }
 
     function updatePhysics() {
-      // Manage Projectiles
       for (let i = gameEngine.projectiles.length - 1; i >= 0; i--) {
         let p = gameEngine.projectiles[i];
         p.x += p.vx;
@@ -1830,83 +1759,6 @@
            gameEngine.projectiles.splice(i, 1);
         }
       }
-
-      // Manage Falling Balloons
-      for (let i = gameEngine.fallingBalloons.length - 1; i >= 0; i--) {
-          let fb = gameEngine.fallingBalloons[i];
-          fb.vy += 0.4; // Gravity
-          fb.x += fb.vx;
-          fb.y += fb.vy;
-
-          // Wall bounce
-          if (fb.x - fb.radius < 0) { fb.x = fb.radius; fb.vx *= -0.6; }
-          if (fb.x + fb.radius > gameEngine.canvas.width) { fb.x = gameEngine.canvas.width - fb.radius; fb.vx *= -0.6; }
-
-          // Check collision with containers
-          if (fb.y + fb.radius > gameEngine.containers.cy) {
-              let idx = Math.floor(fb.x / gameEngine.containers.cw);
-              if (idx >= 0 && idx < 5) {
-                  let pts = gameEngine.containers.scores[idx];
-                  addScore(pts);
-                  showFloatingText(`+${pts}`, fb.x, fb.y, gameEngine.containers.colors[idx]);
-                  if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-              }
-              gameEngine.fallingBalloons.splice(i, 1);
-          }
-      }
-
-      // Manage Particles
-      for (let i = gameEngine.particles.length - 1; i >= 0; i--) {
-          let p = gameEngine.particles[i];
-          p.x += p.vx;
-          p.y += p.vy;
-          p.life -= 0.03;
-          if (p.life <= 0) gameEngine.particles.splice(i, 1);
-      }
-
-      // Manage Floating Texts
-      for (let i = gameEngine.floatingTexts.length - 1; i >= 0; i--) {
-          let ft = gameEngine.floatingTexts[i];
-          ft.y -= 1;
-          ft.life -= 0.02;
-          if (ft.life <= 0) gameEngine.floatingTexts.splice(i, 1);
-      }
-    }
-
-    function showFloatingText(text, x, y, color = '#fff') {
-        gameEngine.floatingTexts.push({text: text, x: x, y: y, life: 1, color: color});
-    }
-
-    function drawPhysicsObjects() {
-      const ctx = gameEngine.ctx;
-
-      // Particles
-      gameEngine.particles.forEach(p => {
-          ctx.globalAlpha = p.life;
-          ctx.fillStyle = p.color;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, gameEngine.ballRadius * 0.3, 0, Math.PI * 2);
-          ctx.fill();
-      });
-      ctx.globalAlpha = 1.0;
-
-      // Falling Balloons
-      gameEngine.fallingBalloons.forEach(fb => {
-          drawBalloon(ctx, fb.x, fb.y, fb.radius, fb.color, fb.type, 1);
-      });
-
-      // Floating Texts
-      ctx.textAlign = 'center';
-      ctx.font = '900 16px "Outfit"';
-      gameEngine.floatingTexts.forEach(ft => {
-          ctx.globalAlpha = ft.life;
-          ctx.fillStyle = ft.color;
-          ctx.shadowColor = '#000';
-          ctx.shadowBlur = 4;
-          ctx.fillText(ft.text, ft.x, ft.y);
-      });
-      ctx.globalAlpha = 1.0;
-      ctx.shadowBlur = 0;
     }
 
     function snapProjectile(p, forceRow = -1) {
@@ -2004,7 +1856,6 @@
 
         if (matchGroup.length >= 3) { 
             matchGroup.forEach(m => popBalloon(m.r, m.c));
-            addScore(matchGroup.length * 10);
             if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             dropFloaters();
         } else {
@@ -2023,18 +1874,14 @@
        }
 
        let pos = getGridPos(r, c);
+       createParticles(r, c, b.color);
        
-       if (b.type === 'normal') {
-           // Transition to falling balloon
-           gameEngine.fallingBalloons.push({
-               x: pos.x, y: pos.y, 
-               vx: (Math.random() - 0.5) * 6, vy: 0, 
-               radius: gameEngine.ballRadius, color: b.color, type: 'normal'
-           });
-       } else {
-           createParticles(r, c, b.color);
-       }
-       
+       gameEngine.fallingBalloons.push({
+           x: pos.x, y: pos.y, 
+           vx: (Math.random() - 0.5) * 6, vy: -2 + Math.random() * -3, 
+           radius: gameEngine.ballRadius, color: b.color, type: b.type
+       });
+
        gameEngine.grid[r][c] = null;
     }
 
@@ -2062,17 +1909,23 @@
             });
         }
 
-        let dropped = 0;
         for(let r=0; r<gameEngine.grid.length; r++) {
             if(!gameEngine.grid[r]) continue;
             for(let c=0; c<gameEngine.grid[r].length; c++) {
                 if(gameEngine.grid[r][c] && !visited.has(`${r},${c}`)) {
-                    popBalloon(r, c, true); // this naturally handles converting to falling items
-                    dropped++;
+                    let pos = getGridPos(r, c);
+                    createParticles(r, c, gameEngine.grid[r][c].color);
+                    
+                    gameEngine.fallingBalloons.push({
+                        x: pos.x, y: pos.y, 
+                        vx: (Math.random() - 0.5) * 4, vy: 1 + Math.random() * 2, 
+                        radius: gameEngine.ballRadius, color: gameEngine.grid[r][c].color, type: gameEngine.grid[r][c].type
+                    });
+
+                    gameEngine.grid[r][c] = null;
                 }
             }
         }
-        if(dropped > 0) addScore(dropped * 20);
     }
 
     function spreadVirus() {
@@ -2100,11 +1953,11 @@
 
     function createParticles(r, c, color) {
         let pos = getGridPos(r, c);
-        for(let i=0; i<8; i++) {
+        for(let i=0; i<6; i++) {
             gameEngine.particles.push({
                 x: pos.x, y: pos.y,
-                vx: (Math.random() - 0.5) * 12,
-                vy: (Math.random() - 0.5) * 12,
+                vx: (Math.random() - 0.5) * 10,
+                vy: (Math.random() - 0.5) * 10,
                 life: 1, color: color
             });
         }
@@ -2167,25 +2020,11 @@
             let stars = calculateStars();
             let idx = gameEngine.currentLevel - 1;
             
-            // Check if level was previously completed
+            let xpEarned = LEVEL_REWARDS[idx] || 75;
             let alreadyCompleted = gameState.levelsCompleted[idx];
-            let xpEarned = alreadyCompleted ? 0 : (LEVEL_REWARDS[idx] || 100);
             
             title.innerText = "Level Clear!";
-            title.className = "text-4xl font-black text-white mb-2 drop-shadow-[0_0_15px_#00f0ff]";
-            
-            if (!alreadyCompleted) {
-                endReward.innerText = `+${xpEarned} XP`;
-                endReward.className = "text-lg font-bold text-emerald-400 mb-8 bg-emerald-500/10 px-6 py-3 rounded-xl border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]";
-                userState.xp += xpEarned;
-                userState.totalXp += xpEarned;
-                gameState.levelsCompleted[idx] = true;
-                checkLevelUp();
-            } else {
-                endReward.innerText = `+0 XP (Replay)`;
-                endReward.className = "text-sm font-bold text-slate-400 mb-8 bg-slate-800 px-4 py-2 rounded-xl border border-slate-700";
-            }
-            
+            title.className = "text-3xl font-black text-white mb-2 drop-shadow-[0_0_10px_#00f0ff]";
             endReward.style.display = 'block';
             
             let starsHtml = '';
@@ -2194,6 +2033,18 @@
             }
             endStars.innerHTML = starsHtml;
 
+            if (!alreadyCompleted) {
+                userState.xp += xpEarned;
+                userState.totalXp += xpEarned;
+                gameState.levelsCompleted[idx] = true;
+                checkLevelUp();
+                endReward.innerText = `+${xpEarned} XP`;
+                endReward.className = "text-sm font-bold text-emerald-400 mb-6 bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/30";
+            } else {
+                endReward.innerText = `Level Already Completed`;
+                endReward.className = "text-sm font-bold text-slate-400 mb-6 bg-slate-800/50 px-4 py-2 rounded-xl border border-slate-700/50";
+            }
+            
             if (stars > gameState.stars[idx]) {
                gameState.stars[idx] = stars;
             }
@@ -2207,8 +2058,8 @@
             
         } else {
             title.innerText = "Level Failed";
-            title.className = "text-4xl font-black text-red-400 mb-2 drop-shadow-[0_0_15px_#ef4444]";
-            endStars.innerHTML = '<i class="fa-solid fa-skull-crossbones text-5xl text-slate-600 drop-shadow-lg"></i>';
+            title.className = "text-3xl font-black text-red-400 mb-2 drop-shadow-[0_0_10px_#ef4444]";
+            endStars.innerHTML = '<i class="fa-solid fa-skull-crossbones text-4xl text-slate-600"></i>';
             endReward.style.display = 'none';
             nextBtn.innerText = "Retry";
             nextBtn.onclick = () => { startGame(gameEngine.currentLevel); };
@@ -2234,19 +2085,12 @@
     function updatePowerupUI() {
         ['rocket', 'bomb'].forEach(type => {
             let el = document.getElementById(`count-${type}`);
-            let btn = document.getElementById(`btn-power-${type}`);
-            if(el && btn) {
+            if(el) {
                let count = gameState.powerups[type];
                el.innerText = count > 0 ? count : '+';
                el.className = count > 0 
-                  ? "absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] shadow-lg"
-                  : "absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] animate-pulse shadow-[0_0_10px_#10b981]";
-               
-               if(gameEngine.activePowerup === type) {
-                  btn.classList.add('powerup-active-glow');
-               } else {
-                  btn.classList.remove('powerup-active-glow');
-               }
+                  ? "absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511]"
+                  : "absolute -top-1 -right-1 bg-emerald-500 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511] animate-pulse";
             }
         });
     }
@@ -2294,49 +2138,90 @@
       const ctx = gameEngine.ctx;
       ctx.clearRect(0, 0, gameEngine.canvas.width, gameEngine.canvas.height);
 
-      drawContainers();
-      drawGrid();
-      drawLauncher();
+      updatePhysics();
       
-      if(gameEngine.projectiles.length > 0 || gameEngine.fallingBalloons.length > 0 || gameEngine.particles.length > 0) {
-         updatePhysics();
-         drawPhysicsObjects();
+      drawBuckets();
+      
+      for(let i = gameEngine.fallingBalloons.length - 1; i >= 0; i--) {
+          let fb = gameEngine.fallingBalloons[i];
+          fb.vy += 0.3; 
+          fb.x += fb.vx; 
+          fb.y += fb.vy;
+          drawBalloon(ctx, fb.x, fb.y, fb.radius, fb.color, fb.type, 1);
+          
+          if (fb.y > gameEngine.canvas.height - 40) {
+              let bw = gameEngine.canvas.width / 5;
+              let bIdx = Math.floor(fb.x / bw);
+              if(bIdx < 0) bIdx = 0; if(bIdx > 4) bIdx = 4;
+              let pts = [10, 50, 100, 50, 10][bIdx];
+              
+              addScore(pts);
+              gameEngine.floatingTexts.push({x: fb.x, y: gameEngine.canvas.height - 50, text: "+"+pts, life: 1});
+              gameEngine.fallingBalloons.splice(i, 1);
+              
+              let isEmpty = true;
+              for(let r=0; r<gameEngine.grid.length; r++) {
+                  if(!gameEngine.grid[r]) continue;
+                  for(let c=0; c<gameEngine.grid[r].length; c++) {
+                      if(gameEngine.grid[r][c]) isEmpty = false;
+                  }
+              }
+              if(isEmpty && gameEngine.fallingBalloons.length === 0) checkWinLoss();
+          }
       }
 
+      drawGrid();
+      
       gameEngine.projectiles.forEach(p => {
-         drawBalloon(ctx, p.x, p.y, p.radius, p.color, p.type, 1);
+         if (p.type === 'rocket') {
+             ctx.font = '30px FontAwesome'; ctx.fillStyle='#ef4444'; ctx.textAlign = 'center'; ctx.textBaseline='middle'; 
+             ctx.save();
+             ctx.translate(p.x, p.y);
+             ctx.rotate(Math.atan2(p.vy, p.vx) + Math.PI/2);
+             ctx.fillText('\uf135', 0, 0);
+             ctx.restore();
+         } else if (p.type === 'bomb') {
+             ctx.font = '30px FontAwesome'; ctx.fillStyle='#f97316'; ctx.textAlign = 'center'; ctx.textBaseline='middle'; 
+             ctx.fillText('\uf1e2', p.x, p.y);
+         } else {
+             drawBalloon(ctx, p.x, p.y, p.radius, p.color, p.type, 1);
+         }
       });
 
-      // Limit line (Danger Zone indicator)
+      for(let i = gameEngine.particles.length - 1; i >= 0; i--) {
+          let pt = gameEngine.particles[i];
+          pt.x += pt.vx; pt.y += pt.vy; pt.life -= 0.05;
+          if(pt.life <= 0) { gameEngine.particles.splice(i, 1); continue; }
+          ctx.beginPath(); ctx.arc(pt.x, pt.y, pt.life * 5, 0, Math.PI*2);
+          ctx.fillStyle = pt.color; ctx.globalAlpha = pt.life; ctx.fill(); ctx.globalAlpha = 1;
+      }
+
+      for(let i = gameEngine.floatingTexts.length - 1; i >= 0; i--) {
+          let ft = gameEngine.floatingTexts[i];
+          ft.y -= 1.5; ft.life -= 0.02;
+          if(ft.life <= 0) { gameEngine.floatingTexts.splice(i, 1); continue; }
+          ctx.globalAlpha = ft.life;
+          ctx.fillStyle = '#f8fafc';
+          ctx.font = '900 16px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(ft.text, ft.x, ft.y);
+          ctx.globalAlpha = 1;
+      }
+
+      drawLauncher();
+
       ctx.beginPath();
       ctx.moveTo(0, gameEngine.limitY);
       ctx.lineTo(gameEngine.canvas.width, gameEngine.limitY);
-      ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)';
-      ctx.lineWidth = 1;
-      ctx.setLineDash([5, 5]);
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.2)';
+      ctx.setLineDash([10, 10]);
       ctx.stroke();
       ctx.setLineDash([]);
-      
-      // Auto check empty grid fix
-      if(gameEngine.projectiles.length === 0 && gameEngine.fallingBalloons.length === 0) {
-         let empty = true;
-         for(let r=0; r<gameEngine.grid.length; r++) {
-             if(!gameEngine.grid[r]) continue;
-             for(let c=0; c<gameEngine.grid[r].length; c++) {
-                 if(gameEngine.grid[r][c]) { empty = false; break; }
-             }
-         }
-         if (empty) checkWinLoss();
-      }
 
-      updatePowerupUI(); 
       window.requestAnimationFrame(gameLoop);
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      initApp();
-    });
-
+    initApp();
   </script>
 </body>
 </html>

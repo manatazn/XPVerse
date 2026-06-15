@@ -1,8 +1,0 @@
-name = "xpverseapp"
-main = "worker.js"
-compatibility_date = "2026-06-15"
-
-[[d1_databases]]
-binding = "MY_KV"
-database_name = "xp-database"
-database_id = "3f85fec6-8762-4766-a9f6-6f0a137bb1db"

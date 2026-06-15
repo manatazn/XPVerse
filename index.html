@@ -1,3 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>XPVerse - Telegram Mini App</title>
+  
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Outfit', 'sans-serif'] },
+          colors: {
+            crypto: {
+              dark: '#050511',     
+              card: '#0a0b1a',     
+              primary: '#3b82f6',  
+              glow: '#00f0ff',     
+              gold: '#ffb800',     
+              silver: '#e2e8f0',   
+              bronze: '#cd7f32'    
+            }
+          },
+          animation: {
+            'blob': 'blob 7s infinite',
+            'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          },
+          keyframes: {
+            blob: {
+              '0%': { transform: 'translate(0px, 0px) scale(1)' },
+              '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+              '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+              '100%': { transform: 'translate(0px, 0px) scale(1)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #050511;
+      color: #f8fafc;
+      overflow-x: hidden;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    /* Background neon orbs */
+    .bg-orb-1 {
+      position: fixed; top: -10%; left: -10%; width: 50vw; height: 50vw;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+      z-index: -1; filter: blur(40px);
+    }
+    .bg-orb-2 {
+      position: fixed; bottom: -10%; right: -10%; width: 60vw; height: 60vw;
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+      z-index: -1; filter: blur(50px);
+    }
+
+    input { user-select: auto !important; }
+    img { pointer-events: none; }
+    ::-webkit-scrollbar { width: 0px; background: transparent; }
+
+    /* Ultra Modern Glassmorphism */
+    .glass-card {
+      background: linear-gradient(145deg, rgba(20, 22, 45, 0.6) 0%, rgba(10, 11, 26, 0.8) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+    
+    .glass-button {
+      background: linear-gradient(135deg, rgba(59,130,246,0.2) 0%, rgba(0,240,255,0.1) 100%);
+      border: 1px solid rgba(0,240,255,0.3);
+      box-shadow: 0 0 15px rgba(0,240,255,0.1) inset;
+    }
+
+    .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Bottom Menu Active State */
+    .nav-active { color: #00f0ff !important; transform: translateY(-2px); }
+    .nav-active i { filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.6)); }
+    .nav-active::before {
+      content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+      width: 24px; height: 4px; background: #00f0ff; border-radius: 4px;
+      box-shadow: 0 0 12px #00f0ff, 0 0 20px #3b82f6;
+    }
+
+    /* Naviqasiyanın gizlənməsi üçün CSS - Klaviatura problemi həlli */
+    #bottom-nav {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out;
+    }
+    .nav-hidden {
+      transition: none !important; /* Ekran yuxarı qalxanda sliding yaranmasın deyə transition bağlandı */
+      transform: translate(-50%, 150px) !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    /* 3D Action Button */
+    .btn-3d {
+      background: linear-gradient(to bottom, #3b82f6, #2563eb);
+      border-bottom: 3px solid #1e3a8a;
+      transition: all 0.1s;
+    }
+    .btn-3d:active {
+      transform: translateY(3px);
+      border-bottom-width: 0px;
+      margin-bottom: 3px;
+    }
+
+    #toast-container {
+      position: fixed; top: 1.5rem; left: 50%; transform: translate(-50%, -150%) scale(0.9);
+      width: 90%; max-width: 380px; z-index: 9999;
+      transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      opacity: 0; pointer-events: none;
+    }
+    .toast-show { transform: translate(-50%, 0) scale(1) !important; opacity: 1 !important; }
+
+    /* Box Gradients */
+    .box-bronze { background: linear-gradient(135deg, rgba(205,127,50,0.1), rgba(139,69,19,0.2)); border: 1px solid rgba(205,127,50,0.4); }
+    .box-silver { background: linear-gradient(135deg, rgba(226,232,240,0.1), rgba(148,163,184,0.2)); border: 1px solid rgba(226,232,240,0.4); }
+    .box-gold { background: linear-gradient(135deg, rgba(255,184,0,0.15), rgba(217,119,6,0.25)); border: 1px solid rgba(255,184,0,0.5); }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen pb-32">
+  
+  <div class="bg-orb-1 animate-blob"></div>
+  <div class="bg-orb-2 animate-blob animation-delay-2000"></div>
+
+  <div id="loading-overlay" class="bg-[#050511] flex flex-col items-center justify-center z-[10000] fixed inset-0 transition-opacity duration-500">
+    <div class="relative w-24 h-24 mb-8">
+      <div class="absolute inset-0 rounded-full border-t-4 border-crypto-glow animate-[spin_1s_linear_infinite] shadow-[0_0_20px_rgba(0,240,255,0.5)]"></div>
+      <div class="absolute inset-3 rounded-full border-b-4 border-blue-500 animate-[spin_1.5s_linear_infinite_reverse]"></div>
+      <div class="absolute inset-0 flex items-center justify-center">
+        <i class="fa-brands fa-space-awesome text-crypto-glow text-3xl animate-pulse"></i>
+      </div>
+    </div>
+    <h2 class="text-white font-black tracking-[0.25em] text-2xl uppercase bg-clip-text text-transparent bg-gradient-to-r from-crypto-glow via-blue-400 to-indigo-500 mb-2 drop-shadow-lg">XPVerse</h2>
+    <div class="flex gap-1 mt-2">
+      <div class="w-1.5 h-1.5 bg-crypto-glow rounded-full animate-bounce"></div>
+      <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+      <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="glass-card rounded-2xl p-4 flex items-center gap-4">
+    <div id="toast-icon" class="w-12 h-12 rounded-full flex shrink-0 items-center justify-center text-xl shadow-inner">
+      <i class="fa-solid fa-bell"></i>
+    </div>
+    <div class="flex-1">
+      <h4 id="toast-title" class="text-sm font-black text-white tracking-wide">Notification</h4>
+      <p id="toast-message" class="text-xs text-slate-300 mt-0.5 leading-tight">Message goes here</p>
+    </div>
+  </div>
+
+  <header id="main-header" class="fixed top-0 left-0 right-0 z-50 w-full p-4 glass-card rounded-b-3xl border-b-0 shadow-lg transition-transform duration-300">
+    <div class="flex justify-between items-center max-w-md mx-auto">
+      <div class="flex items-center gap-3">
+        <div class="relative w-11 h-11 rounded-full p-[2px] bg-gradient-to-tr from-blue-600 via-crypto-glow to-indigo-500 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
+          <img id="user-photo" src="https://via.placeholder.com/150/0a0b1a/00f0ff?text=XP" alt="Profile" class="w-full h-full rounded-full object-cover border-2 border-[#050511]">
+        </div>
+        <div class="flex flex-col">
+          <span id="user-name" class="font-bold text-white text-sm tracking-wide">Loading...</span>
+          <div class="flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse"></span>
+            <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Online</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-col items-end gap-1.5">
+        <div class="glass-button px-3 py-1.5 rounded-xl flex items-center gap-2">
+          <i class="fa-solid fa-bolt text-crypto-glow text-xs drop-shadow-[0_0_5px_#00f0ff]"></i>
+          <span id="user-xp" class="text-white font-black text-sm tracking-wider">0 <span class="text-[10px] text-crypto-glow">XP</span></span>
+        </div>
+        <div class="bg-emerald-900/40 border border-emerald-500/30 px-3 py-1 rounded-xl flex items-center gap-2 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]">
+          <i class="fa-solid fa-dollar-sign text-emerald-400 text-[10px]"></i>
+          <span id="user-usd" class="text-emerald-400 font-black text-xs tracking-wider">0.00</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-md w-full mx-auto p-4 pt-24 relative" id="app-content">
+    
+    <div id="view-home" class="view-section fade-in space-y-6">
+      
+      <div class="relative glass-card rounded-[2rem] p-6 text-center border-t border-t-blue-400/20 overflow-hidden flex flex-col items-center justify-center min-h-[240px]">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/20 rounded-full filter blur-[40px] pointer-events-none animate-pulse-fast"></div>
+        
+        <div class="relative z-10 flex flex-col items-center">
+          <div class="w-14 h-14 rounded-full bg-blue-900/40 border border-blue-400/30 flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
+             <i class="fa-solid fa-gem text-2xl text-crypto-glow drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]"></i>
+          </div>
+          <p class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-1 opacity-80">Balance</p>
+          <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-blue-400 tracking-tighter drop-shadow-2xl" id="main-xp-display">0 XP</h1>
+        </div>
+        
+        <div class="w-full mt-6 grid grid-cols-2 gap-3">
+          <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md">
+            <div class="bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/20"><i class="fa-solid fa-clapperboard text-blue-400"></i></div>
+            <div class="text-left">
+              <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Daily Limit</p>
+              <p class="text-sm font-black text-white"><span id="ads-watched" class="text-blue-400">0</span> / 30</p>
+            </div>
+          </div>
+          <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md">
+            <div class="bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20"><i class="fa-solid fa-fire-flame-curved text-amber-400"></i></div>
+            <div class="text-left">
+              <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Streak</p>
+              <p class="text-sm font-black text-white"><span id="streak-days" class="text-amber-400">1</span> Days</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="watchAd()" id="watch-ad-btn" class="w-full py-4 rounded-2xl text-white font-black text-sm tracking-[0.15em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(59,130,246,0.3)] btn-3d relative overflow-hidden group">
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+        <i class="fa-solid fa-play bg-white/20 p-2 rounded-full text-[10px]"></i> 
+        <span>Watch Ad <span class="text-cyan-200">+10 XP</span></span>
+      </button>
+
+      <div class="glass-card rounded-xl p-3 flex justify-between items-center">
+        <div class="flex items-center gap-2 text-slate-400 text-xs">
+          <i class="fa-solid fa-rotate text-blue-400"></i> Resets in:
+        </div>
+        <span class="text-white font-mono font-bold tracking-widest" id="reset-timer">--:--:--</span>
+      </div>
+    </div>
+
+    <div id="view-tasks" class="view-section hidden fade-in space-y-6 pb-4">
+      <div class="text-center pt-2">
+        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Tasks</h2>
+        <p class="text-xs text-crypto-glow mt-1 uppercase tracking-widest font-bold">Complete to Earn XP</p>
+      </div>
+      
+      <div class="glass-card rounded-3xl p-5 relative overflow-hidden border-t-2 border-t-blue-500/30">
+        <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl"></div>
+        <h3 class="text-xs font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
+          <i class="fa-solid fa-calendar-check text-blue-400 text-lg"></i> 7-Day Streak
+        </h3>
+        
+        <div class="relative flex justify-between items-center" id="streak-tracker-container">
+          </div>
+      </div>
+
+      <div>
+        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">Daily Missions</h3>
+        <div id="missions-container" class="space-y-3">
+          </div>
+      </div>
+    </div>
+
+    <div id="view-boxes" class="view-section hidden fade-in space-y-5 pb-4">
+      <div class="text-center pt-2 mb-6">
+        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Boxes</h2>
+        <p class="text-xs text-amber-400 mt-1 uppercase tracking-widest font-bold">Try Your Luck, Win Dollars</p>
+      </div>
+      
+      <div class="box-bronze glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
+        <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-crypto-bronze/10 rounded-full blur-2xl"></div>
+        <div class="flex items-center gap-4 relative z-10">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-900 to-[#050511] border border-crypto-bronze flex items-center justify-center shadow-[0_0_15px_rgba(205,127,50,0.3)]">
+            <i class="fa-solid fa-box text-2xl text-crypto-bronze"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-white tracking-wide">Bronze Box</h3>
+            <div class="flex flex-col mt-0.5">
+              <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 1,000 XP</span>
+              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $1.00</span>
+            </div>
+          </div>
+        </div>
+        <button onclick="openBox('bronze')" class="relative z-10 bg-gradient-to-b from-orange-600 to-orange-800 text-white shadow-[0_4px_15px_rgba(205,127,50,0.4)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
+      </div>
+
+      <div class="box-silver glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
+        <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-crypto-silver/10 rounded-full blur-2xl"></div>
+        <div class="flex items-center gap-4 relative z-10">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-600 to-[#050511] border border-crypto-silver flex items-center justify-center shadow-[0_0_15px_rgba(226,232,240,0.2)]">
+            <i class="fa-solid fa-box-open text-2xl text-crypto-silver"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-white tracking-wide">Silver Box</h3>
+            <div class="flex flex-col mt-0.5">
+              <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 5,000 XP</span>
+              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $7.00</span>
+            </div>
+          </div>
+        </div>
+        <button onclick="openBox('silver')" class="relative z-10 bg-gradient-to-b from-slate-400 to-slate-600 text-crypto-dark shadow-[0_4px_15px_rgba(226,232,240,0.3)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
+      </div>
+
+      <div class="box-gold glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center border border-crypto-gold shadow-[0_0_20px_rgba(255,184,0,0.15)] transition-transform hover:scale-[1.02]">
+        <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-crypto-gold/20 rounded-full blur-xl animate-pulse"></div>
+        <div class="flex items-center gap-4 relative z-10">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-[#050511] border border-crypto-gold flex items-center justify-center shadow-[0_0_25px_rgba(255,184,0,0.5)]">
+            <i class="fa-solid fa-gem text-2xl text-crypto-gold drop-shadow-[0_0_10px_#ffb800]"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-crypto-gold tracking-wide drop-shadow-[0_0_5px_rgba(255,184,0,0.5)]">Gold Box</h3>
+            <div class="flex flex-col mt-0.5">
+              <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 10,000 XP</span>
+              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $15.00</span>
+            </div>
+          </div>
+        </div>
+        <button onclick="openBox('gold')" class="relative z-10 bg-gradient-to-b from-yellow-400 to-amber-600 text-crypto-dark shadow-[0_4px_20px_rgba(255,184,0,0.6)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
+      </div>
+    </div>
+
+    <div id="view-withdraw" class="view-section hidden fade-in space-y-6">
+      
+      <div class="glass-card rounded-[2rem] p-6 text-center border-t-2 border-emerald-500/40 bg-gradient-to-b from-emerald-900/30 to-[#050511]">
+        <div class="w-14 h-14 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-3 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+          <i class="fa-solid fa-wallet text-xl text-emerald-400"></i>
+        </div>
+        <p class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-1 opacity-80">Withdrawal Balance</p>
+        <h1 class="text-5xl font-black text-white tracking-tighter mb-3">$<span id="withdraw-balance-display">0.00</span></h1>
+        <div class="inline-block bg-[#050511]/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-700/50">
+          <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> Minimum: $5.00</p>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-[1.5rem] p-5 space-y-4 border-slate-800">
+        <div>
+          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">TON Wallet Address</label>
+          <div class="relative group">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="w-5 h-5 opacity-70 group-focus-within:opacity-100 transition-opacity" alt="TON">
+            </div>
+            <input type="text" id="wallet-address" placeholder="UQ..." class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-sm font-medium text-white focus:outline-none focus:border-blue-500 transition-colors placeholder-slate-600 shadow-inner">
+          </div>
+        </div>
+        
+        <div>
+          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">Amount (USD)</label>
+          <div class="relative group">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <i class="fa-solid fa-dollar-sign text-slate-500 group-focus-within:text-emerald-400 transition-colors text-lg"></i>
+            </div>
+            <input type="number" id="withdraw-amount" placeholder="5.00" min="5" step="0.5" class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-sm font-bold text-emerald-400 focus:outline-none focus:border-emerald-500 transition-colors placeholder-slate-600 shadow-inner">
+          </div>
+        </div>
+
+        <button onclick="requestWithdrawal()" id="withdraw-btn" class="w-full py-3.5 mt-2 bg-gradient-to-r from-emerald-600 to-teal-500 hover:brightness-110 active:scale-95 transition-all text-white font-black rounded-xl text-sm uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-[0_10px_20px_rgba(16,185,129,0.3)]">
+          <i class="fa-solid fa-money-bill-transfer"></i> Request Withdrawal
+        </button>
+      </div>
+
+      <div>
+        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">History</h3>
+        <div id="withdraw-history-container" class="space-y-3">
+          </div>
+      </div>
+    </div>
+
+    <div id="view-profile" class="view-section hidden fade-in space-y-6">
+      
+      <div class="glass-card rounded-[2.5rem] p-1 text-center relative overflow-hidden border border-slate-700/50">
+        <div class="h-32 bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 rounded-t-[2.3rem] relative overflow-hidden">
+           <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
+           <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 w-full h-20 bg-gradient-to-t from-[#0a0b1a] to-transparent"></div>
+        </div>
+        
+        <div class="px-6 pb-8 -mt-16 relative z-10">
+          <div class="relative w-24 h-24 mx-auto rounded-full bg-gradient-to-b from-crypto-glow to-blue-600 p-1 mb-3 shadow-[0_0_30px_rgba(0,240,255,0.4)]">
+             <img id="profile-photo-large" src="https://via.placeholder.com/150" class="w-full h-full rounded-full border-4 border-[#0a0b1a] object-cover">
+             <div class="absolute -bottom-2 -right-2 bg-gradient-to-br from-[#0a0b1a] to-blue-900 border-2 border-crypto-glow text-white w-8 h-8 rounded-full flex items-center justify-center font-black text-xs shadow-[0_0_15px_#00f0ff]" id="profile-badge-level">1</div>
+          </div>
+          
+          <h2 id="profile-name" class="text-2xl font-black text-white tracking-tight">User</h2>
+          <p id="profile-tgid" class="text-[10px] text-blue-400 font-mono mt-1 tracking-widest bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20">ID: 00000000</p>
+          
+          <div class="mt-6">
+            <div class="flex justify-between items-end mb-1.5 px-1">
+               <span class="text-[10px] font-black text-crypto-glow uppercase tracking-wider">Level Progress</span>
+               <span class="text-[10px] font-bold text-slate-400" id="profile-current-xp-text">0 XP</span>
+            </div>
+            <div class="w-full bg-[#050511] rounded-full h-3 border border-slate-700/50 overflow-hidden relative shadow-inner p-0.5">
+               <div id="profile-xp-progress" class="bg-gradient-to-r from-blue-600 via-crypto-glow to-indigo-400 h-full rounded-full transition-all duration-1000 w-[0%] relative">
+                 <div class="absolute inset-0 bg-white/20 w-full h-full animate-[shimmer_2s_infinite]"></div>
+               </div>
+            </div>
+            <div class="text-right mt-1 px-1">
+              <span class="text-[9px] font-bold text-slate-500 uppercase">Target: <span id="profile-next-xp-text" class="text-blue-400">250 XP</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-blue-500/30">
+          <div class="w-10 h-10 mx-auto bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center mb-2 text-lg shadow-[0_0_15px_rgba(59,130,246,0.2)inset]"><i class="fa-solid fa-chart-line"></i></div>
+          <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Total Earned</p>
+          <p id="profile-total-xp" class="text-xl font-black text-white">0</p>
+        </div>
+        <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-amber-500/30">
+          <div class="w-10 h-10 mx-auto bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center mb-2 text-lg shadow-[0_0_15px_rgba(245,158,11,0.2)inset]"><i class="fa-solid fa-box-open"></i></div>
+          <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Boxes Opened</p>
+          <p id="profile-boxes" class="text-xl font-black text-white">0</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] glass-card rounded-2xl pb-safe z-50 shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-slate-700/50 backdrop-blur-xl">
+    <div class="flex justify-between items-center px-4 py-2.5 relative">
+      <button onclick="switchTab('home')" class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="home">
+        <i class="fa-solid fa-house text-lg transition-transform group-active:scale-90"></i>
+        <span class="text-[8px] font-black uppercase tracking-widest">Home</span>
+      </button>
+      <button onclick="switchTab('tasks')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="tasks">
+        <i class="fa-solid fa-list-check text-lg transition-transform group-active:scale-90"></i>
+        <span class="text-[8px] font-black uppercase tracking-widest">Tasks</span>
+      </button>
+      <button onclick="switchTab('boxes')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="boxes">
+        <i class="fa-solid fa-box-open text-lg transition-transform group-active:scale-90"></i>
+        <span class="text-[8px] font-black uppercase tracking-widest">Box</span>
+      </button>
+      <button onclick="switchTab('withdraw')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="withdraw">
+        <i class="fa-solid fa-wallet text-lg transition-transform group-active:scale-90"></i>
+        <span class="text-[8px] font-black uppercase tracking-widest">Withdraw</span>
+      </button>
+      <button onclick="switchTab('profile')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="profile">
+        <i class="fa-solid fa-user-astronaut text-lg transition-transform group-active:scale-90"></i>
+        <span class="text-[8px] font-black uppercase tracking-widest">Profile</span>
+      </button>
+    </div>
+  </nav>
+
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand(); 
@@ -6,103 +450,228 @@
     tg.setHeaderColor('#0a0b1a');
     tg.setBackgroundColor('#050511');
 
-    // BURAYA ÖZ CLOUDFLARE WORKER LINKINI YAPIŞDIR
-    const WORKER_URL = "https://xpverapp.xpversegame.workers.dev"; 
+    const defaultUserState = {
+      tgId: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : 123456789,
+      firstName: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : "Crypto User",
+      username: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.username : "xpverse",
+      photoUrl: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.photo_url : "",
+      xp: 0,
+      totalXp: 0,
+      usdBalance: 0.00,
+      level: 1,
+      adsWatchedToday: 0,
+      boxesOpened: 0,
+      streak: 1,
+      lastResetDay: "",
+      withdrawHistory: []
+    };
 
-    // İstifadəçi obyekti (Yalnız Serverdən doldurulacaq)
-    let userState = null;
+    const getDefaultMissions = () => ({
+      dailyReward: { completed: true, claimed: false, reward: 5, type: 'boolean' },
+      watch5: { target: 5, claimed: false, reward: 20, type: 'progress' },
+      watch10: { target: 10, claimed: false, reward: 30, type: 'progress' },
+      watch20: { target: 20, claimed: false, reward: 50, type: 'progress' },
+      all: { claimed: false, reward: 100, type: 'meta' }
+    });
+
+    let userState = { ...defaultUserState };
+    let missionsState = getDefaultMissions();
+    const streakRewards = [5, 10, 15, 20, 25, 30, 50]; 
+
+    let accurateTimeOffset = null;
     let headerTimeout; 
-    const streakRewards = [5, 10, 15, 20, 25, 30, 50];
 
-    // Klaviatura İzləmə Sistemi (Gizlənmə Problemi)
+    // ---- Klaviatura İzləmə Məntiqi Düzəldilmiş Versiya ----
     const bottomNavElement = document.getElementById('bottom-nav');
+    
+    // Yalnız fiziki ekran hündürlüyünün ölçülməsi.
     let maxViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
     function handleKeyboardState() {
       let currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      if (currentHeight > maxViewportHeight) maxViewportHeight = currentHeight;
+      
+      // Əgər ekran tam açılarsa maksimum hündürlüyü yeniləyirik
+      if (currentHeight > maxViewportHeight) {
+        maxViewportHeight = currentHeight;
+      }
+
+      // Hündürlük 100px-dən çox azalıbsa, deməli klaviatura ekranda yer tutur
       if (maxViewportHeight - currentHeight > 100) {
         bottomNavElement.classList.add('nav-hidden');
       } else {
+        // Klaviatura ekrandan gedibsə, naviqasiyanı qaytar
         bottomNavElement.classList.remove('nav-hidden');
+        // QEYD: Buralardakı document.activeElement.blur() silinib, problemi bu yaradırdı.
       }
     }
-    if (window.visualViewport) window.visualViewport.addEventListener('resize', handleKeyboardState);
-    window.addEventListener('resize', handleKeyboardState);
 
-    // BÜTÜN MƏLUMATLARIN SERVERDƏN ÇƏKİLMƏSİ (No LocalStorage)
-    async function loadUserStateFromServer() {
-      const tgId = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : 123456789;
-      const firstName = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : "User";
-      const username = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.username : "xpverse";
-      const referrerId = (tg.initDataUnsafe && tg.initDataUnsafe.start_param) ? tg.initDataUnsafe.start_param : null;
-      
-      try {
-        const response = await fetch(`${WORKER_URL}/auth`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ tgId, firstName, username, referrerId })
-        });
-        const data = await response.json();
-        
-        if (data.success) {
-          userState = data.user; // HƏR ŞEY serverdən gəldi
-          userState.photoUrl = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.photo_url : "";
-          updateUI();
-        } else if (data.isBanned) {
-          document.body.innerHTML = "<div class='flex items-center justify-center min-h-screen text-red-500 font-black text-xl'>BANNED / BLOKLANDINIZ</div>";
-        } else {
-          showToast("Xəta", "Server məlumatları oxuya bilmədi.", "error");
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleKeyboardState);
+    }
+    window.addEventListener('resize', handleKeyboardState);
+    
+    if (tg.onEvent) {
+       tg.onEvent('viewportChanged', handleKeyboardState);
+    }
+    // ---- Klaviatura İzləmə Bitir ----
+
+    async function fetchServerTime() {
+      const apis = [
+        async () => { let res = await fetch('https://api.binance.com/api/v3/time'); let data = await res.json(); return data.serverTime; },
+        async () => { let res = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC'); let data = await res.json(); return new Date(data.utc_datetime).getTime(); },
+        async () => { let res = await fetch('https://timeapi.io/api/Time/current/zone?timeZone=UTC'); let data = await res.json(); return new Date(data.dateTime + 'Z').getTime(); }
+      ];
+
+      for (let apiFunc of apis) {
+        try {
+          const serverTime = await apiFunc();
+          if (serverTime) {
+            accurateTimeOffset = serverTime - performance.now();
+            return true;
+          }
+        } catch (e) {
+          console.warn("Time API failed, falling back...");
         }
-      } catch (e) {
-        showToast("Bağlantı Xətası", "Serverlə əlaqə qurulmadı.", "error");
       }
+      return false;
+    }
+
+    function getNow() {
+      if (!accurateTimeOffset) return new Date(); 
+      return new Date(accurateTimeOffset + performance.now());
     }
 
     function showToast(title, message, type = 'info') {
       const toast = document.getElementById('toast-container');
       const icon = document.getElementById('toast-icon');
+      
       document.getElementById('toast-title').innerText = title;
       document.getElementById('toast-message').innerText = message;
       
-      let iconHtml, iconClass, borderStyle;
+      let iconClass, iconHtml, borderStyle;
       if (type === 'success') {
         iconHtml = '<i class="fa-solid fa-check"></i>';
-        iconClass = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50';
+        iconClass = 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.3)]';
         borderStyle = '1px solid rgba(16, 185, 129, 0.4)';
       } else if (type === 'error') {
         iconHtml = '<i class="fa-solid fa-xmark"></i>';
-        iconClass = 'bg-red-500/20 text-red-400 border-red-500/50';
+        iconClass = 'bg-red-500/20 text-red-400 border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.3)]';
         borderStyle = '1px solid rgba(239, 68, 68, 0.4)';
       } else if (type === 'jackpot') {
         iconHtml = '<i class="fa-solid fa-sack-dollar animate-bounce"></i>';
-        iconClass = 'bg-amber-500/20 text-amber-400 border-amber-500/50';
+        iconClass = 'bg-amber-500/20 text-amber-400 border border-amber-500/50 shadow-[0_0_20px_rgba(251,191,36,0.6)]';
         borderStyle = '1px solid rgba(251, 191, 36, 0.8)';
       } else {
         iconHtml = '<i class="fa-solid fa-bell animate-pulse"></i>';
-        iconClass = 'bg-blue-500/20 text-crypto-glow border-crypto-glow/50';
+        iconClass = 'bg-blue-500/20 text-crypto-glow border border-crypto-glow/50 shadow-[0_0_15px_rgba(0,240,255,0.3)]';
         borderStyle = '1px solid rgba(0, 240, 255, 0.4)';
       }
 
       icon.innerHTML = iconHtml;
-      icon.className = `w-12 h-12 rounded-xl flex shrink-0 items-center justify-center text-xl border ${iconClass}`;
+      icon.className = `w-12 h-12 rounded-xl flex shrink-0 items-center justify-center text-xl ${iconClass}`;
       toast.style.border = borderStyle;
+
       toast.classList.add('toast-show');
       
       if (tg.HapticFeedback) {
         if (type === 'success' || type === 'jackpot') tg.HapticFeedback.notificationOccurred('success');
         else if (type === 'error') tg.HapticFeedback.notificationOccurred('error');
+        else tg.HapticFeedback.notificationOccurred('warning');
       }
+
       setTimeout(() => { toast.classList.remove('toast-show'); }, type === 'jackpot' ? 5000 : 3000); 
     }
 
-    // GÖZƏL ARAYÜZ (UI) YENİLƏNƏSİ
-    function updateUI() {
-      if (!userState) return;
+    function saveState() {
+      localStorage.setItem(`xpverse_user_${userState.tgId}`, JSON.stringify(userState));
+      localStorage.setItem(`xpverse_missions_${userState.tgId}`, JSON.stringify(missionsState));
+    }
 
+    function loadState() {
+      const savedUser = localStorage.getItem(`xpverse_user_${userState.tgId}`);
+      const savedMissions = localStorage.getItem(`xpverse_missions_${userState.tgId}`);
+
+      if (savedUser) userState = { ...userState, ...JSON.parse(savedUser) };
+      if (savedMissions) missionsState = { ...getDefaultMissions(), ...JSON.parse(savedMissions) };
+    }
+
+    function getResetDay(serverDate) { return serverDate.toISOString().split('T')[0]; }
+
+    function checkDailyReset() {
+      const now = getNow();
+      if (!now) return false;
+
+      const currentResetDay = getResetDay(now);
+      
+      if (userState.lastResetDay !== currentResetDay) {
+        if (userState.lastResetDay) {
+            let last = new Date(userState.lastResetDay);
+            let curr = new Date(currentResetDay);
+            let diff = Math.floor((curr - last) / (1000 * 3600 * 24));
+            
+            if (diff === 1) {
+                userState.streak += 1;
+                if (userState.streak > 7) userState.streak = 1;
+            } else if (diff > 1) {
+                userState.streak = 1;
+            }
+        } else {
+            userState.streak = 1;
+        }
+
+        userState.adsWatchedToday = 0;
+        userState.lastResetDay = currentResetDay;
+        missionsState = getDefaultMissions();
+        missionsState.dailyReward.reward = streakRewards[userState.streak - 1]; 
+        
+        saveState();
+        return true; 
+      }
+      return false;
+    }
+
+    function checkLevelUp() {
+      const xp = userState.totalXp;
+      let newLevel = 1;
+      if (xp >= 20000) newLevel = 10;
+      else if (xp >= 3000) newLevel = 5;
+      else if (xp >= 1500) newLevel = 4;
+      else if (xp >= 750) newLevel = 3;
+      else if (xp >= 250) newLevel = 2;
+      
+      if (newLevel > userState.level) {
+        userState.level = newLevel;
+        showToast("Level Up!", `Congratulations! New Level: ${newLevel}!`, "success");
+        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+      }
+    }
+
+    function updateProfileProgress() {
+      const xp = userState.totalXp;
+      let nextLvlXp = 250;
+      let prevLvlXp = 0;
+      
+      if (xp >= 20000) { nextLvlXp = 20000; prevLvlXp = 20000; }
+      else if (xp >= 3000) { nextLvlXp = 20000; prevLvlXp = 3000; }
+      else if (xp >= 1500) { nextLvlXp = 3000; prevLvlXp = 1500; }
+      else if (xp >= 750) { nextLvlXp = 1500; prevLvlXp = 750; }
+      else if (xp >= 250) { nextLvlXp = 750; prevLvlXp = 250; }
+
+      let progress = 100;
+      if (nextLvlXp !== prevLvlXp) {
+        progress = ((xp - prevLvlXp) / (nextLvlXp - prevLvlXp)) * 100;
+      }
+
+      document.getElementById('profile-xp-progress').style.width = `${progress}%`;
+      document.getElementById('profile-current-xp-text').innerText = `${xp.toLocaleString()} XP`;
+      document.getElementById('profile-next-xp-text').innerText = (nextLvlXp === 20000 && xp >= 20000) ? 'MAX LVL' : `${nextLvlXp.toLocaleString()} XP`;
+      document.getElementById('profile-badge-level').innerText = userState.level;
+    }
+
+    function updateUI() {
       document.getElementById('user-name').innerText = userState.firstName;
       document.getElementById('user-xp').innerHTML = `${userState.xp.toLocaleString()} <span class="text-[10px] text-crypto-glow font-bold">XP</span>`;
-      document.getElementById('user-usd').innerText = Number(userState.usdBalance).toFixed(2);
+      document.getElementById('user-usd').innerText = userState.usdBalance.toFixed(2);
       
       if (userState.photoUrl) {
         document.getElementById('user-photo').src = userState.photoUrl;
@@ -111,54 +680,40 @@
 
       document.getElementById('main-xp-display').innerText = `${userState.xp.toLocaleString()} XP`;
       document.getElementById('ads-watched').innerText = userState.adsWatchedToday;
-      document.getElementById('streak-days').innerText = userState.streak || 1;
+      document.getElementById('streak-days').innerText = userState.streak;
 
-      document.getElementById('withdraw-balance-display').innerText = Number(userState.usdBalance).toFixed(2);
+      document.getElementById('withdraw-balance-display').innerText = userState.usdBalance.toFixed(2);
       renderWithdrawHistory();
 
       document.getElementById('profile-name').innerText = userState.firstName;
       document.getElementById('profile-tgid').innerText = `ID: ${userState.tgId}`;
-      document.getElementById('profile-total-xp').innerText = (userState.totalXp || 0).toLocaleString();
-      document.getElementById('profile-boxes').innerText = userState.boxesOpened || 0;
+      document.getElementById('profile-total-xp').innerText = userState.totalXp.toLocaleString();
+      document.getElementById('profile-boxes').innerText = userState.boxesOpened;
       
       updateProfileProgress();
       renderMissions();
       renderStreakTracker();
     }
 
-    function updateProfileProgress() {
-      const xp = userState.totalXp || 0;
-      let nextLvlXp = 250, prevLvlXp = 0;
-      if (xp >= 20000) { nextLvlXp = 20000; prevLvlXp = 20000; }
-      else if (xp >= 3000) { nextLvlXp = 20000; prevLvlXp = 3000; }
-      else if (xp >= 1500) { nextLvlXp = 3000; prevLvlXp = 1500; }
-      else if (xp >= 750) { nextLvlXp = 1500; prevLvlXp = 750; }
-      else if (xp >= 250) { nextLvlXp = 750; prevLvlXp = 250; }
-
-      let progress = nextLvlXp === prevLvlXp ? 100 : ((xp - prevLvlXp) / (nextLvlXp - prevLvlXp)) * 100;
-      document.getElementById('profile-xp-progress').style.width = `${progress}%`;
-      document.getElementById('profile-current-xp-text').innerText = `${xp.toLocaleString()} XP`;
-      document.getElementById('profile-next-xp-text').innerText = (nextLvlXp === 20000 && xp >= 20000) ? 'MAX LVL' : `${nextLvlXp.toLocaleString()} XP`;
-      document.getElementById('profile-badge-level').innerText = userState.level;
-    }
-
     function renderStreakTracker() {
       const container = document.getElementById('streak-tracker-container');
       container.innerHTML = '';
+      
       for (let i = 1; i <= 7; i++) {
-        const isPast = i < userState.streak || (i === userState.streak && userState.missions.dailyReward.claimed);
-        const isToday = i === userState.streak && !userState.missions.dailyReward.claimed;
+        const isPast = i < userState.streak || (i === userState.streak && missionsState.dailyReward.claimed);
+        const isToday = i === userState.streak && !missionsState.dailyReward.claimed;
         const reward = streakRewards[i-1];
+        
         let styles = "bg-[#050511] border-slate-700 text-slate-600";
         let icon = `<span class="text-[9px] font-black">${reward}</span>`;
         let lineStyle = "bg-slate-800";
         
         if (isPast) {
-          styles = "bg-emerald-500/20 border-emerald-500/50 text-emerald-400";
+          styles = "bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]";
           icon = `<i class="fa-solid fa-check text-xs"></i>`;
-          lineStyle = "bg-emerald-500/50";
+          lineStyle = "bg-emerald-500/50 shadow-[0_0_5px_#34d399]";
         } else if (isToday) {
-          styles = "bg-blue-600/30 border-crypto-glow text-white";
+          styles = "bg-blue-600/30 border-crypto-glow shadow-[0_0_20px_rgba(0,240,255,0.5)] text-white";
         }
 
         container.innerHTML += `
@@ -166,7 +721,7 @@
             <div class="w-9 h-9 rounded-xl border-2 flex items-center justify-center transition-all duration-300 ${styles} z-10 relative bg-[#0a0b1a]">
               ${icon}
             </div>
-            <span class="text-[8px] font-black tracking-widest ${isToday ? 'text-crypto-glow' : 'text-slate-500'}">DAY ${i}</span>
+            <span class="text-[8px] font-black tracking-widest ${isToday ? 'text-crypto-glow drop-shadow-[0_0_5px_#00f0ff]' : 'text-slate-500'}">DAY ${i}</span>
             ${i < 7 ? `<div class="absolute top-4 left-[50%] w-full h-1 -z-0 ${lineStyle} rounded-full"></div>` : ''}
           </div>
         `;
@@ -176,6 +731,7 @@
     function renderMissions() {
       const container = document.getElementById('missions-container');
       container.innerHTML = '';
+      
       const missionsList = [
         { key: 'dailyReward', label: `Daily Login`, icon: 'fa-gift', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
         { key: 'watch5', label: 'Watch 5 Ads', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
@@ -185,29 +741,30 @@
       ];
 
       missionsList.forEach(m => {
-        const mission = userState.missions[m.key];
-        let isComplete = false, progressText = '';
+        const mission = missionsState[m.key];
+        let isComplete = false;
+        let progressText = '';
         
         if (mission.type === 'progress') {
             isComplete = userState.adsWatchedToday >= mission.target;
             progressText = `(${Math.min(userState.adsWatchedToday, mission.target)}/${mission.target})`;
         } else if (mission.type === 'boolean') {
-            isComplete = true; // Daily reward auto completes
+            isComplete = mission.completed;
         } else if (mission.type === 'meta') {
-            isComplete = ['dailyReward', 'watch5', 'watch10', 'watch20'].every(k => userState.missions[k].claimed);
+            isComplete = ['dailyReward', 'watch5', 'watch10', 'watch20'].every(k => missionsState[k].claimed);
         }
 
         let btnHtml = '';
         if (mission.claimed) {
-            btnHtml = `<span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/30 flex items-center gap-1"><i class="fa-solid fa-check-double"></i> Claimed</span>`;
+            btnHtml = `<span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/30 flex items-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]"><i class="fa-solid fa-check-double"></i> Claimed</span>`;
         } else if (isComplete) {
             btnHtml = `<button onclick="claimMission('${m.key}')" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-1.5 rounded-xl shadow-[0_0_15px_rgba(0,240,255,0.4)] active:scale-95 transition-all uppercase tracking-wider">Claim</button>`;
         } else {
-            btnHtml = `<span class="text-[10px] font-black bg-slate-800/50 text-slate-200 px-3 py-1.5 rounded-xl border border-slate-600">+${mission.reward} XP</span>`;
+            btnHtml = `<span class="text-[10px] font-black bg-slate-800/50 text-slate-200 px-3 py-1.5 rounded-xl border border-slate-600 shadow-inner">+${mission.reward} XP</span>`;
         }
 
         container.innerHTML += `
-          <div class="glass-card rounded-2xl p-3 flex justify-between items-center border border-slate-800">
+          <div class="glass-card rounded-2xl p-3 flex justify-between items-center transition-transform hover:-translate-y-0.5 border border-slate-800">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-xl border ${m.bg} flex items-center justify-center">
                  <i class="fa-solid ${m.icon} ${m.color} text-lg"></i>
@@ -223,13 +780,139 @@
       });
     }
 
+    function claimMission(key) {
+        const mission = missionsState[key];
+        if (mission.claimed) return;
+        
+        mission.claimed = true;
+        userState.xp += mission.reward;
+        userState.totalXp += mission.reward;
+        
+        checkLevelUp();
+        saveState();
+        updateUI();
+        
+        showToast("Task Completed!", `You earned ${mission.reward} XP!`, "success");
+    }
+
+    function watchAd() {
+      if (userState.adsWatchedToday >= 30) {
+        showToast("Limit", "You have reached the daily limit of 30 ads. Come back tomorrow!", "error");
+        return;
+      }
+
+      const btn = document.getElementById('watch-ad-btn');
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Loading Ad...</span>';
+      btn.classList.add('opacity-80', 'pointer-events-none');
+
+      if (window.Adsgram) {
+        const AdController = window.Adsgram.init({ blockId: "int-34999" });
+        
+        AdController.show().then((result) => {
+          userState.xp += 10;
+          userState.totalXp += 10;
+          userState.adsWatchedToday += 1;
+          
+          checkLevelUp();
+          saveState();
+          updateUI();
+          
+          showToast("Reward Granted!", "You successfully watched the ad and earned +10 XP.", "success");
+          
+          btn.innerHTML = originalHTML;
+          btn.classList.remove('opacity-80', 'pointer-events-none');
+        }).catch((error) => {
+          btn.innerHTML = originalHTML;
+          btn.classList.remove('opacity-80', 'pointer-events-none');
+        });
+      } else {
+        showToast("Error", "The ad system is currently not working.", "error");
+        btn.innerHTML = originalHTML;
+        btn.classList.remove('opacity-80', 'pointer-events-none');
+      }
+    }
+
+    const boxCosts = { bronze: 1000, silver: 5000, gold: 10000 };
+    
+    function openBox(type) {
+      const cost = boxCosts[type];
+      if (userState.xp < cost) {
+        showToast("Not enough XP", `You need ${cost} XP to open this box.`, "error");
+        return;
+      }
+
+      userState.xp -= cost;
+      userState.boxesOpened += 1;
+      
+      let reward = 0;
+      const isJackpot = Math.random() >= 0.9999; 
+
+      if (type === 'bronze') reward = isJackpot ? 1.00 : 0.10;
+      else if (type === 'silver') reward = isJackpot ? 7.00 : 0.50;
+      else if (type === 'gold') reward = isJackpot ? 15.00 : 1.00;
+
+      userState.usdBalance += reward;
+
+      saveState();
+      updateUI();
+
+      if (isJackpot) {
+         showToast("🎉 HUGE JACKPOT! 🎉", `Incredible! You won $${reward.toFixed(2)}!`, "jackpot");
+      } else {
+         showToast("🎁 Box Opened!", `Congratulations! You won $${reward.toFixed(2)} from the box!`, "success");
+      }
+    }
+
+    function requestWithdrawal() {
+      const address = document.getElementById('wallet-address').value;
+      const amount = parseFloat(document.getElementById('withdraw-amount').value);
+
+      if (!address || address.length < 10) {
+        showToast("Invalid Address", "Please enter a valid TON wallet address.", "error");
+        return;
+      }
+
+      if (isNaN(amount) || amount < 5) {
+        showToast("Invalid Amount", "The minimum withdrawal amount is $5.00.", "error");
+        return;
+      }
+
+      if (amount > userState.usdBalance) {
+        showToast("Insufficient balance", "You do not have enough funds to withdraw this amount.", "error");
+        return;
+      }
+
+      userState.usdBalance -= amount;
+      
+      const now = getNow() || new Date(); 
+      const withdrawalRecord = {
+        id: '#' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+        date: now.toLocaleDateString(),
+        amount: amount,
+        address: address.substring(0, 6) + '...' + address.substring(address.length - 4),
+        status: 'Pending'
+      };
+
+      userState.withdrawHistory.unshift(withdrawalRecord); 
+      
+      saveState();
+      updateUI();
+      
+      document.getElementById('wallet-address').value = '';
+      document.getElementById('withdraw-amount').value = '';
+
+      showToast("Withdrawal Requested", `Your request for $${amount.toFixed(2)} has been submitted.`, "success");
+    }
+
     function renderWithdrawHistory() {
       const container = document.getElementById('withdraw-history-container');
-      if (!userState.withdrawHistory || userState.withdrawHistory.length === 0) {
+      
+      if (userState.withdrawHistory.length === 0) {
         container.innerHTML = `
           <div class="glass-card rounded-2xl p-6 text-center border-dashed border-2 border-slate-700">
             <i class="fa-solid fa-clock-rotate-left text-3xl text-slate-600 mb-2"></i>
-            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">Tarixçə Boşdur</p>
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">History is Empty</p>
           </div>`;
         return;
       }
@@ -237,16 +920,18 @@
       container.innerHTML = '';
       userState.withdrawHistory.forEach(record => {
         container.innerHTML += `
-          <div class="glass-card rounded-2xl p-4 flex justify-between items-center border border-slate-800">
+          <div class="glass-card rounded-2xl p-4 flex justify-between items-center transition-transform hover:-translate-y-0.5">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center"><i class="fa-solid fa-arrow-right-arrow-left text-slate-400"></i></div>
+              <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
+                 <i class="fa-solid fa-arrow-right-arrow-left text-slate-400"></i>
+              </div>
               <div>
                 <p class="text-xs font-black text-white">${record.id} <span class="text-[9px] text-slate-400 ml-1 font-bold">${record.date}</span></p>
                 <p class="text-[10px] text-blue-400 mt-0.5 font-mono bg-blue-500/10 inline-block px-1.5 py-0.5 rounded">${record.address}</p>
               </div>
             </div>
             <div class="text-right">
-              <p class="text-sm font-black text-emerald-400">-$${Number(record.amount).toFixed(2)}</p>
+              <p class="text-sm font-black text-emerald-400 drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">-$${record.amount.toFixed(2)}</p>
               <p class="text-[9px] font-black text-amber-400 uppercase tracking-widest mt-0.5 bg-amber-500/10 inline-block px-2 py-0.5 rounded-full border border-amber-500/20">${record.status}</p>
             </div>
           </div>
@@ -254,161 +939,80 @@
       });
     }
 
-    // TƏTBİQ MƏNTİQİ (Serverə Göndərmə)
-    async function claimMission(key) {
-      try {
-        const response = await fetch(`${WORKER_URL}/claimMission`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ tgId: userState.tgId, missionKey: key })
-        });
-        const data = await response.json();
-        if (data.success) {
-          userState = data.user;
-          updateUI();
-          showToast("Missiya Tamamlandı!", `Siz mükafat olaraq XP qazandınız!`, "success");
-        } else {
-          showToast("Xəta", data.error, "error");
-        }
-      } catch (e) {
-        showToast("Xəta", "Serverlə əlaqə qurulmadı.", "error");
-      }
-    }
-
-    function watchAd() {
-      if (userState.adsWatchedToday >= 30) {
-        showToast("Limit", "Siz günlük limitə (30 reklam) çatmısınız.", "error");
-        return;
-      }
-
-      const btn = document.getElementById('watch-ad-btn');
-      const originalHTML = btn.innerHTML;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Loading...</span>';
-      btn.classList.add('opacity-80', 'pointer-events-none');
-
-      if (window.Adsgram) {
-        const AdController = window.Adsgram.init({ blockId: "int-34999" });
-        AdController.show().then(async () => {
-          try {
-            const response = await fetch(`${WORKER_URL}/watchAd`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ tgId: userState.tgId })
-            });
-            const data = await response.json();
-            if (data.success) {
-              userState = data.user;
-              updateUI();
-              showToast("Mükafat Verildi!", "Reklam təsdiqləndi: +10 XP", "success");
-            }
-          } catch(e) { showToast("Xəta", "Baza yenilənmədi.", "error"); }
-          btn.innerHTML = originalHTML; btn.classList.remove('opacity-80', 'pointer-events-none');
-        }).catch(() => {
-          btn.innerHTML = originalHTML; btn.classList.remove('opacity-80', 'pointer-events-none');
-        });
-      } else {
-        showToast("Error", "Reklam sistemi aktiv deyil.", "error");
-        btn.innerHTML = originalHTML; btn.classList.remove('opacity-80', 'pointer-events-none');
-      }
-    }
-
-    async function openBox(type) {
-      const btn = document.activeElement;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-      btn.classList.add('pointer-events-none');
-
-      try {
-        const response = await fetch(`${WORKER_URL}/openBox`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ tgId: userState.tgId, boxType: type })
-        });
-        const data = await response.json();
-        if (data.success) {
-          userState = data.user;
-          updateUI();
-          if (data.isJackpot) showToast("🎉 JACKPOT! 🎉", `$${data.reward.toFixed(2)} qazandınız!`, "jackpot");
-          else showToast("🎁 Qutu Açıldı!", `$${data.reward.toFixed(2)} çıxdı!`, "success");
-        } else showToast("Xəta", data.error, "error");
-      } catch (e) { showToast("Xəta", "Server xətası.", "error"); }
-      btn.innerHTML = "Open"; btn.classList.remove('pointer-events-none');
-    }
-
-    async function requestWithdrawal() {
-      const address = document.getElementById('wallet-address').value;
-      const amount = parseFloat(document.getElementById('withdraw-amount').value);
-
-      if (!address || address.length < 10) return showToast("Yanlış", "Düzgün TON cüzdanı yazın.", "error");
-      if (isNaN(amount) || amount < 5) return showToast("Limit", "Minimum çıxarış $5.00-dır.", "error");
-      if (amount > userState.usdBalance) return showToast("Xəta", "Kifayət qədər vəsait yoxdur.", "error");
-
-      const btn = document.getElementById('withdraw-btn');
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gözləyin...';
-      
-      try {
-        const response = await fetch(`${WORKER_URL}/withdraw`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ tgId: userState.tgId, address, amount })
-        });
-        const data = await response.json();
-        if (data.success) {
-          userState = data.user;
-          updateUI();
-          document.getElementById('wallet-address').value = '';
-          document.getElementById('withdraw-amount').value = '';
-          showToast("Uğurlu", "Çıxarış sorğusu qəbul edildi.", "success");
-        } else showToast("Xəta", data.error, "error");
-      } catch(e) { showToast("Xəta", "Çıxarış baş tutmadı.", "error"); }
-      btn.innerHTML = '<i class="fa-solid fa-money-bill-transfer"></i> Request Withdrawal';
-    }
-
     function switchTab(tabId) {
       document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('nav-active'));
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('nav-active');
+      });
+
       document.getElementById(`view-${tabId}`).classList.remove('hidden');
-      document.querySelector(`[data-target="${tabId}"]`).classList.add('nav-active');
+      
+      const activeBtn = document.querySelector(`[data-target="${tabId}"]`);
+      activeBtn.classList.add('nav-active');
       
       const header = document.getElementById('main-header');
       const mainContent = document.getElementById('app-content');
+
       clearTimeout(headerTimeout);
 
       if (tabId === 'withdraw' || tabId === 'profile') {
         header.style.transform = 'translateY(-100%)';
         headerTimeout = setTimeout(() => header.style.display = 'none', 300);
-        mainContent.classList.remove('pt-24'); mainContent.classList.add('pt-4');
+        mainContent.classList.remove('pt-24');
+        mainContent.classList.add('pt-4');
       } else {
         header.style.display = 'block'; 
         setTimeout(() => header.style.transform = 'translateY(0)', 10);
-        mainContent.classList.remove('pt-4'); mainContent.classList.add('pt-24');
+        mainContent.classList.remove('pt-4');
+        mainContent.classList.add('pt-24');
       }
+      
       if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function updateTimer() {
-        const now = new Date();
+        const now = getNow();
+        if (!now) return;
+
         const tomorrow = new Date(now);
         tomorrow.setUTCHours(24, 0, 0, 0); 
+        
         const diff = tomorrow.getTime() - now.getTime();
         const h = Math.floor(diff / 1000 / 60 / 60);
         const m = Math.floor((diff / 1000 / 60) % 60);
         const s = Math.floor((diff / 1000) % 60);
         
         const timerEl = document.getElementById('reset-timer');
-        if (timerEl) timerEl.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-    }
+        if (timerEl) {
+            timerEl.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
 
+        if (checkDailyReset()) {
+            updateUI();
+            showToast("New Day Started!", "Daily limits and tasks have been reset.", "info");
+        }
+    }
+    
     async function initApp() {
-      await loadUserStateFromServer(); 
+      fetchServerTime(); 
+      
       setTimeout(() => {
         document.getElementById('loading-overlay').style.opacity = '0';
-        setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; }, 500); 
-      }, 1000);
+        setTimeout(() => {
+          document.getElementById('loading-overlay').style.display = 'none';
+        }, 500); 
+      }, 3000);
 
+      loadState();
+      checkDailyReset();
+      updateUI();
+      
       setInterval(updateTimer, 1000);
       updateTimer();
     }
 
     initApp();
   </script>
+</body>
+</html>

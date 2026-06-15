@@ -31,7 +31,6 @@
           animation: {
             'blob': 'blob 7s infinite',
             'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'shimmer': 'shimmer 2s infinite',
           },
           keyframes: {
             blob: {
@@ -39,10 +38,6 @@
               '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
               '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
               '100%': { transform: 'translate(0px, 0px) scale(1)' },
-            },
-            shimmer: {
-              '0%': { transform: 'translateX(-100%)' },
-              '100%': { transform: 'translateX(100%)' }
             }
           }
         }
@@ -100,14 +95,26 @@
       box-shadow: 0 0 12px #00f0ff, 0 0 20px #3b82f6;
     }
 
-    #bottom-nav { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out; }
-    .nav-hidden { transition: none !important; transform: translate(-50%, 150px) !important; opacity: 0 !important; pointer-events: none !important; }
+    #bottom-nav {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out;
+    }
+    .nav-hidden {
+      transition: none !important;
+      transform: translate(-50%, 150px) !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
 
-    .btn-3d { background: linear-gradient(to bottom, #3b82f6, #2563eb); border-bottom: 3px solid #1e3a8a; transition: all 0.1s; }
-    .btn-3d:active { transform: translateY(3px); border-bottom-width: 0px; margin-bottom: 3px; }
-    
-    .btn-epic { background: linear-gradient(to right, #8b5cf6, #d946ef); border-bottom: 3px solid #6d28d9; animation: pulse-fast 2s infinite; }
-    .btn-epic:active { transform: translateY(3px); border-bottom-width: 0px; margin-bottom: 3px; }
+    .btn-3d {
+      background: linear-gradient(to bottom, #3b82f6, #2563eb);
+      border-bottom: 3px solid #1e3a8a;
+      transition: all 0.1s;
+    }
+    .btn-3d:active {
+      transform: translateY(3px);
+      border-bottom-width: 0px;
+      margin-bottom: 3px;
+    }
 
     #toast-container {
       position: fixed; top: 1.5rem; left: 50%; transform: translate(-50%, -150%) scale(0.9);
@@ -127,6 +134,7 @@
   <div class="bg-orb-1 animate-blob"></div>
   <div class="bg-orb-2 animate-blob animation-delay-2000"></div>
 
+  <!-- Main App Loader -->
   <div id="loading-overlay" class="bg-[#050511] flex flex-col items-center justify-center z-[10000] fixed inset-0 transition-opacity duration-500">
     <div class="relative w-24 h-24 mb-8">
       <div class="absolute inset-0 rounded-full border-t-4 border-crypto-glow animate-[spin_1s_linear_infinite] shadow-[0_0_20px_rgba(0,240,255,0.5)]"></div>
@@ -136,7 +144,6 @@
       </div>
     </div>
     <h2 class="text-white font-black tracking-[0.25em] text-2xl uppercase bg-clip-text text-transparent bg-gradient-to-r from-crypto-glow via-blue-400 to-indigo-500 mb-2 drop-shadow-lg">XPVerse</h2>
-    <p class="text-xs text-slate-400 mb-4 animate-pulse">Sistem yüklənir...</p>
     <div class="flex gap-1 mt-2">
       <div class="w-1.5 h-1.5 bg-crypto-glow rounded-full animate-bounce"></div>
       <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
@@ -144,16 +151,18 @@
     </div>
   </div>
 
+  <!-- Toast Notification -->
   <div id="toast-container" class="glass-card rounded-2xl p-4 flex items-center gap-4">
     <div id="toast-icon" class="w-12 h-12 rounded-full flex shrink-0 items-center justify-center text-xl shadow-inner">
       <i class="fa-solid fa-bell"></i>
     </div>
     <div class="flex-1">
-      <h4 id="toast-title" class="text-sm font-black text-white tracking-wide">Bildiriş</h4>
-      <p id="toast-message" class="text-xs text-slate-300 mt-0.5 leading-tight">Mesaj buraya gəlir</p>
+      <h4 id="toast-title" class="text-sm font-black text-white tracking-wide">Notification</h4>
+      <p id="toast-message" class="text-xs text-slate-300 mt-0.5 leading-tight">Message goes here</p>
     </div>
   </div>
 
+  <!-- App Header -->
   <header id="main-header" class="fixed top-0 left-0 right-0 z-50 w-full p-4 glass-card rounded-b-3xl border-b-0 shadow-lg transition-transform duration-300">
     <div class="flex justify-between items-center max-w-md mx-auto">
       <div class="flex items-center gap-3">
@@ -161,10 +170,10 @@
           <img id="user-photo" src="https://via.placeholder.com/150/0a0b1a/00f0ff?text=XP" alt="Profile" class="w-full h-full rounded-full object-cover border-2 border-[#050511]">
         </div>
         <div class="flex flex-col">
-          <span id="user-name" class="font-bold text-white text-sm tracking-wide">Yüklənir...</span>
+          <span id="user-name" class="font-bold text-white text-sm tracking-wide">Loading...</span>
           <div class="flex items-center gap-1">
             <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse"></span>
-            <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Aktivdir</span>
+            <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Online</span>
           </div>
         </div>
       </div>
@@ -181,87 +190,189 @@
     </div>
   </header>
 
+  <!-- Central View Controller Containers -->
   <main class="flex-1 max-w-md w-full mx-auto p-4 pt-24 relative" id="app-content">
     
+    <!-- HOME VIEW -->
     <div id="view-home" class="view-section fade-in space-y-6">
-      
       <div class="relative glass-card rounded-[2rem] p-6 text-center border-t border-t-blue-400/20 overflow-hidden flex flex-col items-center justify-center min-h-[240px]">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/20 rounded-full filter blur-[40px] pointer-events-none animate-pulse-fast"></div>
-        
         <div class="relative z-10 flex flex-col items-center">
           <div class="w-14 h-14 rounded-full bg-blue-900/40 border border-blue-400/30 flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
              <i class="fa-solid fa-gem text-2xl text-crypto-glow drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]"></i>
           </div>
-          <p class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-1 opacity-80">Balans</p>
+          <p class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-1 opacity-80">Balance</p>
           <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-blue-400 tracking-tighter drop-shadow-2xl" id="main-xp-display">0 XP</h1>
         </div>
-        
         <div class="w-full mt-6 grid grid-cols-2 gap-3">
-          <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md relative overflow-hidden group">
-            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/10 to-transparent -translate-x-full group-hover:animate-shimmer"></div>
+          <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md">
             <div class="bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/20"><i class="fa-solid fa-clapperboard text-blue-400"></i></div>
-            <div class="text-left relative z-10">
-              <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Baxış Limiti</p>
+            <div class="text-left">
+              <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Daily Limit</p>
               <p class="text-sm font-black text-white"><span id="ads-watched" class="text-blue-400">0</span> / 30</p>
             </div>
           </div>
           <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md">
             <div class="bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20"><i class="fa-solid fa-fire-flame-curved text-amber-400"></i></div>
             <div class="text-left">
-              <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Seriya</p>
-              <p class="text-sm font-black text-white"><span id="streak-days" class="text-amber-400">1</span> Gün</p>
+              <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Streak</p>
+              <p class="text-sm font-black text-white"><span id="streak-days" class="text-amber-400">1</span> Days</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="space-y-2">
-        <button onclick="watchAd()" id="watch-ad-btn" class="w-full py-4 rounded-2xl text-white font-black text-sm tracking-[0.1em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(59,130,246,0.3)] btn-3d relative overflow-hidden group">
-          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
-          <i class="fa-solid fa-play bg-white/20 p-2 rounded-full text-[10px]"></i> 
-          <span>Reklam İzlə <span class="text-cyan-200 ml-1">+10 XP</span></span>
-        </button>
-        <p class="text-[9px] text-center text-slate-400 font-medium px-4">
-          <i class="fa-solid fa-lightbulb text-amber-400 mr-1 animate-pulse"></i> 
-          <span class="text-white font-bold">Sirr:</span> Reklamlara sona qədər baxıb klikləyənlər üçün <span class="text-purple-400 font-bold drop-shadow-[0_0_5px_#c084fc]">Premium Drop</span> şansı artır!
-        </p>
-      </div>
+      <button onclick="watchAd()" id="watch-ad-btn" class="w-full py-4 rounded-2xl text-white font-black text-sm tracking-[0.15em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(59,130,246,0.3)] btn-3d relative overflow-hidden group">
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+        <i class="fa-solid fa-play bg-white/20 p-2 rounded-full text-[10px]"></i> 
+        <span>Watch Ad <span class="text-cyan-200">+10 XP</span></span>
+      </button>
 
       <div class="glass-card rounded-xl p-3 flex justify-between items-center">
         <div class="flex items-center gap-2 text-slate-400 text-xs">
-          <i class="fa-solid fa-rotate text-blue-400"></i> Yenilənməyə qaldı:
+          <i class="fa-solid fa-rotate text-blue-400"></i> Resets in:
         </div>
         <span class="text-white font-mono font-bold tracking-widest" id="reset-timer">--:--:--</span>
       </div>
     </div>
 
+    <!-- GAME VIEW SECTION -->
+    <div id="view-game" class="view-section hidden fade-in space-y-4 pb-4">
+      
+      <!-- Studio Splash Cover Screen Layer -->
+      <div id="game-splash" class="absolute inset-0 bg-[#050511] z-[80] flex flex-col items-center justify-center text-center p-6 hidden">
+        <div class="w-20 h-20 bg-gradient-to-tr from-blue-600 to-crypto-glow rounded-3xl flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(0,240,255,0.4)] animate-bounce">
+          <i class="fa-solid fa-gamepad text-white text-4xl"></i>
+        </div>
+        <h3 class="text-2xl font-black text-white tracking-widest uppercase">XPVerse Games</h3>
+        <p class="text-xs text-crypto-glow font-bold uppercase tracking-widest mt-1 opacity-70">Loading Balloon Shooter Engine...</p>
+      </div>
+
+      <!-- Level Selection Interface Dashboard -->
+      <div id="game-level-selector" class="space-y-4">
+        <div class="text-center">
+          <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Levels</h2>
+          <p class="text-xs text-crypto-glow font-bold uppercase tracking-widest mt-1">Pop and Build Your Streak Pool</p>
+        </div>
+        <div id="level-grid-container" class="grid grid-cols-4 gap-3 max-h-[60vh] overflow-y-auto p-2 glass-card rounded-2xl">
+          <!-- Populated procedurally -->
+        </div>
+      </div>
+
+      <!-- Live Match Arena Frame Interface Canvas Layer -->
+      <div id="game-arena" class="hidden space-y-3 relative">
+        <div class="flex justify-between items-center bg-[#0a0b1a]/90 backdrop-blur-md p-3 rounded-2xl border border-slate-800">
+          <button onclick="exitMatch()" class="w-8 h-8 rounded-xl bg-slate-800/80 text-white flex items-center justify-center"><i class="fa-solid fa-arrow-left text-xs"></i></button>
+          <div class="text-center">
+            <span id="arena-level-title" class="text-xs font-black text-crypto-glow block uppercase">Level 1</span>
+            <span id="arena-target-text" class="text-[10px] font-bold text-slate-400 uppercase">Target: 500</span>
+          </div>
+          <div class="text-right">
+            <span class="text-[9px] font-black text-slate-500 block uppercase">Score</span>
+            <span id="arena-score" class="text-sm font-black text-white">0</span>
+          </div>
+        </div>
+
+        <!-- Upper Status Indicators Bars Row -->
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="glass-card p-2 rounded-xl">
+            <span class="text-[9px] text-slate-500 font-black block uppercase">Moves Left</span>
+            <span id="arena-moves" class="text-base font-black text-amber-400">20</span>
+          </div>
+          <div class="glass-card p-2 rounded-xl flex flex-col justify-center items-center">
+            <span class="text-[9px] text-slate-500 font-black block uppercase mb-0.5">Rating</span>
+            <div id="arena-stars" class="flex gap-1 text-xs text-slate-600">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+          </div>
+          <div class="glass-card p-2 rounded-xl">
+            <span class="text-[9px] text-slate-500 font-black block uppercase">Active Buffs</span>
+            <div class="flex justify-center gap-2 mt-0.5 text-[10px]">
+              <span id="buff-bomb-count" class="text-red-400 font-black"><i class="fa-solid fa-bomb"></i> 0</span>
+              <span id="buff-rocket-count" class="text-cyan-400 font-black"><i class="fa-solid fa-rocket"></i> 0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Canvas Core Node View Container -->
+        <div class="relative w-full aspect-[3/4] bg-[#02020a] rounded-3xl border-2 border-slate-800 overflow-hidden shadow-2xl">
+          <canvas id="bubble-canvas" class="w-full h-full block"></canvas>
+        </div>
+
+        <!-- Inventory Marketplace Purchase Controls Row Overlay -->
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="buyPowerUp('bomb')" class="glass-card p-2.5 rounded-xl flex items-center justify-between text-left border border-red-500/20 active:scale-95 transition-all">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-bomb text-red-400 text-base"></i>
+              <div>
+                <p class="text-[10px] font-black text-white uppercase">Buy Bomb</p>
+                <p class="text-[9px] text-slate-400 font-bold">Clears Radius</p>
+              </div>
+            </div>
+            <span class="text-[10px] bg-red-500/20 text-red-400 font-black px-1.5 py-0.5 rounded">150 XP</span>
+          </button>
+
+          <button onclick="buyPowerUp('rocket')" class="glass-card p-2.5 rounded-xl flex items-center justify-between text-left border border-cyan-500/20 active:scale-95 transition-all">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-rocket text-cyan-400 text-base"></i>
+              <div>
+                <p class="text-[10px] font-black text-white uppercase">Buy Rocket</p>
+                <p class="text-[9px] text-slate-400 font-bold">Clears Column</p>
+              </div>
+            </div>
+            <span class="text-[10px] bg-cyan-500/20 text-cyan-400 font-black px-1.5 py-0.5 rounded">150 XP</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Failure Modal Prompt Layer Frame -->
+      <div id="game-fail-modal" class="hidden fixed inset-0 bg-[#050511]/90 backdrop-blur-md z-[90] flex flex-col items-center justify-center p-6 text-center">
+        <div class="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 text-2xl mb-4 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+          <i class="fa-solid fa-heart-crack"></i>
+        </div>
+        <h3 class="text-2xl font-black text-white uppercase tracking-wide">Out of Balloons!</h3>
+        <p class="text-xs text-slate-400 mt-1 max-w-[280px]">You ran out of structural ammunition items before meeting target goals.</p>
+        
+        <div class="w-full max-w-[280px] space-y-2 mt-6">
+          <button onclick="watchAdForMoves()" class="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg flex items-center justify-center gap-2">
+            <i class="fa-solid fa-clapperboard"></i> Watch Ad (+5 Balloons)
+          </button>
+          <button onclick="buyMovesWithXP()" class="w-full py-3 bg-slate-800 border border-slate-700 text-white font-black text-xs uppercase tracking-wider rounded-xl flex items-center justify-between px-4">
+            <span>Buy +5 Balloons</span>
+            <span class="text-crypto-glow text-[10px] bg-slate-900 px-2 py-0.5 rounded">200 XP</span>
+          </button>
+          <button onclick="exitMatch()" class="w-full py-2.5 text-slate-500 font-bold text-xs uppercase tracking-widest mt-2">Give Up & Exit</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TASKS VIEW -->
     <div id="view-tasks" class="view-section hidden fade-in space-y-6 pb-4">
       <div class="text-center pt-2">
-        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Görəvlər</h2>
-        <p class="text-xs text-crypto-glow mt-1 uppercase tracking-widest font-bold">Tamamla və XP Qazan</p>
+        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Tasks</h2>
+        <p class="text-xs text-crypto-glow mt-1 uppercase tracking-widest font-bold">Complete to Earn XP</p>
       </div>
-      
       <div class="glass-card rounded-3xl p-5 relative overflow-hidden border-t-2 border-t-blue-500/30">
         <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl"></div>
         <h3 class="text-xs font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
-          <i class="fa-solid fa-calendar-check text-blue-400 text-lg"></i> 7-Günlük Seriya
+          <i class="fa-solid fa-calendar-check text-blue-400 text-lg"></i> 7-Day Streak
         </h3>
-        
-        <div class="relative flex justify-between items-center" id="streak-tracker-container">
-          </div>
+        <div class="relative flex justify-between items-center" id="streak-tracker-container"></div>
       </div>
-
       <div>
-        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">Gündəlik Missiyalar (Hər Gün Dəyişir)</h3>
-        <div id="missions-container" class="space-y-3">
-          </div>
+        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">Daily Missions</h3>
+        <div id="missions-container" class="space-y-3"></div>
       </div>
     </div>
 
+    <!-- BOXES VIEW -->
     <div id="view-boxes" class="view-section hidden fade-in space-y-5 pb-4">
       <div class="text-center pt-2 mb-6">
-        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Qutular</h2>
-        <p class="text-xs text-amber-400 mt-1 uppercase tracking-widest font-bold">Şansını Sına, Dollar Qazan</p>
+        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Boxes</h2>
+        <p class="text-xs text-amber-400 mt-1 uppercase tracking-widest font-bold">Try Your Luck, Win Dollars</p>
       </div>
       
       <div class="box-bronze glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
@@ -271,14 +382,14 @@
             <i class="fa-solid fa-box text-2xl text-crypto-bronze"></i>
           </div>
           <div>
-            <h3 class="text-lg font-black text-white tracking-wide">Bürünc Qutu</h3>
+            <h3 class="text-lg font-black text-white tracking-wide">Bronze Box</h3>
             <div class="flex flex-col mt-0.5">
               <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 1,000 XP</span>
-              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maksimum: $1.00</span>
+              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $1.00</span>
             </div>
           </div>
         </div>
-        <button onclick="openBox('bronze')" class="relative z-10 bg-gradient-to-b from-orange-600 to-orange-800 text-white shadow-[0_4px_15px_rgba(205,127,50,0.4)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Aç</button>
+        <button onclick="openBox('bronze')" class="relative z-10 bg-gradient-to-b from-orange-600 to-orange-800 text-white shadow-[0_4px_15px_rgba(205,127,50,0.4)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
       </div>
 
       <div class="box-silver glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
@@ -288,14 +399,14 @@
             <i class="fa-solid fa-box-open text-2xl text-crypto-silver"></i>
           </div>
           <div>
-            <h3 class="text-lg font-black text-white tracking-wide">Gümüş Qutu</h3>
+            <h3 class="text-lg font-black text-white tracking-wide">Silver Box</h3>
             <div class="flex flex-col mt-0.5">
               <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 5,000 XP</span>
-              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maksimum: $7.00</span>
+              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $7.00</span>
             </div>
           </div>
         </div>
-        <button onclick="openBox('silver')" class="relative z-10 bg-gradient-to-b from-slate-400 to-slate-600 text-crypto-dark shadow-[0_4px_15px_rgba(226,232,240,0.3)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Aç</button>
+        <button onclick="openBox('silver')" class="relative z-10 bg-gradient-to-b from-slate-400 to-slate-600 text-crypto-dark shadow-[0_4px_15px_rgba(226,232,240,0.3)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
       </div>
 
       <div class="box-gold glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center border border-crypto-gold shadow-[0_0_20px_rgba(255,184,0,0.15)] transition-transform hover:scale-[1.02]">
@@ -305,24 +416,24 @@
             <i class="fa-solid fa-gem text-2xl text-crypto-gold drop-shadow-[0_0_10px_#ffb800]"></i>
           </div>
           <div>
-            <h3 class="text-lg font-black text-crypto-gold tracking-wide drop-shadow-[0_0_5px_rgba(255,184,0,0.5)]">Qızıl Qutu</h3>
+            <h3 class="text-lg font-black text-crypto-gold tracking-wide drop-shadow-[0_0_5px_rgba(255,184,0,0.5)]">Gold Box</h3>
             <div class="flex flex-col mt-0.5">
               <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 10,000 XP</span>
-              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maksimum: $15.00</span>
+              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $15.00</span>
             </div>
           </div>
         </div>
-        <button onclick="openBox('gold')" class="relative z-10 bg-gradient-to-b from-yellow-400 to-amber-600 text-crypto-dark shadow-[0_4px_20px_rgba(255,184,0,0.6)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Aç</button>
+        <button onclick="openBox('gold')" class="relative z-10 bg-gradient-to-b from-yellow-400 to-amber-600 text-crypto-dark shadow-[0_4px_20px_rgba(255,184,0,0.6)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
       </div>
     </div>
 
+    <!-- WITHDRAW VIEW -->
     <div id="view-withdraw" class="view-section hidden fade-in space-y-6">
-      
       <div class="glass-card rounded-[2rem] p-6 text-center border-t-2 border-emerald-500/40 bg-gradient-to-b from-emerald-900/30 to-[#050511]">
         <div class="w-14 h-14 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-3 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
           <i class="fa-solid fa-wallet text-xl text-emerald-400"></i>
         </div>
-        <p class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-1 opacity-80">Çıxarış Balansı</p>
+        <p class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-1 opacity-80">Withdrawal Balance</p>
         <h1 class="text-5xl font-black text-white tracking-tighter mb-3">$<span id="withdraw-balance-display">0.00</span></h1>
         <div class="inline-block bg-[#050511]/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-700/50">
           <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> Minimum: $5.00</p>
@@ -331,7 +442,7 @@
 
       <div class="glass-card rounded-[1.5rem] p-5 space-y-4 border-slate-800">
         <div>
-          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">TON Pulqabı Ünvanı</label>
+          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">TON Wallet Address</label>
           <div class="relative group">
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="w-5 h-5 opacity-70 group-focus-within:opacity-100 transition-opacity" alt="TON">
@@ -339,9 +450,8 @@
             <input type="text" id="wallet-address" placeholder="UQ..." class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-sm font-medium text-white focus:outline-none focus:border-blue-500 transition-colors placeholder-slate-600 shadow-inner">
           </div>
         </div>
-        
         <div>
-          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">Məbləğ (USD)</label>
+          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">Amount (USD)</label>
           <div class="relative group">
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <i class="fa-solid fa-dollar-sign text-slate-500 group-focus-within:text-emerald-400 transition-colors text-lg"></i>
@@ -349,39 +459,33 @@
             <input type="number" id="withdraw-amount" placeholder="5.00" min="5" step="0.5" class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-sm font-bold text-emerald-400 focus:outline-none focus:border-emerald-500 transition-colors placeholder-slate-600 shadow-inner">
           </div>
         </div>
-
         <button onclick="requestWithdrawal()" id="withdraw-btn" class="w-full py-3.5 mt-2 bg-gradient-to-r from-emerald-600 to-teal-500 hover:brightness-110 active:scale-95 transition-all text-white font-black rounded-xl text-sm uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-[0_10px_20px_rgba(16,185,129,0.3)]">
-          <i class="fa-solid fa-money-bill-transfer"></i> Çıxarış Et
+          <i class="fa-solid fa-money-bill-transfer"></i> Request Withdrawal
         </button>
       </div>
-
       <div>
-        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">Tarixçə</h3>
-        <div id="withdraw-history-container" class="space-y-3">
-          </div>
+        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">History</h3>
+        <div id="withdraw-history-container" class="space-y-3"></div>
       </div>
     </div>
 
+    <!-- PROFILE VIEW -->
     <div id="view-profile" class="view-section hidden fade-in space-y-6">
-      
       <div class="glass-card rounded-[2.5rem] p-1 text-center relative overflow-hidden border border-slate-700/50">
         <div class="h-32 bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 rounded-t-[2.3rem] relative overflow-hidden">
            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
            <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 w-full h-20 bg-gradient-to-t from-[#0a0b1a] to-transparent"></div>
         </div>
-        
         <div class="px-6 pb-8 -mt-16 relative z-10">
           <div class="relative w-24 h-24 mx-auto rounded-full bg-gradient-to-b from-crypto-glow to-blue-600 p-1 mb-3 shadow-[0_0_30px_rgba(0,240,255,0.4)]">
              <img id="profile-photo-large" src="https://via.placeholder.com/150" class="w-full h-full rounded-full border-4 border-[#0a0b1a] object-cover">
              <div class="absolute -bottom-2 -right-2 bg-gradient-to-br from-[#0a0b1a] to-blue-900 border-2 border-crypto-glow text-white w-8 h-8 rounded-full flex items-center justify-center font-black text-xs shadow-[0_0_15px_#00f0ff]" id="profile-badge-level">1</div>
           </div>
-          
-          <h2 id="profile-name" class="text-2xl font-black text-white tracking-tight">İstifadəçi</h2>
+          <h2 id="profile-name" class="text-2xl font-black text-white tracking-tight">User</h2>
           <p id="profile-tgid" class="text-[10px] text-blue-400 font-mono mt-1 tracking-widest bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20">ID: 00000000</p>
-          
           <div class="mt-6">
             <div class="flex justify-between items-end mb-1.5 px-1">
-               <span class="text-[10px] font-black text-crypto-glow uppercase tracking-wider">Səviyyə İnkişafı</span>
+               <span class="text-[10px] font-black text-crypto-glow uppercase tracking-wider">Level Progress</span>
                <span class="text-[10px] font-bold text-slate-400" id="profile-current-xp-text">0 XP</span>
             </div>
             <div class="w-full bg-[#050511] rounded-full h-3 border border-slate-700/50 overflow-hidden relative shadow-inner p-0.5">
@@ -390,7 +494,7 @@
                </div>
             </div>
             <div class="text-right mt-1 px-1">
-              <span class="text-[9px] font-bold text-slate-500 uppercase">Hədəf: <span id="profile-next-xp-text" class="text-blue-400">250 XP</span></span>
+              <span class="text-[9px] font-bold text-slate-500 uppercase">Target: <span id="profile-next-xp-text" class="text-blue-400">250 XP</span></span>
             </div>
           </div>
         </div>
@@ -399,12 +503,12 @@
       <div class="grid grid-cols-2 gap-3">
         <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-blue-500/30">
           <div class="w-10 h-10 mx-auto bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center mb-2 text-lg shadow-[0_0_15px_rgba(59,130,246,0.2)inset]"><i class="fa-solid fa-chart-line"></i></div>
-          <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Cəmi Qazanılıb</p>
+          <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Total Earned</p>
           <p id="profile-total-xp" class="text-xl font-black text-white">0</p>
         </div>
         <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-amber-500/30">
           <div class="w-10 h-10 mx-auto bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center mb-2 text-lg shadow-[0_0_15px_rgba(245,158,11,0.2)inset]"><i class="fa-solid fa-box-open"></i></div>
-          <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Açılan Qutu</p>
+          <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Boxes Opened</p>
           <p id="profile-boxes" class="text-xl font-black text-white">0</p>
         </div>
       </div>
@@ -412,27 +516,32 @@
 
   </main>
 
-  <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] glass-card rounded-2xl pb-safe z-50 shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-slate-700/50 backdrop-blur-xl">
-    <div class="flex justify-between items-center px-4 py-2.5 relative">
-      <button onclick="switchTab('home')" class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="home">
-        <i class="fa-solid fa-house text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Ana Səhifə</span>
+  <!-- Bottom Global Navigation Matrix -->
+  <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[440px] glass-card rounded-2xl pb-safe z-50 shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-slate-700/50 backdrop-blur-xl">
+    <div class="flex justify-between items-center px-2 py-2.5 relative">
+      <button onclick="switchTab('home')" class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1 w-12 transition-all duration-300 relative group" data-target="home">
+        <i class="fa-solid fa-house text-base transition-transform group-active:scale-90"></i>
+        <span class="text-[7px] font-black uppercase tracking-widest">Home</span>
       </button>
-      <button onclick="switchTab('tasks')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="tasks">
-        <i class="fa-solid fa-list-check text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Görəvlər</span>
+      <button onclick="switchTab('game')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-12 transition-all duration-300 relative group" data-target="game">
+        <i class="fa-solid fa-gamepad text-base transition-transform group-active:scale-90"></i>
+        <span class="text-[7px] font-black uppercase tracking-widest">Game</span>
       </button>
-      <button onclick="switchTab('boxes')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="boxes">
-        <i class="fa-solid fa-box-open text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Qutu</span>
+      <button onclick="switchTab('tasks')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-12 transition-all duration-300 relative group" data-target="tasks">
+        <i class="fa-solid fa-list-check text-base transition-transform group-active:scale-90"></i>
+        <span class="text-[7px] font-black uppercase tracking-widest">Tasks</span>
       </button>
-      <button onclick="switchTab('withdraw')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="withdraw">
-        <i class="fa-solid fa-wallet text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Çıxarış</span>
+      <button onclick="switchTab('boxes')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-12 transition-all duration-300 relative group" data-target="boxes">
+        <i class="fa-solid fa-box-open text-base transition-transform group-active:scale-90"></i>
+        <span class="text-[7px] font-black uppercase tracking-widest">Box</span>
       </button>
-      <button onclick="switchTab('profile')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="profile">
-        <i class="fa-solid fa-user-astronaut text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Profil</span>
+      <button onclick="switchTab('withdraw')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-12 transition-all duration-300 relative group" data-target="withdraw">
+        <i class="fa-solid fa-wallet text-base transition-transform group-active:scale-90"></i>
+        <span class="text-[7px] font-black uppercase tracking-widest">Wallet</span>
+      </button>
+      <button onclick="switchTab('profile')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-12 transition-all duration-300 relative group" data-target="profile">
+        <i class="fa-solid fa-user-astronaut text-base transition-transform group-active:scale-90"></i>
+        <span class="text-[7px] font-black uppercase tracking-widest">Profile</span>
       </button>
     </div>
   </nav>
@@ -441,13 +550,12 @@
     const tg = window.Telegram.WebApp;
     tg.expand(); 
     tg.ready();
-
     tg.setHeaderColor('#0a0b1a');
     tg.setBackgroundColor('#050511');
 
     const defaultUserState = {
       tgId: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : 123456789,
-      firstName: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : "Crypto Oyuncu",
+      firstName: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : "Crypto User",
       username: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.username : "xpverse",
       photoUrl: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.photo_url : "",
       xp: 0,
@@ -455,171 +563,110 @@
       usdBalance: 0.00,
       level: 1,
       adsWatchedToday: 0,
-      boxesOpenedToday: 0, // Yeni artırıldı (Gündəlik missiya üçün)
       boxesOpened: 0,
       streak: 1,
       lastResetDay: "",
-      withdrawHistory: []
+      withdrawHistory: [],
+      // High quality balloon game inventory states[span_2](start_span)[span_2](end_span)
+      maxUnlockedLevel: 1,
+      levelStarsData: {},
+      bombsOwned: 1,
+      rocketsOwned: 1
     };
 
+    const getDefaultMissions = () => ({
+      dailyReward: { completed: true, claimed: false, reward: 5, type: 'boolean' },
+      watch5: { target: 5, claimed: false, reward: 20, type: 'progress' },
+      watch10: { target: 10, claimed: false, reward: 30, type: 'progress' },
+      watch20: { target: 20, claimed: false, reward: 50, type: 'progress' },
+      all: { claimed: false, reward: 100, type: 'meta' }
+    });
+
     let userState = { ...defaultUserState };
+    let missionsState = getDefaultMissions();
     const streakRewards = [5, 10, 15, 20, 25, 30, 50]; 
     let accurateTimeOffset = null;
     let headerTimeout; 
-    let missionsState = {};
 
-    // Dinamik Gövlər Sistemi - Həftənin günlərinə görə dəyişir
-    const dailyMissionsPool = [
-      // Bazar (0)
-      { m1: { id: 'm1', target: 5, action: 'ads', reward: 20, label: '5 Reklam İzlə', icon: 'fa-video', color: 'text-blue-400' },
-        m2: { id: 'm2', target: 1, action: 'box_bronze', reward: 30, label: '1 Bürünc Qutu Aç', icon: 'fa-box', color: 'text-orange-400' },
-        m3: { id: 'm3', target: 15, action: 'ads', reward: 60, label: '15 Reklam İzlə', icon: 'fa-film', color: 'text-indigo-400' } },
-      // Bazar Ertəsi (1)
-      { m1: { id: 'm1', target: 3, action: 'ads', reward: 15, label: '3 Reklam İzlə', icon: 'fa-video', color: 'text-blue-400' },
-        m2: { id: 'm2', target: 10, action: 'ads', reward: 40, label: '10 Reklam İzlə', icon: 'fa-film', color: 'text-indigo-400' },
-        m3: { id: 'm3', target: 20, action: 'ads', reward: 80, label: '20 Reklam İzlə', icon: 'fa-clapperboard', color: 'text-cyan-400' } },
-      // Çərşənbə axşamı (2)
-      { m1: { id: 'm1', target: 7, action: 'ads', reward: 25, label: '7 Reklam İzlə', icon: 'fa-video', color: 'text-blue-400' },
-        m2: { id: 'm2', target: 1, action: 'box_silver', reward: 50, label: '1 Gümüş Qutu Aç', icon: 'fa-box-open', color: 'text-slate-400' },
-        m3: { id: 'm3', target: 15, action: 'ads', reward: 60, label: '15 Reklam İzlə', icon: 'fa-film', color: 'text-indigo-400' } },
-      // Çərşənbə (3)
-      { m1: { id: 'm1', target: 5, action: 'ads', reward: 20, label: '5 Reklam İzlə', icon: 'fa-video', color: 'text-blue-400' },
-        m2: { id: 'm2', target: 12, action: 'ads', reward: 50, label: '12 Reklam İzlə', icon: 'fa-film', color: 'text-indigo-400' },
-        m3: { id: 'm3', target: 25, action: 'ads', reward: 100, label: '25 Reklam İzlə', icon: 'fa-clapperboard', color: 'text-cyan-400' } },
-      // Cümə axşamı (4)
-      { m1: { id: 'm1', target: 4, action: 'ads', reward: 15, label: '4 Reklam İzlə', icon: 'fa-video', color: 'text-blue-400' },
-        m2: { id: 'm2', target: 2, action: 'box_bronze', reward: 60, label: '2 Bürünc Qutu Aç', icon: 'fa-box', color: 'text-orange-400' },
-        m3: { id: 'm3', target: 20, action: 'ads', reward: 80, label: '20 Reklam İzlə', icon: 'fa-film', color: 'text-indigo-400' } },
-      // Cümə (5) - Nadir drop şansı olan günlər
-      { m1: { id: 'm1', target: 10, action: 'ads', reward: 40, label: '10 Reklam İzlə', icon: 'fa-video', color: 'text-blue-400' },
-        m2: { id: 'm2', target: 1, action: 'box_gold', reward: 100, label: '1 Qızıl Qutu Aç', icon: 'fa-gem', color: 'text-yellow-400' },
-        m3: { id: 'm3', target: 30, action: 'ads', reward: 150, label: '30 Reklam İzlə (Maksimum)', icon: 'fa-crown', color: 'text-amber-400' } },
-      // Şənbə (6)
-      { m1: { id: 'm1', target: 5, action: 'ads', reward: 20, label: '5 Reklam İzlə', icon: 'fa-video', color: 'text-blue-400' },
-        m2: { id: 'm2', target: 15, action: 'ads', reward: 60, label: '15 Reklam İzlə', icon: 'fa-film', color: 'text-indigo-400' },
-        m3: { id: 'm3', target: 3, action: 'box_any', reward: 80, label: 'Hər hansı 3 Qutu Aç', icon: 'fa-boxes-stacked', color: 'text-purple-400' } }
-    ];
-
-    function generateDailyMissions() {
-      const now = getNow() || new Date();
-      const dayIndex = now.getDay(); 
-      const selectedMissions = dailyMissionsPool[dayIndex];
-      
-      return {
-        dailyReward: { claimed: false, reward: streakRewards[(userState.streak || 1) - 1], type: 'login' },
-        m1: { ...selectedMissions.m1, claimed: false },
-        m2: { ...selectedMissions.m2, claimed: false },
-        m3: { ...selectedMissions.m3, claimed: false },
-        all: { claimed: false, reward: 150, type: 'meta', label: 'Bütün Tapşırıqlar', icon: 'fa-star', color: 'text-amber-400' }
-      };
-    }
-
+    // Visual Viewport Keyboard layout adjustments[span_3](start_span)[span_3](end_span)
     const bottomNavElement = document.getElementById('bottom-nav');
     let maxViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
     function handleKeyboardState() {
       let currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       if (currentHeight > maxViewportHeight) maxViewportHeight = currentHeight;
-      if (maxViewportHeight - currentHeight > 100) bottomNavElement.classList.add('nav-hidden');
-      else bottomNavElement.classList.remove('nav-hidden');
+      if (maxViewportHeight - currentHeight > 100) {
+        bottomNavElement.classList.add('nav-hidden');
+      } else {
+        bottomNavElement.classList.remove('nav-hidden');
+      }
     }
-
     if (window.visualViewport) window.visualViewport.addEventListener('resize', handleKeyboardState);
     window.addEventListener('resize', handleKeyboardState);
-    if (tg.onEvent) tg.onEvent('viewportChanged', handleKeyboardState);
 
-    function getNow() {
-      if (!accurateTimeOffset) return new Date(); 
-      return new Date(accurateTimeOffset + performance.now());
+    // Dynamic Server Clock sync fallback tree
+    async function fetchServerTime() {
+      const apis = [
+        async () => { let res = await fetch('https://api.binance.com/api/v3/time'); let data = await res.json(); return data.serverTime; },
+        async () => { let res = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC'); let data = await res.json(); return new Date(data.utc_datetime).getTime(); }
+      ];
+      for (let apiFunc of apis) {
+        try {
+          const serverTime = await apiFunc();
+          if (serverTime) { accurateTimeOffset = serverTime - performance.now(); return true; }
+        } catch (e) { console.warn("Clock sync API offline, cycling..."); }
+      }
+      return false;
     }
+    function getNow() { return !accurateTimeOffset ? new Date() : new Date(accurateTimeOffset + performance.now()); }
 
     function showToast(title, message, type = 'info') {
       const toast = document.getElementById('toast-container');
       const icon = document.getElementById('toast-icon');
-      
       document.getElementById('toast-title').innerText = title;
       document.getElementById('toast-message').innerText = message;
       
-      let iconClass, iconHtml, borderStyle;
+      let iconHtml, iconClass, borderStyle;
       if (type === 'success') {
         iconHtml = '<i class="fa-solid fa-check"></i>';
-        iconClass = 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.3)]';
+        iconClass = 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 shadow-[0_0_15px_#10b981]';
         borderStyle = '1px solid rgba(16, 185, 129, 0.4)';
       } else if (type === 'error') {
         iconHtml = '<i class="fa-solid fa-xmark"></i>';
-        iconClass = 'bg-red-500/20 text-red-400 border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.3)]';
+        iconClass = 'bg-red-500/20 text-red-400 border border-red-500/50 shadow-[0_0_15px_#ef4444]';
         borderStyle = '1px solid rgba(239, 68, 68, 0.4)';
-      } else if (type === 'jackpot') {
-        iconHtml = '<i class="fa-solid fa-sack-dollar animate-bounce"></i>';
-        iconClass = 'bg-purple-500/20 text-purple-400 border border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.6)]';
-        borderStyle = '1px solid rgba(168, 85, 247, 0.8)';
       } else {
-        iconHtml = '<i class="fa-solid fa-bell animate-pulse"></i>';
-        iconClass = 'bg-blue-500/20 text-crypto-glow border border-crypto-glow/50 shadow-[0_0_15px_rgba(0,240,255,0.3)]';
+        iconHtml = '<i class="fa-solid fa-bell"></i>';
+        iconClass = 'bg-blue-500/20 text-crypto-glow border border-crypto-glow/50 shadow-[0_0_15px_#00f0ff]';
         borderStyle = '1px solid rgba(0, 240, 255, 0.4)';
       }
-
       icon.innerHTML = iconHtml;
       icon.className = `w-12 h-12 rounded-xl flex shrink-0 items-center justify-center text-xl ${iconClass}`;
       toast.style.border = borderStyle;
-
       toast.classList.add('toast-show');
-      
-      if (tg.HapticFeedback) {
-        if (type === 'success' || type === 'jackpot') tg.HapticFeedback.notificationOccurred('success');
-        else if (type === 'error') tg.HapticFeedback.notificationOccurred('error');
-        else tg.HapticFeedback.notificationOccurred('warning');
-      }
-
-      setTimeout(() => { toast.classList.remove('toast-show'); }, type === 'jackpot' ? 5000 : 3000); 
+      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred(type === 'error' ? 'error' : 'success');
+      setTimeout(() => { toast.classList.remove('toast-show'); }, 3000); 
     }
 
     function saveState() {
       localStorage.setItem(`xpverse_user_${userState.tgId}`, JSON.stringify(userState));
       localStorage.setItem(`xpverse_missions_${userState.tgId}`, JSON.stringify(missionsState));
     }
-
     function loadState() {
       const savedUser = localStorage.getItem(`xpverse_user_${userState.tgId}`);
       const savedMissions = localStorage.getItem(`xpverse_missions_${userState.tgId}`);
-
       if (savedUser) userState = { ...userState, ...JSON.parse(savedUser) };
-      
-      if (!userState.boxesOpenedToday) userState.boxesOpenedToday = 0; // Geri uyğunluq üçün
-      
-      if (savedMissions) missionsState = JSON.parse(savedMissions);
-      else missionsState = generateDailyMissions();
+      if (savedMissions) missionsState = { ...getDefaultMissions(), ...JSON.parse(savedMissions) };
     }
-
-    function getResetDay(serverDate) { return serverDate.toISOString().split('T')[0]; }
 
     function checkDailyReset() {
       const now = getNow();
       if (!now) return false;
-
-      const currentResetDay = getResetDay(now);
-      
+      const currentResetDay = now.toISOString().split('T')[0];
       if (userState.lastResetDay !== currentResetDay) {
-        if (userState.lastResetDay) {
-            let last = new Date(userState.lastResetDay);
-            let curr = new Date(currentResetDay);
-            let diff = Math.floor((curr - last) / (1000 * 3600 * 24));
-            
-            if (diff === 1) {
-                userState.streak += 1;
-                if (userState.streak > 7) userState.streak = 1;
-            } else if (diff > 1) {
-                userState.streak = 1;
-            }
-        } else {
-            userState.streak = 1;
-        }
-
         userState.adsWatchedToday = 0;
-        userState.boxesOpenedToday = 0;
         userState.lastResetDay = currentResetDay;
-        missionsState = generateDailyMissions();
-        
+        missionsState = getDefaultMissions();
         saveState();
         return true; 
       }
@@ -631,421 +678,783 @@
       let newLevel = 1;
       if (xp >= 20000) newLevel = 10;
       else if (xp >= 3000) newLevel = 5;
-      else if (xp >= 1500) newLevel = 4;
-      else if (xp >= 750) newLevel = 3;
       else if (xp >= 250) newLevel = 2;
-      
       if (newLevel > userState.level) {
         userState.level = newLevel;
-        showToast("Səviyyə Artırıldı!", `Təbriklər! Yeni Səviyyə: ${newLevel}!`, "success");
-        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+        showToast("Level Up!", `New Account Rank Tier: ${newLevel}!`, "success");
       }
-    }
-
-    function updateProfileProgress() {
-      const xp = userState.totalXp;
-      let nextLvlXp = 250;
-      let prevLvlXp = 0;
-      
-      if (xp >= 20000) { nextLvlXp = 20000; prevLvlXp = 20000; }
-      else if (xp >= 3000) { nextLvlXp = 20000; prevLvlXp = 3000; }
-      else if (xp >= 1500) { nextLvlXp = 3000; prevLvlXp = 1500; }
-      else if (xp >= 750) { nextLvlXp = 1500; prevLvlXp = 750; }
-      else if (xp >= 250) { nextLvlXp = 750; prevLvlXp = 250; }
-
-      let progress = 100;
-      if (nextLvlXp !== prevLvlXp) progress = ((xp - prevLvlXp) / (nextLvlXp - prevLvlXp)) * 100;
-
-      document.getElementById('profile-xp-progress').style.width = `${progress}%`;
-      document.getElementById('profile-current-xp-text').innerText = `${xp.toLocaleString()} XP`;
-      document.getElementById('profile-next-xp-text').innerText = (nextLvlXp === 20000 && xp >= 20000) ? 'MAKS SƏV' : `${nextLvlXp.toLocaleString()} XP`;
-      document.getElementById('profile-badge-level').innerText = userState.level;
     }
 
     function updateUI() {
       document.getElementById('user-name').innerText = userState.firstName;
       document.getElementById('user-xp').innerHTML = `${userState.xp.toLocaleString()} <span class="text-[10px] text-crypto-glow font-bold">XP</span>`;
       document.getElementById('user-usd').innerText = userState.usdBalance.toFixed(2);
-      
       if (userState.photoUrl) {
         document.getElementById('user-photo').src = userState.photoUrl;
         document.getElementById('profile-photo-large').src = userState.photoUrl;
       }
-
       document.getElementById('main-xp-display').innerText = `${userState.xp.toLocaleString()} XP`;
       document.getElementById('ads-watched').innerText = userState.adsWatchedToday;
       document.getElementById('streak-days').innerText = userState.streak;
-
       document.getElementById('withdraw-balance-display').innerText = userState.usdBalance.toFixed(2);
-      renderWithdrawHistory();
-
+      
       document.getElementById('profile-name').innerText = userState.firstName;
       document.getElementById('profile-tgid').innerText = `ID: ${userState.tgId}`;
       document.getElementById('profile-total-xp').innerText = userState.totalXp.toLocaleString();
       document.getElementById('profile-boxes').innerText = userState.boxesOpened;
       
-      updateProfileProgress();
+      // Update inventory text variables if match view is rendering[span_4](start_span)[span_4](end_span)
+      document.getElementById('buff-bomb-count').innerHTML = `<i class="fa-solid fa-bomb"></i> ${userState.bombsOwned}`;
+      document.getElementById('buff-rocket-count').innerHTML = `<i class="fa-solid fa-rocket"></i> ${userState.rocketsOwned}`;
+
+      renderWithdrawHistory();
       renderMissions();
       renderStreakTracker();
+      buildLevelsGridInterface();
     }
 
     function renderStreakTracker() {
       const container = document.getElementById('streak-tracker-container');
+      if (!container) return;
       container.innerHTML = '';
-      
       for (let i = 1; i <= 7; i++) {
-        const isPast = i < userState.streak || (i === userState.streak && missionsState.dailyReward.claimed);
-        const isToday = i === userState.streak && !missionsState.dailyReward.claimed;
-        const reward = streakRewards[i-1];
-        
-        let styles = "bg-[#050511] border-slate-700 text-slate-600";
-        let icon = `<span class="text-[9px] font-black">${reward}</span>`;
-        let lineStyle = "bg-slate-800";
-        
-        if (isPast) {
-          styles = "bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]";
-          icon = `<i class="fa-solid fa-check text-xs"></i>`;
-          lineStyle = "bg-emerald-500/50 shadow-[0_0_5px_#34d399]";
-        } else if (isToday) {
-          styles = "bg-blue-600/30 border-crypto-glow shadow-[0_0_20px_rgba(0,240,255,0.5)] text-white";
-        }
-
+        const isPast = i < userState.streak;
+        const isToday = i === userState.streak;
         container.innerHTML += `
-          <div class="relative flex flex-col items-center gap-1.5 z-10 flex-1">
-            <div class="w-9 h-9 rounded-xl border-2 flex items-center justify-center transition-all duration-300 ${styles} z-10 relative bg-[#0a0b1a]">
-              ${icon}
+          <div class="relative flex flex-col items-center gap-1.5 flex-1 z-10">
+            <div class="w-9 h-9 rounded-xl border-2 flex items-center justify-center bg-[#0a0b1a] ${isPast ? 'border-emerald-500 text-emerald-400' : isToday ? 'border-crypto-glow text-white' : 'border-slate-800 text-slate-600'}">
+              ${isPast ? '<i class="fa-solid fa-check"></i>' : i}
             </div>
-            <span class="text-[8px] font-black tracking-widest ${isToday ? 'text-crypto-glow drop-shadow-[0_0_5px_#00f0ff]' : 'text-slate-500'}">GÜN ${i}</span>
-            ${i < 7 ? `<div class="absolute top-4 left-[50%] w-full h-1 -z-0 ${lineStyle} rounded-full"></div>` : ''}
-          </div>
-        `;
+            <span class="text-[8px] font-black">${isToday ? 'TODAY' : 'DAY '+i}</span>
+          </div>`;
       }
-    }
-
-    function getMissionProgress(mission) {
-      if (mission.type === 'login') return { current: 1, target: 1, isComplete: true };
-      if (mission.type === 'meta') {
-         const allMissionsDone = ['dailyReward', 'm1', 'm2', 'm3'].every(k => missionsState[k].claimed);
-         return { current: allMissionsDone ? 1 : 0, target: 1, isComplete: allMissionsDone };
-      }
-
-      let current = 0;
-      if (mission.action === 'ads') current = userState.adsWatchedToday;
-      else if (mission.action === 'box_bronze') current = localStorage.getItem(`xpverse_daily_bronze_${userState.tgId}`) || 0;
-      else if (mission.action === 'box_silver') current = localStorage.getItem(`xpverse_daily_silver_${userState.tgId}`) || 0;
-      else if (mission.action === 'box_gold') current = localStorage.getItem(`xpverse_daily_gold_${userState.tgId}`) || 0;
-      else if (mission.action === 'box_any') current = userState.boxesOpenedToday;
-
-      current = parseInt(current);
-      return { current: Math.min(current, mission.target), target: mission.target, isComplete: current >= mission.target };
     }
 
     function renderMissions() {
       const container = document.getElementById('missions-container');
+      if (!container) return;
       container.innerHTML = '';
-      
-      const missionKeys = ['dailyReward', 'm1', 'm2', 'm3', 'all'];
-
-      missionKeys.forEach(k => {
+      Object.keys(missionsState).forEach(k => {
         const m = missionsState[k];
-        if (!m) return;
-        
-        let label = m.label || "Gündəlik Giriş";
-        let icon = m.icon || "fa-gift";
-        let color = m.color || "text-purple-400";
-        
-        const prog = getMissionProgress(m);
-        let progressText = m.type === 'login' || m.type === 'meta' ? '' : `(${prog.current}/${prog.target})`;
-
-        let btnHtml = '';
-        if (m.claimed) {
-            btnHtml = `<span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/30 flex items-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]"><i class="fa-solid fa-check-double"></i> Alındı</span>`;
-        } else if (prog.isComplete) {
-            btnHtml = `<button onclick="claimMission('${k}')" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-1.5 rounded-xl shadow-[0_0_15px_rgba(0,240,255,0.4)] active:scale-95 transition-all uppercase tracking-wider">Topla</button>`;
-        } else {
-            btnHtml = `<span class="text-[10px] font-black bg-slate-800/50 text-slate-200 px-3 py-1.5 rounded-xl border border-slate-600 shadow-inner">+${m.reward} XP</span>`;
-        }
-
+        if (m.type === 'meta') return;
         container.innerHTML += `
-          <div class="glass-card rounded-2xl p-3 flex justify-between items-center transition-transform hover:-translate-y-0.5 border border-slate-800">
+          <div class="glass-card rounded-2xl p-3 flex justify-between items-center">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl border border-slate-700 bg-slate-800/50 flex items-center justify-center">
-                 <i class="fa-solid ${icon} ${color} text-lg"></i>
-              </div>
-              <div class="flex flex-col">
-                <span class="text-xs font-black text-white tracking-wide">${label}</span>
-                <span class="text-crypto-glow text-[10px] font-bold tracking-widest uppercase opacity-80 mt-0.5">${progressText}</span>
-              </div>
+              <div class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-crypto-glow"><i class="fa-solid fa-bolt"></i></div>
+              <div><p class="text-xs font-black text-white">${k.toUpperCase()}</p></div>
             </div>
-            ${btnHtml}
-          </div>
-        `;
+            <button onclick="claimMission('${k}')" ${m.claimed?'disabled':''} class="text-[10px] font-black px-3 py-1.5 rounded-xl ${m.claimed?'bg-slate-800 text-slate-500':'bg-blue-600 text-white'}">${m.claimed?'Claimed':'+'+m.reward+' XP'}</button>
+          </div>`;
       });
     }
 
-    function claimMission(key) {
-        const mission = missionsState[key];
-        if (mission.claimed) return;
-        
-        mission.claimed = true;
-        userState.xp += mission.reward;
-        userState.totalXp += mission.reward;
-        
-        checkLevelUp();
-        saveState();
-        updateUI();
-        
-        showToast("Görəv Tamamlandı!", `Siz ${mission.reward} XP qazandınız!`, "success");
+    function claimMission(k) {
+      if (missionsState[k].claimed) return;
+      missionsState[k].claimed = true;
+      userState.xp += missionsState[k].reward;
+      userState.totalXp += missionsState[k].reward;
+      saveState(); updateUI(); showToast("Claimed!", "Rewards injected.", "success");
     }
 
-    // PREMIUM DROP VƏ GAMIFICATION REKLAM SİSTEMİ
     function watchAd() {
-      if (userState.adsWatchedToday >= 30) {
-        showToast("Limit", "Siz artıq gündəlik 30 reklam limitinə çatmısınız. Sabah yenə gəlin!", "error");
-        return;
-      }
-
-      const btn = document.getElementById('watch-ad-btn');
-      const originalHTML = btn.innerHTML;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Reklam Yüklənir...</span>';
-      btn.classList.add('opacity-80', 'pointer-events-none');
-
-      // Reklamı Adsgram vasitəsilə çağırırıq
+      if (userState.adsWatchedToday >= 30) { showToast("Limit reached", "Try again tomorrow.", "error"); return; }
       if (window.Adsgram) {
         const AdController = window.Adsgram.init({ blockId: "int-34999" });
-        
-        AdController.show().then((result) => {
-          // GAMIFICATION LOGIC: Əgər reklam sona çatdısa (resolve oldu), Premium Drop şansı hesablayaq.
-          let earnedXp = 10;
-          let randomChance = Math.random();
-          let isPremiumDrop = false;
-          let earnedDollar = 0;
-
-          if (randomChance > 0.95) {
-             // 5% ehtimal: Nadir Drop (Pul)
-             isPremiumDrop = true;
-             earnedDollar = 0.05;
-             earnedXp = 50;
-          } else if (randomChance > 0.70) {
-             // 25% ehtimal: Yüksək XP
-             isPremiumDrop = true;
-             earnedXp = 30;
-          }
-
-          userState.xp += earnedXp;
-          userState.totalXp += earnedXp;
-          userState.adsWatchedToday += 1;
-          userState.usdBalance += earnedDollar;
-          
-          checkLevelUp();
-          saveState();
-          updateUI();
-          
-          if (isPremiumDrop) {
-             if (earnedDollar > 0) {
-                showToast("🔥 PREMIUM DROP 🔥", `Təbrik edirik! Möhtəşəm izləməyə görə +${earnedXp} XP və $${earnedDollar} qazandınız!`, "jackpot");
-             } else {
-                showToast("⭐ SUPER İZLƏMƏ ⭐", `Sona qədər izləyib diqqət etdiyiniz üçün tam +${earnedXp} XP qazandınız!`, "success");
-             }
-          } else {
-             showToast("Uğurlu", "Reklamı izlədiniz və +10 XP qazandınız. Daha yaxşı drop üçün klikləməyi unutmayın!", "success");
-          }
-          
-          btn.innerHTML = originalHTML;
-          btn.classList.remove('opacity-80', 'pointer-events-none');
-        }).catch((error) => {
-          // Əgər istifadəçi 'X' düyməsini basıb bağlayarsa (Adsgram reject edir)
-          showToast("Xəta və ya Ləğv", "Reklam tam izlənmədi və ya xəta baş verdi. Zəhmət olmasa sona qədər izləyin.", "error");
-          btn.innerHTML = originalHTML;
-          btn.classList.remove('opacity-80', 'pointer-events-none');
-        });
+        AdController.show().then(() => {
+          userState.xp += 10; userState.totalXp += 10; userState.adsWatchedToday += 1;
+          saveState(); updateUI(); showToast("Rewarded!", "+10 XP granted.", "success");
+        }).catch(() => { showToast("Error", "Playback failed.", "error"); });
       } else {
-        showToast("Xəta", "Reklam sistemi hal-hazırda aktiv deyil.", "error");
-        btn.innerHTML = originalHTML;
-        btn.classList.remove('opacity-80', 'pointer-events-none');
+        // Fallback simulate developer environment logic
+        userState.xp += 10; userState.totalXp += 10; userState.adsWatchedToday += 1;
+        saveState(); updateUI(); showToast("Dev Simulate", "+10 XP added seamlessly.", "success");
       }
     }
 
-    const boxCosts = { bronze: 1000, silver: 5000, gold: 10000 };
-    
     function openBox(type) {
-      const cost = boxCosts[type];
-      if (userState.xp < cost) {
-        showToast("Kifayət qədər XP yoxdur", `Bu qutunu açmaq üçün ${cost} XP lazımdır.`, "error");
-        return;
-      }
-
-      userState.xp -= cost;
-      userState.boxesOpened += 1;
-      userState.boxesOpenedToday += 1;
-      
-      // Gündəlik missiyalar üçün lokal olaraq qutu saylarını izləyirik
-      let currentBoxTypeCount = parseInt(localStorage.getItem(`xpverse_daily_${type}_${userState.tgId}`) || 0);
-      localStorage.setItem(`xpverse_daily_${type}_${userState.tgId}`, currentBoxTypeCount + 1);
-
-      let reward = 0;
-      const isJackpot = Math.random() >= 0.999; 
-
-      if (type === 'bronze') reward = isJackpot ? 1.00 : 0.10;
-      else if (type === 'silver') reward = isJackpot ? 7.00 : 0.50;
-      else if (type === 'gold') reward = isJackpot ? 15.00 : 1.00;
-
-      userState.usdBalance += reward;
-
-      saveState();
-      updateUI();
-
-      if (isJackpot) {
-         showToast("🎉 BÖYÜK CEKPOT! 🎉", `İnanılmaz! Qutudan $${reward.toFixed(2)} çıxdı!`, "jackpot");
-      } else {
-         showToast("🎁 Qutu Açıldı!", `Təbriklər! Qutudan $${reward.toFixed(2)} qazandınız!`, "success");
-      }
+      const cost = type==='bronze'?1000:type==='silver'?5000:10000;
+      if (userState.xp < cost) { showToast("Error", "Insufficient balance assets.", "error"); return; }
+      userState.xp -= cost; userState.boxesOpened++;
+      let prize = type==='bronze'?0.15:type==='silver'?0.75:2.50;
+      userState.usdBalance += prize;
+      saveState(); updateUI(); showToast("Box Unlocked!", `You harvested $${prize.toFixed(2)}`, "success");
     }
 
     function requestWithdrawal() {
       const address = document.getElementById('wallet-address').value;
       const amount = parseFloat(document.getElementById('withdraw-amount').value);
-
-      if (!address || address.length < 10) {
-        showToast("Səhv Ünvan", "Zəhmət olmasa düzgün TON pulqabı ünvanı daxil edin.", "error");
-        return;
+      if (!address || address.length < 8 || amount < 5 || amount > userState.usdBalance) {
+        showToast("Declined", "Verify validation rules ($5 minimum setup).", "error"); return;
       }
-
-      if (isNaN(amount) || amount < 5) {
-        showToast("Yanlış Məbləğ", "Minimum çıxarış məbləği $5.00-dır.", "error");
-        return;
-      }
-
-      if (amount > userState.usdBalance) {
-        showToast("Kifayət qədər balans yoxdur", "Bu məbləği çıxarmaq üçün kifayət qədər vəsaitiniz yoxdur.", "error");
-        return;
-      }
-
       userState.usdBalance -= amount;
-      
-      const now = getNow() || new Date(); 
-      const withdrawalRecord = {
-        id: '#' + Math.random().toString(36).substr(2, 6).toUpperCase(),
-        date: now.toLocaleDateString(),
-        amount: amount,
-        address: address.substring(0, 6) + '...' + address.substring(address.length - 4),
-        status: 'Gözləmədə'
-      };
-
-      userState.withdrawHistory.unshift(withdrawalRecord); 
-      
-      saveState();
-      updateUI();
-      
-      document.getElementById('wallet-address').value = '';
-      document.getElementById('withdraw-amount').value = '';
-
-      showToast("Çıxarış Sorğusu Göndərildi", `$${amount.toFixed(2)} məbləğində sorğunuz qəbul edildi.`, "success");
+      userState.withdrawHistory.unshift({ id: '#W'+Math.floor(Math.random()*9000+1000), date: new Date().toLocaleDateString(), amount, address, status: 'Pending'});
+      saveState(); updateUI(); showToast("Submitted", "TON chain audit pipeline pending.", "success");
     }
 
     function renderWithdrawHistory() {
       const container = document.getElementById('withdraw-history-container');
-      
-      if (userState.withdrawHistory.length === 0) {
-        container.innerHTML = `
-          <div class="glass-card rounded-2xl p-6 text-center border-dashed border-2 border-slate-700">
-            <i class="fa-solid fa-clock-rotate-left text-3xl text-slate-600 mb-2"></i>
-            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">Tarixçə Boşdur</p>
-          </div>`;
-        return;
-      }
-
-      container.innerHTML = '';
-      userState.withdrawHistory.forEach(record => {
-        container.innerHTML += `
-          <div class="glass-card rounded-2xl p-4 flex justify-between items-center transition-transform hover:-translate-y-0.5">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
-                 <i class="fa-solid fa-arrow-right-arrow-left text-slate-400"></i>
-              </div>
-              <div>
-                <p class="text-xs font-black text-white">${record.id} <span class="text-[9px] text-slate-400 ml-1 font-bold">${record.date}</span></p>
-                <p class="text-[10px] text-blue-400 mt-0.5 font-mono bg-blue-500/10 inline-block px-1.5 py-0.5 rounded">${record.address}</p>
-              </div>
-            </div>
-            <div class="text-right">
-              <p class="text-sm font-black text-emerald-400 drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">-$${record.amount.toFixed(2)}</p>
-              <p class="text-[9px] font-black text-amber-400 uppercase tracking-widest mt-0.5 bg-amber-500/10 inline-block px-2 py-0.5 rounded-full border border-amber-500/20">${record.status}</p>
-            </div>
-          </div>
-        `;
+      if (!container) return;
+      container.innerHTML = userState.withdrawHistory.length===0 ? '<p class="text-xs text-slate-500 text-center py-4">No audit rows processed yet.</p>' : '';
+      userState.withdrawHistory.forEach(r => {
+        container.innerHTML += `<div class="glass-card p-3 rounded-xl flex justify-between items-center"><div class="text-left"><p class="text-xs font-black text-white">${r.id}</p><p class="text-[9px] text-slate-500">${r.date} -> ${r.address.substring(0,6)}...</p></div><div class="text-right"><p class="text-xs font-black text-emerald-400">$${r.amount.toFixed(2)}</p><span class="text-[8px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded">${r.status}</span></div></div>`;
       });
     }
 
     function switchTab(tabId) {
       document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('nav-active');
-      });
-
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('nav-active'));
       document.getElementById(`view-${tabId}`).classList.remove('hidden');
-      
-      const activeBtn = document.querySelector(`[data-target="${tabId}"]`);
-      activeBtn.classList.add('nav-active');
+      document.querySelector(`[data-target="${tabId}"]`).classList.add('nav-active');
       
       const header = document.getElementById('main-header');
       const mainContent = document.getElementById('app-content');
-
       clearTimeout(headerTimeout);
 
-      if (tabId === 'withdraw' || tabId === 'profile') {
+      if (tabId === 'withdraw' || tabId === 'profile' || tabId === 'game') {
         header.style.transform = 'translateY(-100%)';
         headerTimeout = setTimeout(() => header.style.display = 'none', 300);
-        mainContent.classList.remove('pt-24');
-        mainContent.classList.add('pt-4');
+        mainContent.classList.remove('pt-24'); mainContent.classList.add('pt-4');
       } else {
-        header.style.display = 'block'; 
-        setTimeout(() => header.style.transform = 'translateY(0)', 10);
-        mainContent.classList.remove('pt-4');
-        mainContent.classList.add('pt-24');
+        header.style.display = 'block'; setTimeout(() => header.style.transform = 'translateY(0)', 10);
+        mainContent.classList.remove('pt-4'); mainContent.classList.add('pt-24');
       }
-      
+
+      if (tabId === 'game') {
+        triggerGameTabSplash();
+      } else {
+        exitMatch();
+      }
       if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function updateTimer() {
-        const now = getNow();
-        if (!now) return;
-
-        const tomorrow = new Date(now);
-        tomorrow.setUTCHours(24, 0, 0, 0); 
-        
-        const diff = tomorrow.getTime() - now.getTime();
-        const h = Math.floor(diff / 1000 / 60 / 60);
-        const m = Math.floor((diff / 1000 / 60) % 60);
-        const s = Math.floor((diff / 1000) % 60);
-        
-        const timerEl = document.getElementById('reset-timer');
-        if (timerEl) {
-            timerEl.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        }
-
-        if (checkDailyReset()) {
-            // Gündəlik dataları lokal olaraq təmizlə
-            ['bronze', 'silver', 'gold'].forEach(type => {
-               localStorage.removeItem(`xpverse_daily_${type}_${userState.tgId}`);
-            });
-            updateUI();
-            showToast("Yeni Gün Başladı!", "Gündəlik limitlər və yeni tapşırıqlar yeniləndi.", "info");
-        }
+      const now = getNow();
+      const tomorrow = new Date(now); tomorrow.setUTCHours(24, 0, 0, 0);
+      const diff = tomorrow.getTime() - now.getTime();
+      const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+      const el = document.getElementById('reset-timer');
+      if (el) el.innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      if (checkDailyReset()) updateUI();
     }
+
+    // ==========================================
+    // HIGH FIDELITY PROCEDURAL BALLOON GAME ENGINE CODE[span_5](start_span)[span_5](end_span)
+    // ==========================================
+    let currentGameLevel = 1;
+    let matchScore = 0;
+    let matchTarget = 500;
+    let matchMovesLeft = 20;
+    let matchIsOver = false;
+
+    // Canvas Engine Physics definitions[span_6](start_span)[span_6](end_span)
+    const canvas = document.getElementById('bubble-canvas');
+    const ctx = canvas.getContext('2d');
     
-    async function initApp() {
-      // Dummy fetch to simulate server time, can replace logic here
-      accurateTimeOffset = 0; 
+    const colorsPalette = ['#ff3b30', '#34c759', '#007aff', '#ffcc00', '#af52de', '#00f0ff'];
+    let bubbleGrid = [];
+    const gridCols = 8;
+    const gridRowsMax = 12;
+    let bubbleRadius = 16;
+
+    // Input vector trajectory trackers
+    let shooterX = 0, shooterY = 0;
+    let currentBulletColor = '';
+    let nextBulletColor = '';
+    let isAiming = false, aimX = 0, aimY = 0;
+    let activeFiredProjectile = null;
+    let particleExplosionPool = [];
+    let activePowerUpSelected = null; // 'bomb' or 'rocket'
+
+    function triggerGameTabSplash() {
+      const splash = document.getElementById('game-splash');
+      splash.classList.remove('hidden');
+      setTimeout(() => { splash.classList.add('hidden'); }, 2500); // 2-3 seconds splash intro visibility[span_7](start_span)[span_7](end_span)
+    }
+
+    function buildLevelsGridInterface() {
+      const container = document.getElementById('level-grid-container');
+      if (!container) return;
+      container.innerHTML = '';
       
+      // Procedural generation supporting 1000+ custom scaling configurations[span_8](start_span)[span_8](end_span)
+      for (let i = 1; i <= 1000; i++) {
+        const isUnlocked = i <= userState.maxUnlockedLevel;
+        const stars = userState.levelStarsData[i] || 0;
+        
+        let starsHtml = '';
+        if (isUnlocked) {
+          starsHtml = '<div class="flex gap-0.5 text-[7px] text-amber-400 justify-center mt-1">';
+          for(let s=1; s<=3; s++) {
+            starsHtml += `<i class="${s<=stars?'fa-solid':'fa-regular'} fa-star"></i>`;
+          }
+          starsHtml += '</div>';
+        }
+
+        container.innerHTML += `
+          <button onclick="startSpecificLevel(${i})" ${!isUnlocked?'disabled':''} class="aspect-square glass-card rounded-xl p-2 flex flex-col justify-center items-center relative border ${isUnlocked?'border-blue-500/40':'border-slate-900 opacity-40'}">
+            ${!isUnlocked ? '<i class="fa-solid fa-lock text-xs text-slate-600"></i>' : `<span class="text-xs font-black text-white">${i}</span>`}
+            ${starsHtml}
+          </button>`;
+      }
+    }
+
+    function startSpecificLevel(lvlNum) {
+      currentGameLevel = lvlNum;
+      matchScore = 0;
+      matchIsOver = false;
+      activeFiredProjectile = null;
+      particleExplosionPool = [];
+      activePowerUpSelected = null;
+
+      // Scaling calculation rules based on linear step curves[span_9](start_span)[span_9](end_span)
+      matchTarget = lvlNum * 180 + 400;
+      
+      // Compute row configuration parameters based on game bounds[span_10](start_span)[span_10](end_span)
+      let baselineRows = 4 + Math.floor(lvlNum / 15);
+      if (baselineRows > 8) baselineRows = 8; // clamp bounds 
+      
+      // Ammunition inventory estimation curves[span_11](start_span)[span_11](end_span)
+      let calculatedBaseMoves = baselineRows * 4 + 8;
+      matchMovesLeft = calculatedBaseMoves + 4; // structural surplus safety margin[span_12](start_span)[span_12](end_span)
+
+      document.getElementById('arena-level-title').innerText = `Level ${lvlNum}`;
+      document.getElementById('arena-target-text').innerText = `Target: ${matchTarget}`;
+      document.getElementById('arena-score').innerText = '0';
+      document.getElementById('arena-moves').innerText = matchMovesLeft;
+
+      // Setup and adjust canvas geometry dynamics
+      resizeCanvasDimensions();
+      initializeBubbleMatrix(baselineRows);
+      generateShooterAmmunitionQueue();
+
+      document.getElementById('game-level-selector').classList.add('hidden');
+      document.getElementById('game-arena').classList.remove('hidden');
+      
+      requestAnimationFrame(runGameFrameEngineLoop);
+    }
+
+    function resizeCanvasDimensions() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * window.devicePixelRatio;
+      canvas.height = rect.height * window.devicePixelRatio;
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      
+      bubbleRadius = (rect.width / gridCols) / 2;
+      shooterX = rect.width / 2;
+      shooterY = rect.height - 40;
+    }
+
+    function initializeBubbleMatrix(rowsCount) {
+      bubbleGrid = [];
+      // Populate structured palette nodes procedurally[span_13](start_span)[span_13](end_span)
+      for (let r = 0; r < gridRowsMax; r++) {
+        bubbleGrid[r] = [];
+        for (let c = 0; c < gridCols; c++) {
+          if (r < rowsCount) {
+            // Pick structural variety dynamically
+            const availableColorsCount = Math.min(3 + Math.floor(currentGameLevel / 5), colorsPalette.length);
+            const rndColor = colorsPalette[Math.floor(Math.random() * availableColorsCount)];
+            bubbleGrid[r][c] = { x: 0, y: 0, color: rndColor, active: true };
+          } else {
+            bubbleGrid[r][c] = { x: 0, y: 0, color: '', active: false };
+          }
+        }
+      }
+      recomputeGridPhysicsCoordinates();
+    }
+
+    function recomputeGridPhysicsCoordinates() {
+      const rect = canvas.getBoundingClientRect();
+      for (let r = 0; r < gridRowsMax; r++) {
+        const indentOffset = (r % 2 === 1) ? bubbleRadius : 0;
+        for (let c = 0; c < gridCols; c++) {
+          bubbleGrid[r][c].x = c * (bubbleRadius * 2) + bubbleRadius + indentOffset;
+          bubbleGrid[r][c].y = r * (bubbleRadius * 2) + bubbleRadius + 10;
+        }
+      }
+    }
+
+    function generateShooterAmmunitionQueue() {
+      const availableColorsCount = Math.min(3 + Math.floor(currentGameLevel / 5), colorsPalette.length);
+      currentBulletColor = colorsPalette[Math.floor(Math.random() * availableColorsCount)];
+      nextBulletColor = colorsPalette[Math.floor(Math.random() * availableColorsCount)];
+    }
+
+    function executeAmmunitionSwap() {
+      if (matchIsOver || activeFiredProjectile) return;
+      let temp = currentBulletColor;
+      currentBulletColor = nextBulletColor;
+      nextBulletColor = temp;
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
+
+    function buyPowerUp(type) {
+      if (userState.xp < 150) { showToast("Error", "Need 150 XP assets.", "error"); return; }
+      userState.xp -= 150;
+      if (type === 'bomb') userState.bombsOwned++;
+      if (type === 'rocket') userState.rocketsOwned++;
+      saveState(); updateUI(); showToast("Purchased", "+1 tactical asset unlocked.", "success");
+    }
+
+    // Interactive event listeners hooks setup inside system loop context
+    let canvasRectOffset = null;
+    function getCanvasTouchCoords(e) {
+      if (!canvasRectOffset) canvasRectOffset = canvas.getBoundingClientRect();
+      const t = e.touches ? e.touches[0] : e;
+      return {
+        x: t.clientX - canvasRectOffset.left,
+        y: t.clientY - canvasRectOffset.top
+      };
+    }
+
+    canvas.addEventListener('mousedown', (e) => {
+      if(matchIsOver || activeFiredProjectile) return;
+      canvasRectOffset = canvas.getBoundingClientRect();
+      isAiming = true;
+      let coords = getCanvasTouchCoords(e);
+      aimX = coords.x; aimY = coords.y;
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (!isAiming) return;
+      let coords = getCanvasTouchCoords(e);
+      aimX = coords.x; aimY = coords.y;
+    });
+
+    window.addEventListener('mouseup', (e) => {
+      if (!isAiming) return;
+      isAiming = false;
+      
+      // Process click coordinate bounds validation rules checks
+      const rect = canvas.getBoundingClientRect();
+      let coords = getCanvasTouchCoords(e);
+      
+      // If user clicks close proximity to shooter core position -> trigger ammo swap logic[span_14](start_span)[span_14](end_span)
+      const distToShooter = Math.hypot(coords.x - shooterX, coords.y - shooterY);
+      if (distToShooter < bubbleRadius * 2.5) {
+        executeAmmunitionSwap();
+        return;
+      }
+
+      // Compute vector angles structures and dispatch weapon elements instances tracking physics paths
+      let dx = coords.x - shooterX;
+      let dy = coords.y - shooterY;
+      if (dy >= -10) return; // ignore down-facing operations vectors
+
+      let angle = Math.atan2(dy, dx);
+      let speed = 12;
+      
+      activeFiredProjectile = {
+        x: shooterX,
+        y: shooterY,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        color: currentBulletColor,
+        isBomb: activePowerUpSelected === 'bomb',
+        isRocket: activePowerUpSelected === 'rocket'
+      };
+
+      // Reset tactical overlay activation flags states context safely
+      if (activePowerUpSelected === 'bomb') userState.bombsOwned--;
+      if (activePowerUpSelected === 'rocket') userState.rocketsOwned--;
+      activePowerUpSelected = null;
+
+      matchMovesLeft--;
+      document.getElementById('arena-moves').innerText = matchMovesLeft;
+      
+      // Refill ammunition vectors line sequence context pipeline dynamically
+      const availableColorsCount = Math.min(3 + Math.floor(currentGameLevel / 5), colorsPalette.length);
+      currentBulletColor = nextBulletColor;
+      nextBulletColor = colorsPalette[Math.floor(Math.random() * availableColorsCount)];
+      
+      updateUI();
+    });
+
+    // Touch events for mobile systems mapping context
+    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); canvasRectOffset = canvas.getBoundingClientRect(); isAiming = true; let coords = getCanvasTouchCoords(e); aimX = coords.x; aimY = coords.y; });
+    canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if (!isAiming) return; let coords = getCanvasTouchCoords(e); aimX = coords.x; aimY = coords.y; });
+    canvas.addEventListener('touchend', (e) => { e.preventDefault(); window.dispatchEvent(new MouseEvent('mouseup', { clientX: aimX + canvasRectOffset.left, clientY: aimY + canvasRectOffset.top })); });
+
+    function runGameFrameEngineLoop() {
+      if (document.getElementById('view-game').classList.contains('hidden') || !document.getElementById('game-level-selector').classList.contains('hidden')) {
+        return; // Halt engine cycles safely if tab changes context maps context
+      }
+
+      clearArenaCanvasContext();
+      processActiveProjectilePhysicsPhysics();
+      renderActiveGridNodes();
+      renderAimingTrajectoryVectorLine();
+      renderInteractiveShooterInterface();
+      processParticlesExplosionAnimationPool();
+      updateMatchPerformanceIndicatorsBars();
+
+      requestAnimationFrame(runGameFrameEngineLoop);
+    }
+
+    function clearArenaCanvasContext() {
+      const rect = canvas.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
+    }
+
+    function renderActiveGridNodes() {
+      for (let r = 0; r < gridRowsMax; r++) {
+        for (let c = 0; c < gridCols; c++) {
+          const cell = bubbleGrid[r][c];
+          if (cell && cell.active) {
+            ctx.beginPath();
+            ctx.arc(cell.x, cell.y, bubbleRadius - 1, 0, Math.PI * 2);
+            ctx.fillStyle = cell.color;
+            ctx.fill();
+            // Subtle 3D glossy highlight inside elements circles
+            ctx.beginPath();
+            ctx.arc(cell.x - bubbleRadius*0.3, cell.y - bubbleRadius*0.3, bubbleRadius*0.2, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.fill();
+          }
+        }
+      }
+    }
+
+    function renderAimingTrajectoryVectorLine() {
+      if (!isAiming || activeFiredProjectile) return;
+      ctx.beginPath();
+      ctx.setLineDash([4, 4]);
+      ctx.moveTo(shooterX, shooterY);
+      
+      // Calculate continuous vector endpoint calculation
+      let dx = aimX - shooterX;
+      let dy = aimY - shooterY;
+      let angle = Math.atan2(dy, dx);
+      
+      let targetVectorX = shooterX + Math.cos(angle) * 120;
+      let targetVectorY = shooterY + Math.sin(angle) * 120;
+      
+      ctx.lineTo(targetVectorX, targetVectorY);
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.6)';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    function renderInteractiveShooterInterface() {
+      // Draw next predictive queue preview node circles frame[span_15](start_span)[span_15](end_span)
+      ctx.beginPath();
+      ctx.arc(shooterX - 45, shooterY + 10, bubbleRadius * 0.7, 0, Math.PI * 2);
+      ctx.fillStyle = nextBulletColor;
+      ctx.fill();
+
+      // Draw primary ammunition core focus structure
+      ctx.beginPath();
+      ctx.arc(shooterX, shooterY, bubbleRadius, 0, Math.PI * 2);
+      ctx.fillStyle = currentBulletColor;
+      ctx.fill();
+      
+      // Interactive weapon swap icon vector overlay graphics trace indicators[span_16](start_span)[span_16](end_span)
+      ctx.font = '10px sans-serif';
+      ctx.fillStyle = '#f8fafc';
+      ctx.textAlign = 'center';
+      ctx.fillText("⇄", shooterX, shooterY + 3);
+    }
+
+    function processActiveProjectilePhysicsPhysics() {
+      if (!activeFiredProjectile) return;
+      const rect = canvas.getBoundingClientRect();
+      
+      activeFiredProjectile.x += activeFiredProjectile.vx;
+      activeFiredProjectile.y += activeFiredProjectile.vy;
+
+      // Handle continuous boundary walls collision matrix bounds safely
+      if (activeFiredProjectile.x - bubbleRadius <= 0 || activeFiredProjectile.x + bubbleRadius >= rect.width) {
+        activeFiredProjectile.vx *= -1;
+        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      }
+
+      // Draw projectile sphere context entity instance frame
+      ctx.beginPath();
+      ctx.arc(activeFiredProjectile.x, activeFiredProjectile.y, bubbleRadius, 0, Math.PI * 2);
+      ctx.fillStyle = activeFiredProjectile.color;
+      ctx.fill();
+
+      // Matrix collision validation scan sweeps mapping nodes coordinates offsets
+      let hitGridNode = checkGridIntersectionHit(activeFiredProjectile.x, activeFiredProjectile.y);
+      if (hitGridNode || activeFiredProjectile.y - bubbleRadius <= 0) {
+        snapProjectileIntoGridMatrix(activeFiredProjectile);
+        activeFiredProjectile = null;
+      }
+    }
+
+    function checkGridIntersectionHit(px, py) {
+      for (let r = 0; r < gridRowsMax; r++) {
+        for (let c = 0; c < gridCols; c++) {
+          const cell = bubbleGrid[r][c];
+          if (cell && cell.active) {
+            let dist = Math.hypot(px - cell.x, py - cell.y);
+            if (dist < bubbleRadius * 1.7) return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    function snapProjectileIntoGridMatrix(proj) {
+      let closestRow = 0, closestCol = 0;
+      let shortestDistanceValue = 999999;
+
+      for (let r = 0; r < gridRowsMax; r++) {
+        for (let c = 0; c < gridCols; c++) {
+          const cell = bubbleGrid[r][c];
+          if (cell && !cell.active) {
+            let dist = Math.hypot(proj.x - cell.x, proj.y - cell.y);
+            if (dist < shortestDistanceValue) {
+              shortestDistanceValue = dist;
+              closestRow = r; closestCol = c;
+            }
+          }
+        }
+      }
+
+      // Mount element cell parameters attributes maps data block arrays references securely
+      bubbleGrid[closestRow][closestCol].active = true;
+      bubbleGrid[closestRow][closestCol].color = proj.color;
+
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+
+      // Check structural pop calculations pipelines conditions flows metrics[span_17](start_span)[span_17](end_span)
+      let matchesClusterArray = [];
+      findMatchingClustersFloodFill(closestRow, closestCol, proj.color, matchesClusterArray);
+
+      if (matchesClusterArray.length >= 3) {
+        popMatchedClusterNodes(matchesClusterArray);
+        dropFloatingDisconnectedClusters();
+      }
+
+      verifyLevelMatchEndingStates();
+    }
+
+    function findMatchingClustersFloodFill(r, c, color, visitedPool) {
+      const uniqueKey = `${r}_${c}`;
+      if (r < 0 || r >= gridRowsMax || c < 0 || c >= gridCols) return;
+      if (!bubbleGrid[r][c].active || bubbleGrid[r][c].color !== color) return;
+      if (visitedPool.some(v => v.key === uniqueKey)) return;
+
+      visitedPool.push({ r, c, key: uniqueKey });
+
+      // Search matching matrix structures hex shifts mapping vectors offsets configurations arrays
+      const pathsOffsets = (r % 2 === 1) 
+        ? [[-1,0], [-1,1], [0,-1], [0,1], [1,0], [1,1]]
+        : [[-1,-1], [-1,0], [0,-1], [0,1], [1,-1], [1,0]];
+
+      pathsOffsets.forEach(([dr, dc]) => {
+        findMatchingClustersFloodFill(r + dr, c + dc, color, visitedPool);
+      });
+    }
+
+    function popMatchedClusterNodes(cluster) {
+      cluster.forEach(node => {
+        const cell = bubbleGrid[node.r][node.c];
+        if (cell.active) {
+          spawnBurstParticles(cell.x, cell.y, cell.color);
+          cell.active = false;
+          cell.color = '';
+          matchScore += 25;
+        }
+      });
+    }
+
+    function dropFloatingDisconnectedClusters() {
+      let connectedCeilingMap = [];
+      for (let r = 0; r < gridRowsMax; r++) {
+        connectedCeilingMap[r] = [];
+        for (let c = 0; c < gridCols; c++) connectedCeilingMap[r][c] = false;
+      }
+
+      for (let c = 0; c < gridCols; c++) {
+        if (bubbleGrid[0][c].active) {
+          traceCeilingAnchorsConnectivity(0, c, connectedCeilingMap);
+        }
+      }
+
+      for (let r = 1; r < gridRowsMax; r++) {
+        for (let c = 0; c < gridCols; c++) {
+          if (bubbleGrid[r][c].active && !connectedCeilingMap[r][c]) {
+            spawnBurstParticles(bubbleGrid[r][c].x, bubbleGrid[r][c].y, bubbleGrid[r][c].color);
+            bubbleGrid[r][c].active = false;
+            bubbleGrid[r][c].color = '';
+            matchScore += 50; // Bonus multiplier weight rewards score metrics profiles configuration
+          }
+        }
+      }
+    }
+
+    function traceCeilingAnchorsConnectivity(r, c, graphVisitedMap) {
+      if (r < 0 || r >= gridRowsMax || c < 0 || c >= gridCols) return;
+      if (!bubbleGrid[r][c].active || graphVisitedMap[r][c]) return;
+
+      graphVisitedMap[r][c] = true;
+
+      const pathsOffsets = (r % 2 === 1) 
+        ? [[-1,0], [-1,1], [0,-1], [0,1], [1,0], [1,1]]
+        : [[-1,-1], [-1,0], [0,-1], [0,1], [1,-1], [1,0]];
+
+      pathsOffsets.forEach(([dr, dc]) => {
+        traceCeilingAnchorsConnectivity(r + dr, c + dc, graphVisitedMap);
+      });
+    }
+
+    function spawnBurstParticles(x, y, color) {
+      for (let i = 0; i < 8; i++) {
+        particleExplosionPool.push({
+          x: x, y: y,
+          vx: (Math.random() - 0.5) * 6,
+          vy: (Math.random() - 0.5) * 6,
+          radius: Math.random() * 3 + 1,
+          color: color,
+          alpha: 1,
+          life: 25
+        });
+      }
+    }
+
+    function processParticlesExplosionAnimationPool() {
+      for (let i = particleExplosionPool.length - 1; i >= 0; i--) {
+        const p = particleExplosionPool[i];
+        p.x += p.vx; p.y += p.vy;
+        p.alpha -= 0.04; p.life--;
+        if (p.life <= 0 || p.alpha <= 0) {
+          particleExplosionPool.splice(i, 1);
+        } else {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = p.alpha;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        }
+      }
+    }
+
+    function updateMatchPerformanceIndicatorsBars() {
+      document.getElementById('arena-score').innerText = matchScore;
+      
+      let starsCount = 0;
+      if (matchScore >= matchTarget) starsCount = 3;
+      else if (matchScore >= matchTarget * 0.7) starsCount = 2;
+      else if (matchScore >= matchTarget * 0.3) starsCount = 1;
+
+      const container = document.getElementById('arena-stars');
+      container.innerHTML = '';
+      for (let i = 1; i <= 3; i++) {
+        container.innerHTML += `<i class="${i<=starsCount?'fa-solid text-amber-400':'fa-regular text-slate-700'} fa-star"></i>`;
+      }
+    }
+
+    function verifyLevelMatchEndingStates() {
+      // Scan current matrix content block elements visibility mapping states profiles
+      let elementsFound = false;
+      for (let r = 0; r < gridRowsMax; r++) {
+        for (let c = 0; c < gridCols; c++) {
+          if (bubbleGrid[r][c].active) { elementsFound = true; break; }
+        }
+      }
+
+      if (!elementsFound || matchScore >= matchTarget) {
+        triggerMatchVictorySequenceTransition();
+        return;
+      }
+
+      if (matchMovesLeft <= 0 && !activeFiredProjectile) {
+        matchIsOver = true;
+        document.getElementById('game-fail-modal').classList.remove('hidden');
+      }
+    }
+
+    function triggerMatchVictorySequenceTransition() {
+      matchIsOver = true;
+      // High interest endpoint mechanic execution sequence implementation[span_18](start_span)[span_18](end_span)
+      // Leftover ammunition cascades vertically upward popping in festive fireworks styles configuration metrics[span_19](start_span)[span_19](end_span)
+      if (matchMovesLeft > 0) {
+        let loopCounter = 0;
+        const rect = canvas.getBoundingClientRect();
+        let intervalRef = setInterval(() => {
+          if (loopCounter >= matchMovesLeft) {
+            clearInterval(intervalRef);
+            finalizeMatchVictoryRewardsDataState();
+            return;
+          }
+          let randomX = Math.random() * rect.width;
+          let randomColor = colorsPalette[Math.floor(Math.random() * colorsPalette.length)];
+          spawnBurstParticles(randomX, shooterY - 100, randomColor);
+          matchScore += 60; // Leftover ammunition structural bonus factor injection[span_20](start_span)[span_20](end_span)
+          loopCounter++;
+          updateMatchPerformanceIndicatorsBars();
+        }, 150);
+      } else {
+        finalizeMatchVictoryRewardsDataState();
+      }
+    }
+
+    function finalizeMatchVictoryRewardsDataState() {
+      let finalStars = 1;
+      if (matchScore >= matchTarget) finalStars = 3;
+      else if (matchScore >= matchTarget * 0.7) finalStars = 2;
+
+      // Update structural system progress metrics records vectors parameters safely
+      if (currentGameLevel === userState.maxUnlockedLevel) {
+        userState.maxUnlockedLevel++;
+      }
+      
+      const legacyStars = userState.levelStarsData[currentGameLevel] || 0;
+      if (finalStars > legacyStars) {
+        userState.levelStarsData[currentGameLevel] = finalStars;
+      }
+
+      // Inject account level balancing structures pools automatically[span_21](start_span)[span_21](end_span)
+      const standardXPBonusPayload = 50 + (finalStars * 15);
+      userState.xp += standardXPBonusPayload;
+      userState.totalXp += standardXPBonusPayload;
+
+      checkLevelUp(); saveState(); updateUI();
+      showToast("Victory Achieved!", `Scored ${finalStars} Stars! +${standardXPBonusPayload} XP awarded!`, "success");
+      exitMatch();
+    }
+
+    function watchAdForMoves() {
+      // Add moves to standard ammunition variable indicators profiles
+      matchMovesLeft += 5;
+      matchIsOver = false;
+      document.getElementById('arena-moves').innerText = matchMovesLeft;
+      document.getElementById('game-fail-modal').classList.add('hidden');
+      showToast("Ammunition Filled", "+5 Extra balls initialized context.", "success");
+    }
+
+    function buyMovesWithXP() {
+      if (userState.xp < 200) { showToast("Error", "Need 200 XP points balance assets.", "error"); return; }
+      userState.xp -= 200;
+      matchMovesLeft += 5;
+      matchIsOver = false;
+      document.getElementById('arena-moves').innerText = matchMovesLeft;
+      document.getElementById('game-fail-modal').classList.add('hidden');
+      saveState(); updateUI();
+      showToast("Success", "+5 Balloons traded for asset points balance.", "success");
+    }
+
+    function exitMatch() {
+      matchIsOver = true;
+      document.getElementById('game-arena').classList.add('hidden');
+      document.getElementById('game-fail-modal').classList.add('hidden');
+      document.getElementById('game-level-selector').classList.remove('hidden');
+      buildLevelsGridInterface();
+    }
+
+    // ==========================================
+    // Lifecycle Management Systems Tree
+    // ==========================================
+    async function initApp() {
+      fetchServerTime(); 
       setTimeout(() => {
         document.getElementById('loading-overlay').style.opacity = '0';
-        setTimeout(() => {
-          document.getElementById('loading-overlay').style.display = 'none';
-        }, 500); 
-      }, 2000);
+        setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; }, 500); 
+      }, 3000);
 
       loadState();
       checkDailyReset();

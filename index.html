@@ -57,42 +57,91 @@
       -webkit-user-select: none;
       user-select: none;
     }
-    .bg-orb-1 { position: fixed; top: -10%; left: -10%; width: 50vw; height: 50vw; background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(0, 0, 0, 0) 70%); z-index: -1; filter: blur(40px); }
-    .bg-orb-2 { position: fixed; bottom: -10%; right: -10%; width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(0, 240, 255, 0.1) 0%, rgba(0, 0, 0, 0) 70%); z-index: -1; filter: blur(50px); }
+
+    /* Background neon orbs */
+    .bg-orb-1 {
+      position: fixed; top: -10%; left: -10%; width: 50vw; height: 50vw;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+      z-index: -1; filter: blur(40px);
+    }
+    .bg-orb-2 {
+      position: fixed; bottom: -10%; right: -10%; width: 60vw; height: 60vw;
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+      z-index: -1; filter: blur(50px);
+    }
+
     input { user-select: auto !important; }
     img { pointer-events: none; }
     ::-webkit-scrollbar { width: 0px; background: transparent; }
-    .glass-card { background: linear-gradient(145deg, rgba(20, 22, 45, 0.6) 0%, rgba(10, 11, 26, 0.8) 100%); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
-    .glass-button { background: linear-gradient(135deg, rgba(59,130,246,0.2) 0%, rgba(0,240,255,0.1) 100%); border: 1px solid rgba(0,240,255,0.3); box-shadow: 0 0 15px rgba(0,240,255,0.1) inset; }
+
+    /* Ultra Modern Glassmorphism */
+    .glass-card {
+      background: linear-gradient(145deg, rgba(20, 22, 45, 0.6) 0%, rgba(10, 11, 26, 0.8) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+    
+    .glass-button {
+      background: linear-gradient(135deg, rgba(59,130,246,0.2) 0%, rgba(0,240,255,0.1) 100%);
+      border: 1px solid rgba(0,240,255,0.3);
+      box-shadow: 0 0 15px rgba(0,240,255,0.1) inset;
+    }
+
     .fade-in { animation: fadeIn 0.3s ease-out forwards; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Bottom Menu Active State */
     .nav-active { color: #00f0ff !important; transform: translateY(-2px); }
     .nav-active i { filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.6)); }
-    .nav-active::before { content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 20px; height: 4px; background: #00f0ff; border-radius: 4px; box-shadow: 0 0 12px #00f0ff, 0 0 20px #3b82f6; }
-    #bottom-nav { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out; }
-    .nav-hidden { transition: none !important; transform: translate(-50%, 150px) !important; opacity: 0 !important; pointer-events: none !important; }
-    .btn-3d { background: linear-gradient(to bottom, #3b82f6, #2563eb); border-bottom: 3px solid #1e3a8a; transition: all 0.1s; }
-    .btn-3d:active { transform: translateY(3px); border-bottom-width: 0px; margin-bottom: 3px; }
-    #toast-container { position: fixed; top: 1.5rem; left: 50%; transform: translate(-50%, -150%) scale(0.9); width: 90%; max-width: 380px; z-index: 9999; transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); opacity: 0; pointer-events: none; }
+    .nav-active::before {
+      content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+      width: 24px; height: 4px; background: #00f0ff; border-radius: 4px;
+      box-shadow: 0 0 12px #00f0ff, 0 0 20px #3b82f6;
+    }
+
+    /* Naviqasiyanın gizlənməsi üçün CSS - Klaviatura problemi həlli */
+    #bottom-nav {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out;
+    }
+    .nav-hidden {
+      transition: none !important; /* Ekran yuxarı qalxanda sliding yaranmasın deyə transition bağlandı */
+      transform: translate(-50%, 150px) !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    /* 3D Action Button */
+    .btn-3d {
+      background: linear-gradient(to bottom, #3b82f6, #2563eb);
+      border-bottom: 3px solid #1e3a8a;
+      transition: all 0.1s;
+    }
+    .btn-3d:active {
+      transform: translateY(3px);
+      border-bottom-width: 0px;
+      margin-bottom: 3px;
+    }
+
+    #toast-container {
+      position: fixed; top: 1.5rem; left: 50%; transform: translate(-50%, -150%) scale(0.9);
+      width: 90%; max-width: 380px; z-index: 9999;
+      transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      opacity: 0; pointer-events: none;
+    }
     .toast-show { transform: translate(-50%, 0) scale(1) !important; opacity: 1 !important; }
+
+    /* Box Gradients */
     .box-bronze { background: linear-gradient(135deg, rgba(205,127,50,0.1), rgba(139,69,19,0.2)); border: 1px solid rgba(205,127,50,0.4); }
     .box-silver { background: linear-gradient(135deg, rgba(226,232,240,0.1), rgba(148,163,184,0.2)); border: 1px solid rgba(226,232,240,0.4); }
     .box-gold { background: linear-gradient(135deg, rgba(255,184,0,0.15), rgba(217,119,6,0.25)); border: 1px solid rgba(255,184,0,0.5); }
-    
-    /* Ban ekranı */
-    #ban-screen { display: none; position: fixed; inset: 0; background: #050511; z-index: 99999; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
   </style>
 </head>
 <body class="flex flex-col min-h-screen pb-32">
   
   <div class="bg-orb-1 animate-blob"></div>
   <div class="bg-orb-2 animate-blob animation-delay-2000"></div>
-
-  <div id="ban-screen">
-      <i class="fa-solid fa-ban text-red-500 text-6xl mb-4"></i>
-      <h1 class="text-3xl font-black text-white mb-2">Hesab Bloklanıb</h1>
-      <p class="text-slate-400">Sizin bu tətbiqdən istifadəniz məhdudlaşdırılıb.</p>
-  </div>
 
   <div id="loading-overlay" class="bg-[#050511] flex flex-col items-center justify-center z-[10000] fixed inset-0 transition-opacity duration-500">
     <div class="relative w-24 h-24 mb-8">
@@ -111,7 +160,9 @@
   </div>
 
   <div id="toast-container" class="glass-card rounded-2xl p-4 flex items-center gap-4">
-    <div id="toast-icon" class="w-12 h-12 rounded-full flex shrink-0 items-center justify-center text-xl shadow-inner"></div>
+    <div id="toast-icon" class="w-12 h-12 rounded-full flex shrink-0 items-center justify-center text-xl shadow-inner">
+      <i class="fa-solid fa-bell"></i>
+    </div>
     <div class="flex-1">
       <h4 id="toast-title" class="text-sm font-black text-white tracking-wide">Notification</h4>
       <p id="toast-message" class="text-xs text-slate-300 mt-0.5 leading-tight">Message goes here</p>
@@ -148,8 +199,10 @@
   <main class="flex-1 max-w-md w-full mx-auto p-4 pt-24 relative" id="app-content">
     
     <div id="view-home" class="view-section fade-in space-y-6">
+      
       <div class="relative glass-card rounded-[2rem] p-6 text-center border-t border-t-blue-400/20 overflow-hidden flex flex-col items-center justify-center min-h-[240px]">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/20 rounded-full filter blur-[40px] pointer-events-none animate-pulse-fast"></div>
+        
         <div class="relative z-10 flex flex-col items-center">
           <div class="w-14 h-14 rounded-full bg-blue-900/40 border border-blue-400/30 flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
              <i class="fa-solid fa-gem text-2xl text-crypto-glow drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]"></i>
@@ -157,6 +210,7 @@
           <p class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-1 opacity-80">Balance</p>
           <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-blue-400 tracking-tighter drop-shadow-2xl" id="main-xp-display">0 XP</h1>
         </div>
+        
         <div class="w-full mt-6 grid grid-cols-2 gap-3">
           <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md">
             <div class="bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/20"><i class="fa-solid fa-clapperboard text-blue-400"></i></div>
@@ -189,44 +243,26 @@
       </div>
     </div>
 
-    <div id="view-referrals" class="view-section hidden fade-in space-y-6 pb-4">
-        <div class="text-center pt-2 mb-6">
-            <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Dostlar</h2>
-            <p class="text-xs text-crypto-glow mt-1 uppercase tracking-widest font-bold">Dəvət et, 50 XP Qazan!</p>
-        </div>
-        <div class="glass-card rounded-[1.5rem] p-5 relative overflow-hidden">
-            <p class="text-xs text-slate-400 mb-2 font-bold uppercase tracking-wider">Sənin Dəvət Linkin</p>
-            <div class="flex gap-2">
-                <input type="text" id="ref-link-input" readonly class="w-full bg-[#050511]/50 border border-slate-700/50 rounded-xl py-3 px-4 text-xs font-medium text-blue-400 focus:outline-none transition-colors shadow-inner" value="https://t.me/XPVersebot?startapp=">
-                <button onclick="copyRefLink()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-colors"><i class="fa-solid fa-copy"></i></button>
-            </div>
-            <p class="text-[10px] text-slate-500 mt-3 flex gap-1 items-start"><i class="fa-solid fa-circle-info mt-0.5 text-blue-400"></i> Dostunuz 25 reklam izlədikdən sonra 50 XP avtomatik balansınıza əlavə olunacaq.</p>
-        </div>
-        <div class="grid grid-cols-2 gap-3 mt-4">
-            <div class="glass-card p-4 rounded-2xl text-center border-t-2 border-emerald-500/30">
-                <p class="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-1">Onaylanan</p>
-                <p id="ref-approved-count" class="text-2xl font-black text-emerald-400">0</p>
-            </div>
-            <div class="glass-card p-4 rounded-2xl text-center border-t-2 border-amber-500/30">
-                <p class="text-[10px] text-slate-400 uppercase font-black tracking-widest mb-1">Gözləmədə</p>
-                <p id="ref-pending-count" class="text-2xl font-black text-amber-400">0</p>
-            </div>
-        </div>
-    </div>
-
     <div id="view-tasks" class="view-section hidden fade-in space-y-6 pb-4">
       <div class="text-center pt-2">
         <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Tasks</h2>
         <p class="text-xs text-crypto-glow mt-1 uppercase tracking-widest font-bold">Complete to Earn XP</p>
       </div>
+      
       <div class="glass-card rounded-3xl p-5 relative overflow-hidden border-t-2 border-t-blue-500/30">
         <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl"></div>
-        <h3 class="text-xs font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2"><i class="fa-solid fa-calendar-check text-blue-400 text-lg"></i> 7-Day Streak</h3>
-        <div class="relative flex justify-between items-center" id="streak-tracker-container"></div>
+        <h3 class="text-xs font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
+          <i class="fa-solid fa-calendar-check text-blue-400 text-lg"></i> 7-Day Streak
+        </h3>
+        
+        <div class="relative flex justify-between items-center" id="streak-tracker-container">
+          </div>
       </div>
+
       <div>
         <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">Daily Missions</h3>
-        <div id="missions-container" class="space-y-3"></div>
+        <div id="missions-container" class="space-y-3">
+          </div>
       </div>
     </div>
 
@@ -239,7 +275,9 @@
       <div class="box-bronze glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
         <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-crypto-bronze/10 rounded-full blur-2xl"></div>
         <div class="flex items-center gap-4 relative z-10">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-900 to-[#050511] border border-crypto-bronze flex items-center justify-center shadow-[0_0_15px_rgba(205,127,50,0.3)]"><i class="fa-solid fa-box text-2xl text-crypto-bronze"></i></div>
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-900 to-[#050511] border border-crypto-bronze flex items-center justify-center shadow-[0_0_15px_rgba(205,127,50,0.3)]">
+            <i class="fa-solid fa-box text-2xl text-crypto-bronze"></i>
+          </div>
           <div>
             <h3 class="text-lg font-black text-white tracking-wide">Bronze Box</h3>
             <div class="flex flex-col mt-0.5">
@@ -254,7 +292,9 @@
       <div class="box-silver glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
         <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-crypto-silver/10 rounded-full blur-2xl"></div>
         <div class="flex items-center gap-4 relative z-10">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-600 to-[#050511] border border-crypto-silver flex items-center justify-center shadow-[0_0_15px_rgba(226,232,240,0.2)]"><i class="fa-solid fa-box-open text-2xl text-crypto-silver"></i></div>
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-600 to-[#050511] border border-crypto-silver flex items-center justify-center shadow-[0_0_15px_rgba(226,232,240,0.2)]">
+            <i class="fa-solid fa-box-open text-2xl text-crypto-silver"></i>
+          </div>
           <div>
             <h3 class="text-lg font-black text-white tracking-wide">Silver Box</h3>
             <div class="flex flex-col mt-0.5">
@@ -269,7 +309,9 @@
       <div class="box-gold glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center border border-crypto-gold shadow-[0_0_20px_rgba(255,184,0,0.15)] transition-transform hover:scale-[1.02]">
         <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-crypto-gold/20 rounded-full blur-xl animate-pulse"></div>
         <div class="flex items-center gap-4 relative z-10">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-[#050511] border border-crypto-gold flex items-center justify-center shadow-[0_0_25px_rgba(255,184,0,0.5)]"><i class="fa-solid fa-gem text-2xl text-crypto-gold drop-shadow-[0_0_10px_#ffb800]"></i></div>
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-[#050511] border border-crypto-gold flex items-center justify-center shadow-[0_0_25px_rgba(255,184,0,0.5)]">
+            <i class="fa-solid fa-gem text-2xl text-crypto-gold drop-shadow-[0_0_10px_#ffb800]"></i>
+          </div>
           <div>
             <h3 class="text-lg font-black text-crypto-gold tracking-wide drop-shadow-[0_0_5px_rgba(255,184,0,0.5)]">Gold Box</h3>
             <div class="flex flex-col mt-0.5">
@@ -283,50 +325,68 @@
     </div>
 
     <div id="view-withdraw" class="view-section hidden fade-in space-y-6">
+      
       <div class="glass-card rounded-[2rem] p-6 text-center border-t-2 border-emerald-500/40 bg-gradient-to-b from-emerald-900/30 to-[#050511]">
-        <div class="w-14 h-14 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-3 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]"><i class="fa-solid fa-wallet text-xl text-emerald-400"></i></div>
+        <div class="w-14 h-14 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-3 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+          <i class="fa-solid fa-wallet text-xl text-emerald-400"></i>
+        </div>
         <p class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-1 opacity-80">Withdrawal Balance</p>
         <h1 class="text-5xl font-black text-white tracking-tighter mb-3">$<span id="withdraw-balance-display">0.00</span></h1>
         <div class="inline-block bg-[#050511]/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-700/50">
           <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> Minimum: $5.00</p>
         </div>
       </div>
+
       <div class="glass-card rounded-[1.5rem] p-5 space-y-4 border-slate-800">
         <div>
           <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">TON Wallet Address</label>
           <div class="relative group">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="w-5 h-5 opacity-70 group-focus-within:opacity-100 transition-opacity" alt="TON"></div>
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="w-5 h-5 opacity-70 group-focus-within:opacity-100 transition-opacity" alt="TON">
+            </div>
             <input type="text" id="wallet-address" placeholder="UQ..." class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-sm font-medium text-white focus:outline-none focus:border-blue-500 transition-colors placeholder-slate-600 shadow-inner">
           </div>
         </div>
+        
         <div>
           <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">Amount (USD)</label>
           <div class="relative group">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i class="fa-solid fa-dollar-sign text-slate-500 group-focus-within:text-emerald-400 transition-colors text-lg"></i></div>
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <i class="fa-solid fa-dollar-sign text-slate-500 group-focus-within:text-emerald-400 transition-colors text-lg"></i>
+            </div>
             <input type="number" id="withdraw-amount" placeholder="5.00" min="5" step="0.5" class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-sm font-bold text-emerald-400 focus:outline-none focus:border-emerald-500 transition-colors placeholder-slate-600 shadow-inner">
           </div>
         </div>
-        <button onclick="requestWithdrawal()" id="withdraw-btn" class="w-full py-3.5 mt-2 bg-gradient-to-r from-emerald-600 to-teal-500 hover:brightness-110 active:scale-95 transition-all text-white font-black rounded-xl text-sm uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-[0_10px_20px_rgba(16,185,129,0.3)]"><i class="fa-solid fa-money-bill-transfer"></i> Request Withdrawal</button>
+
+        <button onclick="requestWithdrawal()" id="withdraw-btn" class="w-full py-3.5 mt-2 bg-gradient-to-r from-emerald-600 to-teal-500 hover:brightness-110 active:scale-95 transition-all text-white font-black rounded-xl text-sm uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-[0_10px_20px_rgba(16,185,129,0.3)]">
+          <i class="fa-solid fa-money-bill-transfer"></i> Request Withdrawal
+        </button>
       </div>
+
       <div>
         <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">History</h3>
-        <div id="withdraw-history-container" class="space-y-3"></div>
+        <div id="withdraw-history-container" class="space-y-3">
+          </div>
       </div>
     </div>
 
     <div id="view-profile" class="view-section hidden fade-in space-y-6">
+      
       <div class="glass-card rounded-[2.5rem] p-1 text-center relative overflow-hidden border border-slate-700/50">
         <div class="h-32 bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 rounded-t-[2.3rem] relative overflow-hidden">
            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
            <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 w-full h-20 bg-gradient-to-t from-[#0a0b1a] to-transparent"></div>
         </div>
+        
         <div class="px-6 pb-8 -mt-16 relative z-10">
           <div class="relative w-24 h-24 mx-auto rounded-full bg-gradient-to-b from-crypto-glow to-blue-600 p-1 mb-3 shadow-[0_0_30px_rgba(0,240,255,0.4)]">
              <img id="profile-photo-large" src="https://via.placeholder.com/150" class="w-full h-full rounded-full border-4 border-[#0a0b1a] object-cover">
              <div class="absolute -bottom-2 -right-2 bg-gradient-to-br from-[#0a0b1a] to-blue-900 border-2 border-crypto-glow text-white w-8 h-8 rounded-full flex items-center justify-center font-black text-xs shadow-[0_0_15px_#00f0ff]" id="profile-badge-level">1</div>
           </div>
+          
           <h2 id="profile-name" class="text-2xl font-black text-white tracking-tight">User</h2>
-          <p id="profile-tgid" onclick="checkAdmin()" class="text-[10px] text-blue-400 font-mono mt-1 tracking-widest bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20 cursor-pointer transition-colors active:bg-blue-500/30">ID: 00000000</p>
+          <p id="profile-tgid" class="text-[10px] text-blue-400 font-mono mt-1 tracking-widest bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20">ID: 00000000</p>
+          
           <div class="mt-6">
             <div class="flex justify-between items-end mb-1.5 px-1">
                <span class="text-[10px] font-black text-crypto-glow uppercase tracking-wider">Level Progress</span>
@@ -343,6 +403,7 @@
           </div>
         </div>
       </div>
+
       <div class="grid grid-cols-2 gap-3">
         <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-blue-500/30">
           <div class="w-10 h-10 mx-auto bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center mb-2 text-lg shadow-[0_0_15px_rgba(59,130,246,0.2)inset]"><i class="fa-solid fa-chart-line"></i></div>
@@ -357,111 +418,46 @@
       </div>
     </div>
 
-    <div id="view-admin" class="view-section hidden fade-in space-y-4 pb-10">
-        <h2 class="text-2xl font-black text-red-500 text-center mb-4"><i class="fa-solid fa-shield-halved"></i> Admin Panel</h2>
-        
-        <div class="glass-card p-4 rounded-xl border border-red-500/30">
-            <p class="text-[10px] text-slate-400 mb-2 uppercase font-bold tracking-widest">İstifadəçi Axtarışı</p>
-            <div class="flex gap-2">
-                <input type="text" id="admin-search-uid" placeholder="İstifadəçi UID" class="w-full bg-[#050511] text-white p-3 rounded-xl border border-slate-700 text-sm">
-                <button onclick="adminSearchUser()" class="bg-blue-600 text-white px-4 rounded-xl"><i class="fa-solid fa-search"></i></button>
-            </div>
-        </div>
-
-        <div id="admin-user-info" class="hidden glass-card p-5 rounded-xl space-y-4 border border-blue-500/30">
-            <div class="flex justify-between items-center border-b border-slate-700 pb-2">
-                <p class="text-sm font-bold text-white" id="admin-target-name">-</p>
-                <span id="admin-target-status" class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded">Aktiv</span>
-            </div>
-            
-            <div class="grid grid-cols-2 gap-2 text-xs">
-                <div class="bg-[#050511] p-2 rounded border border-slate-800">
-                    <p class="text-[9px] text-slate-500 uppercase">Balans (XP)</p>
-                    <p class="font-bold text-blue-400" id="admin-target-xp">0</p>
-                </div>
-                <div class="bg-[#050511] p-2 rounded border border-slate-800">
-                    <p class="text-[9px] text-slate-500 uppercase">Balans (USD)</p>
-                    <p class="font-bold text-emerald-400" id="admin-target-usd">0.00</p>
-                </div>
-                <div class="bg-[#050511] p-2 rounded border border-slate-800">
-                    <p class="text-[9px] text-slate-500 uppercase">İzlənən Reklam</p>
-                    <p class="font-bold text-white" id="admin-target-ads">0</p>
-                </div>
-                <div class="bg-[#050511] p-2 rounded border border-slate-800">
-                    <p class="text-[9px] text-slate-500 uppercase">Dəvət (Göz / Onay)</p>
-                    <p class="font-bold text-amber-400" id="admin-target-refs">0 / 0</p>
-                </div>
-            </div>
-
-            <div class="space-y-2 pt-2">
-                <p class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Balans Əməliyyatları</p>
-                <div class="flex gap-2">
-                    <select id="admin-balance-type" class="bg-[#050511] text-white p-2 text-xs rounded border border-slate-700">
-                        <option value="xp">XP</option>
-                        <option value="usd">USD</option>
-                    </select>
-                    <input type="number" id="admin-balance-amount" placeholder="Məbləğ" class="flex-1 bg-[#050511] text-white p-2 text-xs rounded border border-slate-700">
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="adminModifyBalance('add')" class="bg-emerald-600/80 hover:bg-emerald-500 text-white p-2 rounded text-xs font-bold transition-colors">Əlavə Et</button>
-                    <button onclick="adminModifyBalance('sub')" class="bg-orange-600/80 hover:bg-orange-500 text-white p-2 rounded text-xs font-bold transition-colors">Çıxart</button>
-                </div>
-            </div>
-
-            <div class="pt-2 border-t border-slate-700">
-                <button onclick="adminToggleBan()" id="admin-ban-btn" class="w-full bg-red-600 hover:bg-red-500 text-white p-3 rounded text-xs font-bold uppercase transition-colors"><i class="fa-solid fa-gavel"></i> Ban Et</button>
-            </div>
-        </div>
-
-        <div class="glass-card p-4 rounded-xl border border-orange-500/30">
-            <p class="text-[10px] text-slate-400 mb-2 uppercase font-bold tracking-widest text-center">Qlobal Əməliyyatlar</p>
-            <button onclick="adminResetAllAds()" class="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white p-3 rounded-xl text-xs font-bold uppercase shadow-lg hover:opacity-90 active:scale-95 transition-all"><i class="fa-solid fa-rotate-right"></i> Bütün Reklam Limitlərini Sıfırla</button>
-        </div>
-    </div>
-
   </main>
 
-  <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] max-w-[420px] glass-card rounded-2xl pb-safe z-50 shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-slate-700/50 backdrop-blur-xl">
-    <div class="flex justify-between items-center px-2 py-2.5 relative">
-      <button onclick="switchTab('home')" class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1 w-12 transition-all duration-300 relative group" data-target="home">
+  <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] glass-card rounded-2xl pb-safe z-50 shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-slate-700/50 backdrop-blur-xl">
+    <div class="flex justify-between items-center px-4 py-2.5 relative">
+      <button onclick="switchTab('home')" class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="home">
         <i class="fa-solid fa-house text-lg transition-transform group-active:scale-90"></i>
         <span class="text-[8px] font-black uppercase tracking-widest">Home</span>
       </button>
-      <button onclick="switchTab('tasks')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-12 transition-all duration-300 relative group" data-target="tasks">
+      <button onclick="switchTab('tasks')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="tasks">
         <i class="fa-solid fa-list-check text-lg transition-transform group-active:scale-90"></i>
         <span class="text-[8px] font-black uppercase tracking-widest">Tasks</span>
       </button>
-      <button onclick="switchTab('referrals')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-12 transition-all duration-300 relative group" data-target="referrals">
-        <i class="fa-solid fa-users text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Dostlar</span>
-      </button>
-      <button onclick="switchTab('boxes')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-12 transition-all duration-300 relative group" data-target="boxes">
+      <button onclick="switchTab('boxes')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="boxes">
         <i class="fa-solid fa-box-open text-lg transition-transform group-active:scale-90"></i>
         <span class="text-[8px] font-black uppercase tracking-widest">Box</span>
       </button>
-      <button onclick="switchTab('withdraw')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-12 transition-all duration-300 relative group" data-target="withdraw">
+      <button onclick="switchTab('withdraw')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="withdraw">
         <i class="fa-solid fa-wallet text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Kassa</span>
+        <span class="text-[8px] font-black uppercase tracking-widest">Withdraw</span>
       </button>
-      <button onclick="switchTab('profile')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-12 transition-all duration-300 relative group" data-target="profile">
+      <button onclick="switchTab('profile')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="profile">
         <i class="fa-solid fa-user-astronaut text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[8px] font-black uppercase tracking-widest">Profil</span>
+        <span class="text-[8px] font-black uppercase tracking-widest">Profile</span>
       </button>
     </div>
   </nav>
 
   <script>
     // ==========================================
-    // 1. FIREBASE CONFIG (BUNU DƏYİŞDİRİN)
+    // 1. FIREBASE CONFIG (SİZİN MƏLUMATLARINIZ)
     // ==========================================
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyC2HW57UDwGXArJxEPVXhOYjTvux3GZd30",
+      authDomain: "xpverse-app.firebaseapp.com",
+      databaseURL: "https://xpverse-app-default-rtdb.firebaseio.com", // Database URL əlavə edildi
+      projectId: "xpverse-app",
+      storageBucket: "xpverse-app.firebasestorage.app",
+      messagingSenderId: "1016706276101",
+      appId: "1:1016706276101:web:2103106aa02effc8cdf56c",
+      measurementId: "G-63KKP2VNKW"
     };
 
     // Firebase Init
@@ -470,17 +466,16 @@
     }
     const db = firebase.database();
 
-    // ==========================================
-    // Tətbiq Dəyişənləri
-    // ==========================================
+
     const tg = window.Telegram.WebApp;
     tg.expand(); 
     tg.ready();
+
     tg.setHeaderColor('#0a0b1a');
     tg.setBackgroundColor('#050511');
 
     const defaultUserState = {
-      tgId: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : Math.floor(Math.random() * 1000000),
+      tgId: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : 123456789,
       firstName: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : "Crypto User",
       username: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.username : "xpverse",
       photoUrl: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.photo_url : "",
@@ -489,42 +484,78 @@
       usdBalance: 0.00,
       level: 1,
       adsWatchedToday: 0,
-      totalAdsWatched: 0, // Referans yoxlanışı üçün yeni
       boxesOpened: 0,
       streak: 1,
       lastResetDay: "",
-      banned: false,
-      invitedBy: null,
-      inviterRewarded: false,
-      withdrawHistory: [],
-      missions: {
-        dailyReward: { completed: true, claimed: false, reward: 5, type: 'boolean' },
-        watch5: { target: 5, claimed: false, reward: 20, type: 'progress' },
-        watch10: { target: 10, claimed: false, reward: 30, type: 'progress' },
-        watch20: { target: 20, claimed: false, reward: 50, type: 'progress' },
-        all: { claimed: false, reward: 100, type: 'meta' }
-      }
+      withdrawHistory: []
     };
 
+    const getDefaultMissions = () => ({
+      dailyReward: { completed: true, claimed: false, reward: 5, type: 'boolean' },
+      watch5: { target: 5, claimed: false, reward: 20, type: 'progress' },
+      watch10: { target: 10, claimed: false, reward: 30, type: 'progress' },
+      watch20: { target: 20, claimed: false, reward: 50, type: 'progress' },
+      all: { claimed: false, reward: 100, type: 'meta' }
+    });
+
     let userState = { ...defaultUserState };
+    let missionsState = getDefaultMissions();
     const streakRewards = [5, 10, 15, 20, 25, 30, 50]; 
+
+    let accurateTimeOffset = null;
     let headerTimeout; 
 
-    // Klaviatura İzləmə
     const bottomNavElement = document.getElementById('bottom-nav');
     let maxViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
     function handleKeyboardState() {
       let currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      if (currentHeight > maxViewportHeight) maxViewportHeight = currentHeight;
-      if (maxViewportHeight - currentHeight > 100) bottomNavElement.classList.add('nav-hidden');
-      else bottomNavElement.classList.remove('nav-hidden');
-    }
-    if (window.visualViewport) window.visualViewport.addEventListener('resize', handleKeyboardState);
-    window.addEventListener('resize', handleKeyboardState);
+      
+      if (currentHeight > maxViewportHeight) {
+        maxViewportHeight = currentHeight;
+      }
 
-    // ==========================================
-    // Funksiyalar
-    // ==========================================
+      if (maxViewportHeight - currentHeight > 100) {
+        bottomNavElement.classList.add('nav-hidden');
+      } else {
+        bottomNavElement.classList.remove('nav-hidden');
+      }
+    }
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleKeyboardState);
+    }
+    window.addEventListener('resize', handleKeyboardState);
+    
+    if (tg.onEvent) {
+       tg.onEvent('viewportChanged', handleKeyboardState);
+    }
+
+    async function fetchServerTime() {
+      const apis = [
+        async () => { let res = await fetch('https://api.binance.com/api/v3/time'); let data = await res.json(); return data.serverTime; },
+        async () => { let res = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC'); let data = await res.json(); return new Date(data.utc_datetime).getTime(); },
+        async () => { let res = await fetch('https://timeapi.io/api/Time/current/zone?timeZone=UTC'); let data = await res.json(); return new Date(data.dateTime + 'Z').getTime(); }
+      ];
+
+      for (let apiFunc of apis) {
+        try {
+          const serverTime = await apiFunc();
+          if (serverTime) {
+            accurateTimeOffset = serverTime - performance.now();
+            return true;
+          }
+        } catch (e) {
+          console.warn("Time API failed, falling back...");
+        }
+      }
+      return false;
+    }
+
+    function getNow() {
+      if (!accurateTimeOffset) return new Date(); 
+      return new Date(accurateTimeOffset + performance.now());
+    }
 
     function showToast(title, message, type = 'info') {
       const toast = document.getElementById('toast-container');
@@ -555,6 +586,7 @@
       icon.innerHTML = iconHtml;
       icon.className = `w-12 h-12 rounded-xl flex shrink-0 items-center justify-center text-xl ${iconClass}`;
       toast.style.border = borderStyle;
+
       toast.classList.add('toast-show');
       
       if (tg.HapticFeedback) {
@@ -566,13 +598,24 @@
       setTimeout(() => { toast.classList.remove('toast-show'); }, type === 'jackpot' ? 5000 : 3000); 
     }
 
-    // Firebase Yaddaş
+    // ==========================================
+    // FIREBASE STATE MANAGEMENT (Save/Load)
+    // ==========================================
     function saveState() {
-      db.ref('users/' + userState.tgId).update(userState);
+      db.ref('users/' + userState.tgId).set({
+        user: userState,
+        missions: missionsState
+      });
     }
 
+    function getResetDay(serverDate) { return serverDate.toISOString().split('T')[0]; }
+
     function checkDailyReset() {
-      const currentResetDay = new Date().toISOString().split('T')[0];
+      const now = getNow();
+      if (!now) return false;
+
+      const currentResetDay = getResetDay(now);
+      
       if (userState.lastResetDay !== currentResetDay) {
         if (userState.lastResetDay) {
             let last = new Date(userState.lastResetDay);
@@ -580,7 +623,8 @@
             let diff = Math.floor((curr - last) / (1000 * 3600 * 24));
             
             if (diff === 1) {
-                userState.streak = (userState.streak > 6) ? 1 : userState.streak + 1;
+                userState.streak += 1;
+                if (userState.streak > 7) userState.streak = 1;
             } else if (diff > 1) {
                 userState.streak = 1;
             }
@@ -590,12 +634,8 @@
 
         userState.adsWatchedToday = 0;
         userState.lastResetDay = currentResetDay;
-        
-        // Reset Missions
-        Object.keys(userState.missions).forEach(key => {
-            userState.missions[key].claimed = false;
-        });
-        userState.missions.dailyReward.reward = streakRewards[userState.streak - 1]; 
+        missionsState = getDefaultMissions();
+        missionsState.dailyReward.reward = streakRewards[userState.streak - 1]; 
         
         saveState();
         return true; 
@@ -614,14 +654,16 @@
       
       if (newLevel > userState.level) {
         userState.level = newLevel;
-        showToast("Level Up!", `Təbrikər! Yeni Səviyyə: ${newLevel}!`, "success");
+        showToast("Level Up!", `Congratulations! New Level: ${newLevel}!`, "success");
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       }
     }
 
     function updateProfileProgress() {
       const xp = userState.totalXp;
-      let nextLvlXp = 250, prevLvlXp = 0;
+      let nextLvlXp = 250;
+      let prevLvlXp = 0;
+      
       if (xp >= 20000) { nextLvlXp = 20000; prevLvlXp = 20000; }
       else if (xp >= 3000) { nextLvlXp = 20000; prevLvlXp = 3000; }
       else if (xp >= 1500) { nextLvlXp = 3000; prevLvlXp = 1500; }
@@ -629,7 +671,9 @@
       else if (xp >= 250) { nextLvlXp = 750; prevLvlXp = 250; }
 
       let progress = 100;
-      if (nextLvlXp !== prevLvlXp) progress = ((xp - prevLvlXp) / (nextLvlXp - prevLvlXp)) * 100;
+      if (nextLvlXp !== prevLvlXp) {
+        progress = ((xp - prevLvlXp) / (nextLvlXp - prevLvlXp)) * 100;
+      }
 
       document.getElementById('profile-xp-progress').style.width = `${progress}%`;
       document.getElementById('profile-current-xp-text').innerText = `${xp.toLocaleString()} XP`;
@@ -638,63 +682,39 @@
     }
 
     function updateUI() {
-      if(userState.banned) {
-          document.getElementById('ban-screen').style.display = 'flex';
-          return;
-      } else {
-          document.getElementById('ban-screen').style.display = 'none';
-      }
-
       document.getElementById('user-name').innerText = userState.firstName;
-      document.getElementById('user-xp').innerHTML = `${(userState.xp||0).toLocaleString()} <span class="text-[10px] text-crypto-glow font-bold">XP</span>`;
-      document.getElementById('user-usd').innerText = (userState.usdBalance||0).toFixed(2);
+      document.getElementById('user-xp').innerHTML = `${userState.xp.toLocaleString()} <span class="text-[10px] text-crypto-glow font-bold">XP</span>`;
+      document.getElementById('user-usd').innerText = userState.usdBalance.toFixed(2);
       
       if (userState.photoUrl) {
         document.getElementById('user-photo').src = userState.photoUrl;
         document.getElementById('profile-photo-large').src = userState.photoUrl;
       }
 
-      document.getElementById('main-xp-display').innerText = `${(userState.xp||0).toLocaleString()} XP`;
-      document.getElementById('ads-watched').innerText = userState.adsWatchedToday || 0;
-      document.getElementById('streak-days').innerText = userState.streak || 1;
-      document.getElementById('withdraw-balance-display').innerText = (userState.usdBalance||0).toFixed(2);
-      
+      document.getElementById('main-xp-display').innerText = `${userState.xp.toLocaleString()} XP`;
+      document.getElementById('ads-watched').innerText = userState.adsWatchedToday;
+      document.getElementById('streak-days').innerText = userState.streak;
+
+      document.getElementById('withdraw-balance-display').innerText = userState.usdBalance.toFixed(2);
+      renderWithdrawHistory();
+
       document.getElementById('profile-name').innerText = userState.firstName;
       document.getElementById('profile-tgid').innerText = `ID: ${userState.tgId}`;
-      document.getElementById('profile-total-xp').innerText = (userState.totalXp||0).toLocaleString();
-      document.getElementById('profile-boxes').innerText = userState.boxesOpened || 0;
+      document.getElementById('profile-total-xp').innerText = userState.totalXp.toLocaleString();
+      document.getElementById('profile-boxes').innerText = userState.boxesOpened;
       
-      // Referans link update
-      document.getElementById('ref-link-input').value = `https://t.me/XPVersebot?startapp=${userState.tgId}`;
-
       updateProfileProgress();
       renderMissions();
       renderStreakTracker();
-      renderWithdrawHistory();
-      fetchReferralStats();
-    }
-
-    function fetchReferralStats() {
-        db.ref('users/' + userState.tgId + '/referrals').once('value', snapshot => {
-            let pending = 0, approved = 0;
-            if(snapshot.exists()) {
-                const refs = snapshot.val();
-                Object.values(refs).forEach(status => {
-                    if(status === 'approved') approved++;
-                    else pending++;
-                });
-            }
-            document.getElementById('ref-pending-count').innerText = pending;
-            document.getElementById('ref-approved-count').innerText = approved;
-        });
     }
 
     function renderStreakTracker() {
       const container = document.getElementById('streak-tracker-container');
       container.innerHTML = '';
+      
       for (let i = 1; i <= 7; i++) {
-        const isPast = i < userState.streak || (i === userState.streak && userState.missions.dailyReward.claimed);
-        const isToday = i === userState.streak && !userState.missions.dailyReward.claimed;
+        const isPast = i < userState.streak || (i === userState.streak && missionsState.dailyReward.claimed);
+        const isToday = i === userState.streak && !missionsState.dailyReward.claimed;
         const reward = streakRewards[i-1];
         
         let styles = "bg-[#050511] border-slate-700 text-slate-600";
@@ -724,6 +744,7 @@
     function renderMissions() {
       const container = document.getElementById('missions-container');
       container.innerHTML = '';
+      
       const missionsList = [
         { key: 'dailyReward', label: `Daily Login`, icon: 'fa-gift', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
         { key: 'watch5', label: 'Watch 5 Ads', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
@@ -733,19 +754,27 @@
       ];
 
       missionsList.forEach(m => {
-        const mission = userState.missions[m.key];
-        let isComplete = false, progressText = '';
+        const mission = missionsState[m.key];
+        let isComplete = false;
+        let progressText = '';
         
         if (mission.type === 'progress') {
             isComplete = userState.adsWatchedToday >= mission.target;
             progressText = `(${Math.min(userState.adsWatchedToday, mission.target)}/${mission.target})`;
-        } else if (mission.type === 'boolean') isComplete = mission.completed;
-        else if (mission.type === 'meta') isComplete = ['dailyReward', 'watch5', 'watch10', 'watch20'].every(k => userState.missions[k].claimed);
+        } else if (mission.type === 'boolean') {
+            isComplete = mission.completed;
+        } else if (mission.type === 'meta') {
+            isComplete = ['dailyReward', 'watch5', 'watch10', 'watch20'].every(k => missionsState[k].claimed);
+        }
 
         let btnHtml = '';
-        if (mission.claimed) btnHtml = `<span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/30 flex items-center gap-1"><i class="fa-solid fa-check-double"></i> Claimed</span>`;
-        else if (isComplete) btnHtml = `<button onclick="claimMission('${m.key}')" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-1.5 rounded-xl active:scale-95 transition-all uppercase tracking-wider">Claim</button>`;
-        else btnHtml = `<span class="text-[10px] font-black bg-slate-800/50 text-slate-200 px-3 py-1.5 rounded-xl border border-slate-600">+${mission.reward} XP</span>`;
+        if (mission.claimed) {
+            btnHtml = `<span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/30 flex items-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]"><i class="fa-solid fa-check-double"></i> Claimed</span>`;
+        } else if (isComplete) {
+            btnHtml = `<button onclick="claimMission('${m.key}')" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-1.5 rounded-xl shadow-[0_0_15px_rgba(0,240,255,0.4)] active:scale-95 transition-all uppercase tracking-wider">Claim</button>`;
+        } else {
+            btnHtml = `<span class="text-[10px] font-black bg-slate-800/50 text-slate-200 px-3 py-1.5 rounded-xl border border-slate-600 shadow-inner">+${mission.reward} XP</span>`;
+        }
 
         container.innerHTML += `
           <div class="glass-card rounded-2xl p-3 flex justify-between items-center transition-transform hover:-translate-y-0.5 border border-slate-800">
@@ -765,300 +794,250 @@
     }
 
     function claimMission(key) {
-        const mission = userState.missions[key];
+        const mission = missionsState[key];
         if (mission.claimed) return;
+        
         mission.claimed = true;
         userState.xp += mission.reward;
         userState.totalXp += mission.reward;
+        
         checkLevelUp();
         saveState();
         updateUI();
+        
         showToast("Task Completed!", `You earned ${mission.reward} XP!`, "success");
     }
 
     function watchAd() {
       if (userState.adsWatchedToday >= 30) {
-        showToast("Limit", "Siz bugünkü 30 reklam limitini doldurdunuz. Sabah yenidən yoxlayın!", "error");
+        showToast("Limit", "You have reached the daily limit of 30 ads. Come back tomorrow!", "error");
         return;
       }
+
       const btn = document.getElementById('watch-ad-btn');
       const originalHTML = btn.innerHTML;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Yüklənir...</span>';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Loading Ad...</span>';
       btn.classList.add('opacity-80', 'pointer-events-none');
 
       if (window.Adsgram) {
         const AdController = window.Adsgram.init({ blockId: "int-34999" });
+        
         AdController.show().then((result) => {
           userState.xp += 10;
           userState.totalXp += 10;
           userState.adsWatchedToday += 1;
-          userState.totalAdsWatched = (userState.totalAdsWatched || 0) + 1;
           
-          // Referans yoxlanışı (25 Reklam Şərti)
-          if(userState.invitedBy && !userState.inviterRewarded && userState.totalAdsWatched >= 25) {
-             // Dəvət edənə 50 XP ver və statusunu 'approved' et
-             db.ref('users/' + userState.invitedBy + '/xp').once('value', s => db.ref('users/' + userState.invitedBy + '/xp').set((s.val()||0) + 50));
-             db.ref('users/' + userState.invitedBy + '/totalXp').once('value', s => db.ref('users/' + userState.invitedBy + '/totalXp').set((s.val()||0) + 50));
-             db.ref('users/' + userState.invitedBy + '/referrals/' + userState.tgId).set('approved');
-             userState.inviterRewarded = true;
-          }
-
           checkLevelUp();
           saveState();
           updateUI();
-          showToast("Uğurlu!", "Reklamı izlədiniz və +10 XP qazandınız.", "success");
-          btn.innerHTML = originalHTML; btn.classList.remove('opacity-80', 'pointer-events-none');
+          
+          showToast("Reward Granted!", "You successfully watched the ad and earned +10 XP.", "success");
+          
+          btn.innerHTML = originalHTML;
+          btn.classList.remove('opacity-80', 'pointer-events-none');
         }).catch((error) => {
-          btn.innerHTML = originalHTML; btn.classList.remove('opacity-80', 'pointer-events-none');
+          btn.innerHTML = originalHTML;
+          btn.classList.remove('opacity-80', 'pointer-events-none');
         });
       } else {
-        showToast("Xəta", "Reklam sistemi hazırda işləmir.", "error");
-        btn.innerHTML = originalHTML; btn.classList.remove('opacity-80', 'pointer-events-none');
+        showToast("Error", "The ad system is currently not working.", "error");
+        btn.innerHTML = originalHTML;
+        btn.classList.remove('opacity-80', 'pointer-events-none');
       }
     }
 
+    const boxCosts = { bronze: 1000, silver: 5000, gold: 10000 };
+    
     function openBox(type) {
-      const costs = { bronze: 1000, silver: 5000, gold: 10000 };
-      const cost = costs[type];
-      if (userState.xp < cost) return showToast("Kifayət qədər XP yoxdur", `Bu qutunu açmaq üçün ${cost} XP lazımdır.`, "error");
+      const cost = boxCosts[type];
+      if (userState.xp < cost) {
+        showToast("Not enough XP", `You need ${cost} XP to open this box.`, "error");
+        return;
+      }
 
       userState.xp -= cost;
       userState.boxesOpened += 1;
       
-      const isJackpot = Math.random() >= 0.9999; 
       let reward = 0;
+      const isJackpot = Math.random() >= 0.9999; 
+
       if (type === 'bronze') reward = isJackpot ? 1.00 : 0.10;
       else if (type === 'silver') reward = isJackpot ? 7.00 : 0.50;
       else if (type === 'gold') reward = isJackpot ? 15.00 : 1.00;
 
       userState.usdBalance += reward;
+
       saveState();
       updateUI();
 
-      if (isJackpot) showToast("🎉 BÖYÜK JACKPOT! 🎉", `İnanılmaz! $${reward.toFixed(2)} qazandınız!`, "jackpot");
-      else showToast("🎁 Qutu Açıldı!", `$${reward.toFixed(2)} qazandınız!`, "success");
+      if (isJackpot) {
+         showToast("🎉 HUGE JACKPOT! 🎉", `Incredible! You won $${reward.toFixed(2)}!`, "jackpot");
+      } else {
+         showToast("🎁 Box Opened!", `Congratulations! You won $${reward.toFixed(2)} from the box!`, "success");
+      }
     }
 
     function requestWithdrawal() {
       const address = document.getElementById('wallet-address').value;
       const amount = parseFloat(document.getElementById('withdraw-amount').value);
-      if (!address || address.length < 10) return showToast("Səhv Ünvan", "Zəhmət olmasa düzgün TON cüzdan ünvanı daxil edin.", "error");
-      if (isNaN(amount) || amount < 5) return showToast("Səhv Məbləğ", "Minimum çıxarış məbləği $5.00-dır.", "error");
-      if (amount > userState.usdBalance) return showToast("Kifayət qədər balans yoxdur", "Balansınız bu məbləğ üçün kifayət etmir.", "error");
+
+      if (!address || address.length < 10) {
+        showToast("Invalid Address", "Please enter a valid TON wallet address.", "error");
+        return;
+      }
+
+      if (isNaN(amount) || amount < 5) {
+        showToast("Invalid Amount", "The minimum withdrawal amount is $5.00.", "error");
+        return;
+      }
+
+      if (amount > userState.usdBalance) {
+        showToast("Insufficient balance", "You do not have enough funds to withdraw this amount.", "error");
+        return;
+      }
 
       userState.usdBalance -= amount;
-      if (!userState.withdrawHistory) userState.withdrawHistory = [];
-      userState.withdrawHistory.unshift({ id: '#'+Math.random().toString(36).substr(2, 6).toUpperCase(), date: new Date().toLocaleDateString(), amount: amount, address: address.substring(0, 6) + '...' + address.substring(address.length - 4), status: 'Gözləyir' }); 
+      
+      const now = getNow() || new Date(); 
+      const withdrawalRecord = {
+        id: '#' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+        date: now.toLocaleDateString(),
+        amount: amount,
+        address: address.substring(0, 6) + '...' + address.substring(address.length - 4),
+        status: 'Pending'
+      };
+
+      if(!userState.withdrawHistory) userState.withdrawHistory = [];
+      userState.withdrawHistory.unshift(withdrawalRecord); 
       
       saveState();
       updateUI();
+      
       document.getElementById('wallet-address').value = '';
       document.getElementById('withdraw-amount').value = '';
-      showToast("Çıxarış Tələbi Göndərildi", `$${amount.toFixed(2)} üçün tələb qeydə alındı.`, "success");
+
+      showToast("Withdrawal Requested", `Your request for $${amount.toFixed(2)} has been submitted.`, "success");
     }
 
     function renderWithdrawHistory() {
       const container = document.getElementById('withdraw-history-container');
+      
       if (!userState.withdrawHistory || userState.withdrawHistory.length === 0) {
-        container.innerHTML = `<div class="glass-card rounded-2xl p-6 text-center border-dashed border-2 border-slate-700"><p class="text-xs font-bold text-slate-500 uppercase">Tarixçə Boşdur</p></div>`;
+        container.innerHTML = `
+          <div class="glass-card rounded-2xl p-6 text-center border-dashed border-2 border-slate-700">
+            <i class="fa-solid fa-clock-rotate-left text-3xl text-slate-600 mb-2"></i>
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">History is Empty</p>
+          </div>`;
         return;
       }
+
       container.innerHTML = '';
-      userState.withdrawHistory.forEach(r => {
+      userState.withdrawHistory.forEach(record => {
         container.innerHTML += `
-          <div class="glass-card rounded-2xl p-4 flex justify-between items-center">
+          <div class="glass-card rounded-2xl p-4 flex justify-between items-center transition-transform hover:-translate-y-0.5">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center"><i class="fa-solid fa-arrow-right-arrow-left text-slate-400"></i></div>
-              <div><p class="text-xs font-black text-white">${r.id} <span class="text-[9px] text-slate-400 ml-1 font-bold">${r.date}</span></p><p class="text-[10px] text-blue-400 mt-0.5 font-mono">${r.address}</p></div>
+              <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
+                 <i class="fa-solid fa-arrow-right-arrow-left text-slate-400"></i>
+              </div>
+              <div>
+                <p class="text-xs font-black text-white">${record.id} <span class="text-[9px] text-slate-400 ml-1 font-bold">${record.date}</span></p>
+                <p class="text-[10px] text-blue-400 mt-0.5 font-mono bg-blue-500/10 inline-block px-1.5 py-0.5 rounded">${record.address}</p>
+              </div>
             </div>
             <div class="text-right">
-              <p class="text-sm font-black text-emerald-400">-$${r.amount.toFixed(2)}</p>
-              <p class="text-[9px] font-black text-amber-400 uppercase tracking-widest mt-0.5 bg-amber-500/10 px-2 py-0.5 rounded-full">${r.status}</p>
+              <p class="text-sm font-black text-emerald-400 drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">-$${record.amount.toFixed(2)}</p>
+              <p class="text-[9px] font-black text-amber-400 uppercase tracking-widest mt-0.5 bg-amber-500/10 inline-block px-2 py-0.5 rounded-full border border-amber-500/20">${record.status}</p>
             </div>
           </div>
         `;
       });
     }
 
-    function copyRefLink() {
-        const link = document.getElementById('ref-link-input');
-        link.select();
-        document.execCommand("copy");
-        showToast("Kopyalandı!", "Referans linki yaddaşa kopyalandı.", "success");
-    }
-
     function switchTab(tabId) {
       document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('nav-active'));
-      
-      const targetEl = document.getElementById(`view-${tabId}`);
-      if(targetEl) targetEl.classList.remove('hidden');
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('nav-active');
+      });
+
+      document.getElementById(`view-${tabId}`).classList.remove('hidden');
       
       const activeBtn = document.querySelector(`[data-target="${tabId}"]`);
-      if(activeBtn) activeBtn.classList.add('nav-active');
+      activeBtn.classList.add('nav-active');
       
       const header = document.getElementById('main-header');
       const mainContent = document.getElementById('app-content');
+
       clearTimeout(headerTimeout);
 
-      if (tabId === 'withdraw' || tabId === 'profile' || tabId === 'admin') {
+      if (tabId === 'withdraw' || tabId === 'profile') {
         header.style.transform = 'translateY(-100%)';
         headerTimeout = setTimeout(() => header.style.display = 'none', 300);
-        mainContent.classList.remove('pt-24'); mainContent.classList.add('pt-4');
+        mainContent.classList.remove('pt-24');
+        mainContent.classList.add('pt-4');
       } else {
         header.style.display = 'block'; 
         setTimeout(() => header.style.transform = 'translateY(0)', 10);
-        mainContent.classList.remove('pt-4'); mainContent.classList.add('pt-24');
+        mainContent.classList.remove('pt-4');
+        mainContent.classList.add('pt-24');
       }
       
       if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // ==========================================
-    // ADMIN PANEL MƏNTİQİ
-    // ==========================================
-    let currentAdminTargetUid = null;
-
-    function checkAdmin() {
-        if(userState.tgId.toString() === "7397122686") {
-            switchTab('admin');
-        }
-    }
-
-    function adminSearchUser() {
-        const uid = document.getElementById('admin-search-uid').value;
-        if(!uid) return;
-        
-        db.ref('users/' + uid).once('value', snapshot => {
-            if(!snapshot.exists()) {
-                showToast("Tapılmadı", "Bu UID-yə uyğun istifadəçi yoxdur.", "error");
-                return;
-            }
-            const targetData = snapshot.val();
-            currentAdminTargetUid = uid;
-            
-            document.getElementById('admin-user-info').classList.remove('hidden');
-            document.getElementById('admin-target-name').innerText = targetData.firstName || 'İstifadəçi';
-            
-            const statusEl = document.getElementById('admin-target-status');
-            if(targetData.banned) {
-                statusEl.className = "text-[10px] bg-red-500/20 text-red-400 px-2 py-1 rounded";
-                statusEl.innerText = "Ban edilib";
-                document.getElementById('admin-ban-btn').innerHTML = '<i class="fa-solid fa-unlock"></i> Banı Aç';
-                document.getElementById('admin-ban-btn').className = "w-full bg-emerald-600 hover:bg-emerald-500 text-white p-3 rounded text-xs font-bold uppercase";
-            } else {
-                statusEl.className = "text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded";
-                statusEl.innerText = "Aktiv";
-                document.getElementById('admin-ban-btn').innerHTML = '<i class="fa-solid fa-gavel"></i> Ban Et';
-                document.getElementById('admin-ban-btn').className = "w-full bg-red-600 hover:bg-red-500 text-white p-3 rounded text-xs font-bold uppercase";
-            }
-
-            document.getElementById('admin-target-xp').innerText = targetData.xp || 0;
-            document.getElementById('admin-target-usd').innerText = (targetData.usdBalance || 0).toFixed(2);
-            document.getElementById('admin-target-ads').innerText = targetData.adsWatchedToday || 0;
-            
-            let pRef = 0, aRef = 0;
-            if(targetData.referrals) {
-                Object.values(targetData.referrals).forEach(s => { s === 'approved' ? aRef++ : pRef++ });
-            }
-            document.getElementById('admin-target-refs').innerText = `${pRef} / ${aRef}`;
-        });
-    }
-
-    function adminModifyBalance(action) {
-        if(!currentAdminTargetUid) return;
-        const type = document.getElementById('admin-balance-type').value;
-        const amount = parseFloat(document.getElementById('admin-balance-amount').value);
-        if(isNaN(amount) || amount <= 0) return;
-
-        const refPath = type === 'xp' ? 'xp' : 'usdBalance';
-        
-        db.ref('users/' + currentAdminTargetUid + '/' + refPath).once('value', snap => {
-            let current = snap.val() || 0;
-            let newAmount = action === 'add' ? current + amount : current - amount;
-            if(newAmount < 0) newAmount = 0;
-            
-            db.ref('users/' + currentAdminTargetUid + '/' + refPath).set(newAmount);
-            showToast("Uğurlu", "Balans yeniləndi.", "success");
-            adminSearchUser(); // UI Yenilə
-            document.getElementById('admin-balance-amount').value = '';
-        });
-    }
-
-    function adminToggleBan() {
-        if(!currentAdminTargetUid) return;
-        db.ref('users/' + currentAdminTargetUid + '/banned').once('value', snap => {
-            const isBanned = snap.val() || false;
-            db.ref('users/' + currentAdminTargetUid + '/banned').set(!isBanned);
-            showToast("Uğurlu", !isBanned ? "İstifadəçi ban edildi." : "Ban açıldı.", "success");
-            adminSearchUser(); // UI Yenilə
-        });
-    }
-
-    function adminResetAllAds() {
-        if(confirm("Bütün istifadəçilərin bugünkü reklam limitini sıfırlamaq istədiyinizə əminsiniz?")) {
-            db.ref('users').once('value', snapshot => {
-                let updates = {};
-                snapshot.forEach(child => {
-                    updates[child.key + '/adsWatchedToday'] = 0;
-                });
-                db.ref('users').update(updates, (error) => {
-                    if (error) showToast("Xəta", "Sıfırlama zamanı xəta yarandı.", "error");
-                    else showToast("Hazırdır!", "Bütün reklam limitləri 0-landı.", "success");
-                });
-            });
-        }
-    }
-
-    // ==========================================
-    // INIT & TIMER
-    // ==========================================
     function updateTimer() {
-        const now = new Date();
+        const now = getNow();
+        if (!now) return;
+
         const tomorrow = new Date(now);
         tomorrow.setUTCHours(24, 0, 0, 0); 
+        
         const diff = tomorrow.getTime() - now.getTime();
         const h = Math.floor(diff / 1000 / 60 / 60);
         const m = Math.floor((diff / 1000 / 60) % 60);
         const s = Math.floor((diff / 1000) % 60);
+        
         const timerEl = document.getElementById('reset-timer');
-        if (timerEl) timerEl.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        if (checkDailyReset()) { updateUI(); showToast("Yeni Gün Başladı!", "Reklam limitləri və tapşırıqlar sıfırlandı.", "info"); }
+        if (timerEl) {
+            timerEl.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        if (checkDailyReset()) {
+            updateUI();
+            showToast("New Day Started!", "Daily limits and tasks have been reset.", "info");
+        }
     }
     
+    // ==========================================
+    // APP INITIALIZATION WITH FIREBASE
+    // ==========================================
     async function initApp() {
-      // Start_param yoxlanışı (Referans linkindən gəlibsə)
-      let startParam = tg.initDataUnsafe.start_param;
-      
+      await fetchServerTime(); 
+
+      // Load State from Firebase instead of localStorage
       db.ref('users/' + userState.tgId).once('value', snapshot => {
-          if (snapshot.exists()) {
-              userState = { ...defaultUserState, ...snapshot.val() };
-              // Ban check
-              if (userState.banned) {
-                  document.getElementById('ban-screen').style.display = 'flex';
-              }
-          } else {
-              // Yeni istifadəçidir
-              if (startParam && startParam != userState.tgId) {
-                  userState.invitedBy = startParam;
-                  // Dəvət edənin pending listinə əlavə et
-                  db.ref('users/' + startParam + '/referrals/' + userState.tgId).set('pending');
-              }
-              saveState();
-          }
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          if (data.user) userState = { ...defaultUserState, ...data.user };
+          if (data.missions) missionsState = { ...getDefaultMissions(), ...data.missions };
+        } else {
+          saveState(); // Save default if new user
+        }
 
+        // Hide loading screen after data is fetched
+        setTimeout(() => {
+          document.getElementById('loading-overlay').style.opacity = '0';
           setTimeout(() => {
-            document.getElementById('loading-overlay').style.opacity = '0';
-            setTimeout(() => document.getElementById('loading-overlay').style.display = 'none', 500); 
-          }, 1500);
+            document.getElementById('loading-overlay').style.display = 'none';
+          }, 500); 
+        }, 1000); // 3 saniyə gözləməyə ehtiyac qalmır, data yüklənəndə açılır
 
-          checkDailyReset();
-          updateUI();
+        checkDailyReset();
+        updateUI();
+        
+        setInterval(updateTimer, 1000);
+        updateTimer();
       });
-
-      setInterval(updateTimer, 1000);
-      updateTimer();
     }
 
     initApp();

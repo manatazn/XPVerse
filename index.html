@@ -1,230 +1,414 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>XPVerse - Telegram Mini App</title>
-  
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-
   <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Outfit', 'sans-serif'] },
-          colors: {
-            crypto: { dark: '#050511', card: '#0a0b1a', primary: '#3b82f6', glow: '#00f0ff', gold: '#ffb800', silver: '#e2e8f0', bronze: '#cd7f32' }
-          },
-          animation: {
-            'blob': 'blob 7s infinite',
-            'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-          },
-          keyframes: {
-            blob: {
-              '0%': { transform: 'translate(0px, 0px) scale(1)' },
-              '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-              '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-              '100%': { transform: 'translate(0px, 0px) scale(1)' },
-            }
-          }
-        }
+    const tg = window.Telegram.WebApp;
+    tg.expand(); 
+    tg.ready();
+
+    tg.setHeaderColor('#0a0b1a');
+    tg.setBackgroundColor('#050511');
+
+    // BURAYA ÖZ CLOUDFLARE WORKER LINKINI YAPIŞDIR
+    const WORKER_URL = "https://xpverse-api.istifadeci-adi.workers.dev"; 
+
+    // İstifadəçi obyekti (Yalnız Serverdən doldurulacaq)
+    let userState = null;
+    let headerTimeout; 
+    const streakRewards = [5, 10, 15, 20, 25, 30, 50];
+
+    // Klaviatura İzləmə Sistemi (Gizlənmə Problemi)
+    const bottomNavElement = document.getElementById('bottom-nav');
+    let maxViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+    function handleKeyboardState() {
+      let currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      if (currentHeight > maxViewportHeight) maxViewportHeight = currentHeight;
+      if (maxViewportHeight - currentHeight > 100) {
+        bottomNavElement.classList.add('nav-hidden');
+      } else {
+        bottomNavElement.classList.remove('nav-hidden');
       }
     }
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', handleKeyboardState);
+    window.addEventListener('resize', handleKeyboardState);
+
+    // BÜTÜN MƏLUMATLARIN SERVERDƏN ÇƏKİLMƏSİ (No LocalStorage)
+    async function loadUserStateFromServer() {
+      const tgId = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : 123456789;
+      const firstName = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : "User";
+      const username = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.username : "xpverse";
+      const referrerId = (tg.initDataUnsafe && tg.initDataUnsafe.start_param) ? tg.initDataUnsafe.start_param : null;
+      
+      try {
+        const response = await fetch(`${WORKER_URL}/auth`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tgId, firstName, username, referrerId })
+        });
+        const data = await response.json();
+        
+        if (data.success) {
+          userState = data.user; // HƏR ŞEY serverdən gəldi
+          userState.photoUrl = (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.photo_url : "";
+          updateUI();
+        } else if (data.isBanned) {
+          document.body.innerHTML = "<div class='flex items-center justify-center min-h-screen text-red-500 font-black text-xl'>BANNED / BLOKLANDINIZ</div>";
+        } else {
+          showToast("Xəta", "Server məlumatları oxuya bilmədi.", "error");
+        }
+      } catch (e) {
+        showToast("Bağlantı Xətası", "Serverlə əlaqə qurulmadı.", "error");
+      }
+    }
+
+    function showToast(title, message, type = 'info') {
+      const toast = document.getElementById('toast-container');
+      const icon = document.getElementById('toast-icon');
+      document.getElementById('toast-title').innerText = title;
+      document.getElementById('toast-message').innerText = message;
+      
+      let iconHtml, iconClass, borderStyle;
+      if (type === 'success') {
+        iconHtml = '<i class="fa-solid fa-check"></i>';
+        iconClass = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50';
+        borderStyle = '1px solid rgba(16, 185, 129, 0.4)';
+      } else if (type === 'error') {
+        iconHtml = '<i class="fa-solid fa-xmark"></i>';
+        iconClass = 'bg-red-500/20 text-red-400 border-red-500/50';
+        borderStyle = '1px solid rgba(239, 68, 68, 0.4)';
+      } else if (type === 'jackpot') {
+        iconHtml = '<i class="fa-solid fa-sack-dollar animate-bounce"></i>';
+        iconClass = 'bg-amber-500/20 text-amber-400 border-amber-500/50';
+        borderStyle = '1px solid rgba(251, 191, 36, 0.8)';
+      } else {
+        iconHtml = '<i class="fa-solid fa-bell animate-pulse"></i>';
+        iconClass = 'bg-blue-500/20 text-crypto-glow border-crypto-glow/50';
+        borderStyle = '1px solid rgba(0, 240, 255, 0.4)';
+      }
+
+      icon.innerHTML = iconHtml;
+      icon.className = `w-12 h-12 rounded-xl flex shrink-0 items-center justify-center text-xl border ${iconClass}`;
+      toast.style.border = borderStyle;
+      toast.classList.add('toast-show');
+      
+      if (tg.HapticFeedback) {
+        if (type === 'success' || type === 'jackpot') tg.HapticFeedback.notificationOccurred('success');
+        else if (type === 'error') tg.HapticFeedback.notificationOccurred('error');
+      }
+      setTimeout(() => { toast.classList.remove('toast-show'); }, type === 'jackpot' ? 5000 : 3000); 
+    }
+
+    // GÖZƏL ARAYÜZ (UI) YENİLƏNƏSİ
+    function updateUI() {
+      if (!userState) return;
+
+      document.getElementById('user-name').innerText = userState.firstName;
+      document.getElementById('user-xp').innerHTML = `${userState.xp.toLocaleString()} <span class="text-[10px] text-crypto-glow font-bold">XP</span>`;
+      document.getElementById('user-usd').innerText = Number(userState.usdBalance).toFixed(2);
+      
+      if (userState.photoUrl) {
+        document.getElementById('user-photo').src = userState.photoUrl;
+        document.getElementById('profile-photo-large').src = userState.photoUrl;
+      }
+
+      document.getElementById('main-xp-display').innerText = `${userState.xp.toLocaleString()} XP`;
+      document.getElementById('ads-watched').innerText = userState.adsWatchedToday;
+      document.getElementById('streak-days').innerText = userState.streak || 1;
+
+      document.getElementById('withdraw-balance-display').innerText = Number(userState.usdBalance).toFixed(2);
+      renderWithdrawHistory();
+
+      document.getElementById('profile-name').innerText = userState.firstName;
+      document.getElementById('profile-tgid').innerText = `ID: ${userState.tgId}`;
+      document.getElementById('profile-total-xp').innerText = (userState.totalXp || 0).toLocaleString();
+      document.getElementById('profile-boxes').innerText = userState.boxesOpened || 0;
+      
+      updateProfileProgress();
+      renderMissions();
+      renderStreakTracker();
+    }
+
+    function updateProfileProgress() {
+      const xp = userState.totalXp || 0;
+      let nextLvlXp = 250, prevLvlXp = 0;
+      if (xp >= 20000) { nextLvlXp = 20000; prevLvlXp = 20000; }
+      else if (xp >= 3000) { nextLvlXp = 20000; prevLvlXp = 3000; }
+      else if (xp >= 1500) { nextLvlXp = 3000; prevLvlXp = 1500; }
+      else if (xp >= 750) { nextLvlXp = 1500; prevLvlXp = 750; }
+      else if (xp >= 250) { nextLvlXp = 750; prevLvlXp = 250; }
+
+      let progress = nextLvlXp === prevLvlXp ? 100 : ((xp - prevLvlXp) / (nextLvlXp - prevLvlXp)) * 100;
+      document.getElementById('profile-xp-progress').style.width = `${progress}%`;
+      document.getElementById('profile-current-xp-text').innerText = `${xp.toLocaleString()} XP`;
+      document.getElementById('profile-next-xp-text').innerText = (nextLvlXp === 20000 && xp >= 20000) ? 'MAX LVL' : `${nextLvlXp.toLocaleString()} XP`;
+      document.getElementById('profile-badge-level').innerText = userState.level;
+    }
+
+    function renderStreakTracker() {
+      const container = document.getElementById('streak-tracker-container');
+      container.innerHTML = '';
+      for (let i = 1; i <= 7; i++) {
+        const isPast = i < userState.streak || (i === userState.streak && userState.missions.dailyReward.claimed);
+        const isToday = i === userState.streak && !userState.missions.dailyReward.claimed;
+        const reward = streakRewards[i-1];
+        let styles = "bg-[#050511] border-slate-700 text-slate-600";
+        let icon = `<span class="text-[9px] font-black">${reward}</span>`;
+        let lineStyle = "bg-slate-800";
+        
+        if (isPast) {
+          styles = "bg-emerald-500/20 border-emerald-500/50 text-emerald-400";
+          icon = `<i class="fa-solid fa-check text-xs"></i>`;
+          lineStyle = "bg-emerald-500/50";
+        } else if (isToday) {
+          styles = "bg-blue-600/30 border-crypto-glow text-white";
+        }
+
+        container.innerHTML += `
+          <div class="relative flex flex-col items-center gap-1.5 z-10 flex-1">
+            <div class="w-9 h-9 rounded-xl border-2 flex items-center justify-center transition-all duration-300 ${styles} z-10 relative bg-[#0a0b1a]">
+              ${icon}
+            </div>
+            <span class="text-[8px] font-black tracking-widest ${isToday ? 'text-crypto-glow' : 'text-slate-500'}">DAY ${i}</span>
+            ${i < 7 ? `<div class="absolute top-4 left-[50%] w-full h-1 -z-0 ${lineStyle} rounded-full"></div>` : ''}
+          </div>
+        `;
+      }
+    }
+
+    function renderMissions() {
+      const container = document.getElementById('missions-container');
+      container.innerHTML = '';
+      const missionsList = [
+        { key: 'dailyReward', label: `Daily Login`, icon: 'fa-gift', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
+        { key: 'watch5', label: 'Watch 5 Ads', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
+        { key: 'watch10', label: 'Watch 10 Ads', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
+        { key: 'watch20', label: 'Watch 20 Ads', icon: 'fa-clapperboard', color: 'text-cyan-400', bg: 'bg-cyan-500/10 border-cyan-500/20' },
+        { key: 'all', label: 'All Tasks', icon: 'fa-crown', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' }
+      ];
+
+      missionsList.forEach(m => {
+        const mission = userState.missions[m.key];
+        let isComplete = false, progressText = '';
+        
+        if (mission.type === 'progress') {
+            isComplete = userState.adsWatchedToday >= mission.target;
+            progressText = `(${Math.min(userState.adsWatchedToday, mission.target)}/${mission.target})`;
+        } else if (mission.type === 'boolean') {
+            isComplete = true; // Daily reward auto completes
+        } else if (mission.type === 'meta') {
+            isComplete = ['dailyReward', 'watch5', 'watch10', 'watch20'].every(k => userState.missions[k].claimed);
+        }
+
+        let btnHtml = '';
+        if (mission.claimed) {
+            btnHtml = `<span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/30 flex items-center gap-1"><i class="fa-solid fa-check-double"></i> Claimed</span>`;
+        } else if (isComplete) {
+            btnHtml = `<button onclick="claimMission('${m.key}')" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-1.5 rounded-xl shadow-[0_0_15px_rgba(0,240,255,0.4)] active:scale-95 transition-all uppercase tracking-wider">Claim</button>`;
+        } else {
+            btnHtml = `<span class="text-[10px] font-black bg-slate-800/50 text-slate-200 px-3 py-1.5 rounded-xl border border-slate-600">+${mission.reward} XP</span>`;
+        }
+
+        container.innerHTML += `
+          <div class="glass-card rounded-2xl p-3 flex justify-between items-center border border-slate-800">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl border ${m.bg} flex items-center justify-center">
+                 <i class="fa-solid ${m.icon} ${m.color} text-lg"></i>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-xs font-black text-white tracking-wide">${m.label}</span>
+                <span class="text-crypto-glow text-[10px] font-bold tracking-widest uppercase opacity-80 mt-0.5">${progressText}</span>
+              </div>
+            </div>
+            ${btnHtml}
+          </div>
+        `;
+      });
+    }
+
+    function renderWithdrawHistory() {
+      const container = document.getElementById('withdraw-history-container');
+      if (!userState.withdrawHistory || userState.withdrawHistory.length === 0) {
+        container.innerHTML = `
+          <div class="glass-card rounded-2xl p-6 text-center border-dashed border-2 border-slate-700">
+            <i class="fa-solid fa-clock-rotate-left text-3xl text-slate-600 mb-2"></i>
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">Tarixçə Boşdur</p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = '';
+      userState.withdrawHistory.forEach(record => {
+        container.innerHTML += `
+          <div class="glass-card rounded-2xl p-4 flex justify-between items-center border border-slate-800">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center"><i class="fa-solid fa-arrow-right-arrow-left text-slate-400"></i></div>
+              <div>
+                <p class="text-xs font-black text-white">${record.id} <span class="text-[9px] text-slate-400 ml-1 font-bold">${record.date}</span></p>
+                <p class="text-[10px] text-blue-400 mt-0.5 font-mono bg-blue-500/10 inline-block px-1.5 py-0.5 rounded">${record.address}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-sm font-black text-emerald-400">-$${Number(record.amount).toFixed(2)}</p>
+              <p class="text-[9px] font-black text-amber-400 uppercase tracking-widest mt-0.5 bg-amber-500/10 inline-block px-2 py-0.5 rounded-full border border-amber-500/20">${record.status}</p>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // TƏTBİQ MƏNTİQİ (Serverə Göndərmə)
+    async function claimMission(key) {
+      try {
+        const response = await fetch(`${WORKER_URL}/claimMission`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tgId: userState.tgId, missionKey: key })
+        });
+        const data = await response.json();
+        if (data.success) {
+          userState = data.user;
+          updateUI();
+          showToast("Missiya Tamamlandı!", `Siz mükafat olaraq XP qazandınız!`, "success");
+        } else {
+          showToast("Xəta", data.error, "error");
+        }
+      } catch (e) {
+        showToast("Xəta", "Serverlə əlaqə qurulmadı.", "error");
+      }
+    }
+
+    function watchAd() {
+      if (userState.adsWatchedToday >= 30) {
+        showToast("Limit", "Siz günlük limitə (30 reklam) çatmısınız.", "error");
+        return;
+      }
+
+      const btn = document.getElementById('watch-ad-btn');
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Loading...</span>';
+      btn.classList.add('opacity-80', 'pointer-events-none');
+
+      if (window.Adsgram) {
+        const AdController = window.Adsgram.init({ blockId: "int-34999" });
+        AdController.show().then(async () => {
+          try {
+            const response = await fetch(`${WORKER_URL}/watchAd`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ tgId: userState.tgId })
+            });
+            const data = await response.json();
+            if (data.success) {
+              userState = data.user;
+              updateUI();
+              showToast("Mükafat Verildi!", "Reklam təsdiqləndi: +10 XP", "success");
+            }
+          } catch(e) { showToast("Xəta", "Baza yenilənmədi.", "error"); }
+          btn.innerHTML = originalHTML; btn.classList.remove('opacity-80', 'pointer-events-none');
+        }).catch(() => {
+          btn.innerHTML = originalHTML; btn.classList.remove('opacity-80', 'pointer-events-none');
+        });
+      } else {
+        showToast("Error", "Reklam sistemi aktiv deyil.", "error");
+        btn.innerHTML = originalHTML; btn.classList.remove('opacity-80', 'pointer-events-none');
+      }
+    }
+
+    async function openBox(type) {
+      const btn = document.activeElement;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      btn.classList.add('pointer-events-none');
+
+      try {
+        const response = await fetch(`${WORKER_URL}/openBox`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tgId: userState.tgId, boxType: type })
+        });
+        const data = await response.json();
+        if (data.success) {
+          userState = data.user;
+          updateUI();
+          if (data.isJackpot) showToast("🎉 JACKPOT! 🎉", `$${data.reward.toFixed(2)} qazandınız!`, "jackpot");
+          else showToast("🎁 Qutu Açıldı!", `$${data.reward.toFixed(2)} çıxdı!`, "success");
+        } else showToast("Xəta", data.error, "error");
+      } catch (e) { showToast("Xəta", "Server xətası.", "error"); }
+      btn.innerHTML = "Open"; btn.classList.remove('pointer-events-none');
+    }
+
+    async function requestWithdrawal() {
+      const address = document.getElementById('wallet-address').value;
+      const amount = parseFloat(document.getElementById('withdraw-amount').value);
+
+      if (!address || address.length < 10) return showToast("Yanlış", "Düzgün TON cüzdanı yazın.", "error");
+      if (isNaN(amount) || amount < 5) return showToast("Limit", "Minimum çıxarış $5.00-dır.", "error");
+      if (amount > userState.usdBalance) return showToast("Xəta", "Kifayət qədər vəsait yoxdur.", "error");
+
+      const btn = document.getElementById('withdraw-btn');
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Gözləyin...';
+      
+      try {
+        const response = await fetch(`${WORKER_URL}/withdraw`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tgId: userState.tgId, address, amount })
+        });
+        const data = await response.json();
+        if (data.success) {
+          userState = data.user;
+          updateUI();
+          document.getElementById('wallet-address').value = '';
+          document.getElementById('withdraw-amount').value = '';
+          showToast("Uğurlu", "Çıxarış sorğusu qəbul edildi.", "success");
+        } else showToast("Xəta", data.error, "error");
+      } catch(e) { showToast("Xəta", "Çıxarış baş tutmadı.", "error"); }
+      btn.innerHTML = '<i class="fa-solid fa-money-bill-transfer"></i> Request Withdrawal';
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('nav-active'));
+      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+      document.querySelector(`[data-target="${tabId}"]`).classList.add('nav-active');
+      
+      const header = document.getElementById('main-header');
+      const mainContent = document.getElementById('app-content');
+      clearTimeout(headerTimeout);
+
+      if (tabId === 'withdraw' || tabId === 'profile') {
+        header.style.transform = 'translateY(-100%)';
+        headerTimeout = setTimeout(() => header.style.display = 'none', 300);
+        mainContent.classList.remove('pt-24'); mainContent.classList.add('pt-4');
+      } else {
+        header.style.display = 'block'; 
+        setTimeout(() => header.style.transform = 'translateY(0)', 10);
+        mainContent.classList.remove('pt-4'); mainContent.classList.add('pt-24');
+      }
+      if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateTimer() {
+        const now = new Date();
+        const tomorrow = new Date(now);
+        tomorrow.setUTCHours(24, 0, 0, 0); 
+        const diff = tomorrow.getTime() - now.getTime();
+        const h = Math.floor(diff / 1000 / 60 / 60);
+        const m = Math.floor((diff / 1000 / 60) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        
+        const timerEl = document.getElementById('reset-timer');
+        if (timerEl) timerEl.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    async function initApp() {
+      await loadUserStateFromServer(); 
+      setTimeout(() => {
+        document.getElementById('loading-overlay').style.opacity = '0';
+        setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; }, 500); 
+      }, 1000);
+
+      setInterval(updateTimer, 1000);
+      updateTimer();
+    }
+
+    initApp();
   </script>
-</head>
-<body class="flex flex-col min-h-screen pb-32">
-  
-  <div class="bg-orb-1 animate-blob"></div>
-  <div class="bg-orb-2 animate-blob animation-delay-2000"></div>
-
-  <div id="loading-overlay" class="bg-[#050511] flex flex-col items-center justify-center z-[10000] fixed inset-0 transition-opacity duration-500">
-    <div class="relative w-24 h-24 mb-8">
-      <div class="absolute inset-0 rounded-full border-t-4 border-crypto-glow animate-[spin_1s_linear_infinite] shadow-[0_0_20px_rgba(0,240,255,0.5)]"></div>
-      <div class="absolute inset-3 rounded-full border-b-4 border-blue-500 animate-[spin_1.5s_linear_infinite_reverse]"></div>
-      <div class="absolute inset-0 flex items-center justify-center">
-        <i class="fa-brands fa-space-awesome text-crypto-glow text-3xl animate-pulse"></i>
-      </div>
-    </div>
-    <h2 class="text-white font-black tracking-[0.25em] text-2xl uppercase bg-clip-text text-transparent bg-gradient-to-r from-crypto-glow via-blue-400 to-indigo-500 mb-2 drop-shadow-lg">XPVerse</h2>
-  </div>
-
-  <div id="toast-container" class="glass-card rounded-2xl p-4 flex items-center gap-4">
-    <div id="toast-icon" class="w-12 h-12 rounded-full flex shrink-0 items-center justify-center text-xl shadow-inner">
-      <i class="fa-solid fa-bell"></i>
-    </div>
-    <div class="flex-1">
-      <h4 id="toast-title" class="text-sm font-black text-white tracking-wide">Notification</h4>
-      <p id="toast-message" class="text-xs text-slate-300 mt-0.5 leading-tight">Message goes here</p>
-    </div>
-  </div>
-
-  <header id="main-header" class="fixed top-0 left-0 right-0 z-50 w-full p-4 glass-card rounded-b-3xl border-b-0 shadow-lg transition-transform duration-300">
-    <div class="flex justify-between items-center max-w-md mx-auto">
-      <div class="flex items-center gap-3">
-        <div class="relative w-11 h-11 rounded-full p-[2px] bg-gradient-to-tr from-blue-600 via-crypto-glow to-indigo-500 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
-          <img id="user-photo" src="https://via.placeholder.com/150/0a0b1a/00f0ff?text=XP" alt="Profile" class="w-full h-full rounded-full object-cover border-2 border-[#050511]">
-        </div>
-        <div class="flex flex-col">
-          <span id="user-name" class="font-bold text-white text-sm tracking-wide">Loading...</span>
-          <div class="flex items-center gap-1">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse"></span>
-            <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Online</span>
-          </div>
-        </div>
-      </div>
-      <div class="flex flex-col items-end gap-1.5">
-        <div class="glass-button px-3 py-1.5 rounded-xl flex items-center gap-2">
-          <i class="fa-solid fa-bolt text-crypto-glow text-xs drop-shadow-[0_0_5px_#00f0ff]"></i>
-          <span id="user-xp" class="text-white font-black text-sm tracking-wider">0 <span class="text-[10px] text-crypto-glow">XP</span></span>
-        </div>
-        <div class="bg-emerald-900/40 border border-emerald-500/30 px-3 py-1 rounded-xl flex items-center gap-2 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]">
-          <i class="fa-solid fa-dollar-sign text-emerald-400 text-[10px]"></i>
-          <span id="user-usd" class="text-emerald-400 font-black text-xs tracking-wider">0.00$</span>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <main class="flex-1 max-w-md w-full mx-auto p-4 pt-24 relative" id="app-content">
-    
-    <div id="view-home" class="view-section fade-in space-y-6">
-      <div class="relative glass-card rounded-[2rem] p-6 text-center border-t border-t-blue-400/20 overflow-hidden min-h-[240px]">
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/20 rounded-full filter blur-[40px] pointer-events-none animate-pulse-fast"></div>
-        <div class="relative z-10 flex flex-col items-center">
-          <div class="w-14 h-14 rounded-full bg-blue-900/40 border border-blue-400/30 flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
-             <i class="fa-solid fa-gem text-2xl text-crypto-glow drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]"></i>
-          </div>
-          <p class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-1 opacity-80">Balance</p>
-          <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-blue-400 tracking-tighter drop-shadow-2xl" id="main-xp-display">0 XP</h1>
-        </div>
-        
-        <div class="w-full mt-6 grid grid-cols-2 gap-3">
-          <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md">
-            <div class="bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/20"><i class="fa-solid fa-clapperboard text-blue-400"></i></div>
-            <div class="text-left">
-              <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Daily Limit</p>
-              <p class="text-sm font-black text-white"><span id="ads-watched" class="text-blue-400">0</span> / 30</p>
-            </div>
-          </div>
-          <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md">
-            <div class="bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20"><i class="fa-solid fa-fire-flame-curved text-amber-400"></i></div>
-            <div class="text-left">
-              <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Streak</p>
-              <p class="text-sm font-black text-white"><span id="streak-days" class="text-amber-400">1</span> Days</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <button onclick="watchAd()" id="watch-ad-btn" class="w-full py-4 rounded-2xl text-white font-black text-sm tracking-[0.15em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(59,130,246,0.3)] btn-3d relative overflow-hidden group">
-        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
-        <i class="fa-solid fa-play bg-white/20 p-2 rounded-full text-[10px]"></i> 
-        <span>Watch Ad <span class="text-cyan-200">+10 XP</span></span>
-      </button>
-    </div>
-
-    <div id="view-referrals" class="view-section hidden fade-in space-y-6">
-      <div class="text-center pt-2">
-        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Invite Friends</h2>
-        <p class="text-xs text-crypto-glow mt-1 uppercase tracking-widest font-bold">Earn 50 XP per Active Friend</p>
-      </div>
-
-      <div class="glass-card rounded-2xl p-5 border-t-2 border-crypto-glow text-center">
-        <p class="text-xs text-slate-300 mb-4">Your friend must watch <span class="text-crypto-glow font-bold">25 ads</span> for you to receive the reward.</p>
-        <div class="flex items-center bg-[#050511] border border-slate-700 rounded-xl p-2">
-          <input type="text" id="invite-link" readonly class="w-full bg-transparent text-slate-300 text-xs px-2 focus:outline-none" value="Loading...">
-          <button onclick="copyInviteLink()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all"><i class="fa-solid fa-copy"></i> Copy</button>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-3">
-        <div class="glass-card p-4 rounded-xl text-center">
-          <p class="text-[10px] text-slate-400 uppercase font-bold">Approved</p>
-          <p class="text-xl font-black text-emerald-400" id="ref-approved">0</p>
-        </div>
-        <div class="glass-card p-4 rounded-xl text-center">
-          <p class="text-[10px] text-slate-400 uppercase font-bold">Pending (Ads < 25)</p>
-          <p class="text-xl font-black text-amber-400" id="ref-pending">0</p>
-        </div>
-      </div>
-    </div>
-
-    <div id="view-leaderboard" class="view-section hidden fade-in space-y-4">
-      <div class="text-center pt-2 mb-6">
-        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Leaderboard</h2>
-        <p class="text-xs text-amber-400 mt-1 uppercase tracking-widest font-bold">Top Earners</p>
-      </div>
-      <div id="leaderboard-container" class="space-y-3">
-        <p class="text-center text-slate-500 text-sm"><i class="fa-solid fa-spinner fa-spin"></i> Loading top users...</p>
-      </div>
-    </div>
-
-    <div id="view-admin" class="view-section hidden fade-in space-y-6">
-      <div class="text-center pt-2 border-b border-red-500/30 pb-4">
-        <h2 class="text-3xl font-black text-red-500 tracking-tight drop-shadow-lg"><i class="fa-solid fa-shield-halved"></i> Admin Panel</h2>
-      </div>
-
-      <div class="glass-card rounded-2xl p-5 space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-slate-400 mb-2">Target User ID (UID)</label>
-          <input type="number" id="admin-target-uid" placeholder="e.g. 123456789" class="w-full bg-[#050511] border border-slate-700 rounded-xl p-3 text-white">
-        </div>
-        <div class="flex gap-2">
-          <button onclick="adminCheckUser()" class="flex-1 bg-blue-600 text-white py-2 rounded-xl text-xs font-bold">Check User</button>
-        </div>
-      </div>
-
-      <div id="admin-user-details" class="glass-card rounded-2xl p-5 space-y-4 hidden border border-blue-500/30">
-        <p class="text-sm text-white font-bold">Status: <span id="ad-u-status" class="text-emerald-400">Active</span></p>
-        <p class="text-sm text-white">XP: <span id="ad-u-xp" class="font-bold text-crypto-glow">0</span> | USD: <span id="ad-u-usd" class="font-bold text-emerald-400">0.00$</span></p>
-        
-        <div class="grid grid-cols-2 gap-2 mt-2">
-          <input type="number" id="admin-val-xp" placeholder="XP Amount" class="bg-[#050511] border border-slate-700 rounded-lg p-2 text-white text-xs">
-          <div class="flex gap-1">
-             <button onclick="adminModify('add_xp')" class="flex-1 bg-emerald-600 text-white rounded-lg text-xs">+</button>
-             <button onclick="adminModify('sub_xp')" class="flex-1 bg-red-600 text-white rounded-lg text-xs">-</button>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <input type="number" id="admin-val-usd" placeholder="USD Amount" step="0.1" class="bg-[#050511] border border-slate-700 rounded-lg p-2 text-white text-xs">
-          <div class="flex gap-1">
-             <button onclick="adminModify('add_usd')" class="flex-1 bg-emerald-600 text-white rounded-lg text-xs">+</button>
-             <button onclick="adminModify('sub_usd')" class="flex-1 bg-red-600 text-white rounded-lg text-xs">-</button>
-          </div>
-        </div>
-
-        <div class="flex gap-2 mt-4">
-          <button onclick="adminModify('ban')" class="flex-1 bg-red-900 border border-red-500 text-white py-2 rounded-xl text-xs font-bold">Ban</button>
-          <button onclick="adminModify('unban')" class="flex-1 bg-emerald-900 border border-emerald-500 text-white py-2 rounded-xl text-xs font-bold">Unban</button>
-        </div>
-      </div>
-    </div>
-
-  </main>
-
-  <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] glass-card rounded-2xl pb-safe z-50 shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-slate-700/50 backdrop-blur-xl">
-    <div class="flex justify-between items-center px-4 py-2.5 relative">
-      <button onclick="switchTab('home')" class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="home">
-        <i class="fa-solid fa-house text-lg"></i><span class="text-[8px] font-black uppercase tracking-widest">Home</span>
-      </button>
-      <button onclick="switchTab('referrals')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="referrals">
-        <i class="fa-solid fa-users text-lg"></i><span class="text-[8px] font-black uppercase tracking-widest">Invite</span>
-      </button>
-      <button onclick="switchTab('leaderboard')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 w-14 transition-all duration-300 relative group" data-target="leaderboard">
-        <i class="fa-solid fa-trophy text-lg"></i><span class="text-[8px] font-black uppercase tracking-widest">Top</span>
-      </button>
-      <button id="admin-nav-btn" onclick="switchTab('admin')" class="nav-btn text-slate-500 flex-col items-center gap-1 w-14 transition-all duration-300 relative group hidden" data-target="admin">
-        <i class="fa-solid fa-lock text-lg text-red-500"></i><span class="text-[8px] font-black uppercase tracking-widest">Admin</span>
-      </button>
-    </div>
-  </nav>
-
-  <script src="app.js"></script>
-</body>
-</html>

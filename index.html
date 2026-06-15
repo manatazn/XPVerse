@@ -32,7 +32,8 @@
             'blob': 'blob 7s infinite',
             'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             'float-up': 'floatUp 2s ease-out forwards',
-            'pop': 'pop 0.3s ease-out forwards'
+            'pop': 'pop 0.3s ease-out forwards',
+            'shimmer': 'shimmer 2s infinite'
           },
           keyframes: {
             blob: {
@@ -49,6 +50,10 @@
               '0%': { transform: 'scale(1)' },
               '50%': { transform: 'scale(1.3)' },
               '100%': { transform: 'scale(0)', opacity: 0 }
+            },
+            shimmer: {
+              '0%': { transform: 'translateX(-100%)' },
+              '100%': { transform: 'translateX(100%)' }
             }
           }
         }
@@ -66,7 +71,6 @@
       user-select: none;
     }
 
-    /* FULL SCREEN GAME STYLES */
     body.in-game {
       overflow: hidden !important;
       touch-action: none !important;
@@ -192,9 +196,7 @@
     .level-node.current { background: #050511; border: 3px solid #00f0ff; color: #00f0ff; box-shadow: 0 0 20px rgba(0, 240, 255, 0.6); animation: pulse 2s infinite; }
     .level-node.locked { background: #1e293b; border: 2px solid #334155; color: #475569; }
     
-    .path-line {
-      position: absolute; width: 6px; background: #334155; z-index: 5;
-    }
+    .path-line { position: absolute; width: 6px; background: #334155; z-index: 5; }
     .path-line.active { background: linear-gradient(to bottom, #3b82f6, #00f0ff); box-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
 
     .star-icon { color: #334155; font-size: 0.7rem; }
@@ -203,6 +205,18 @@
     #splash-screen {
       background: linear-gradient(180deg, #050511 0%, #0a0b1a 100%);
       z-index: 100;
+    }
+    
+    /* Elegant Powerup Buttons */
+    .powerup-btn {
+      transition: all 0.2s ease-in-out;
+    }
+    .powerup-btn:active {
+      transform: scale(0.9) translateY(4px);
+    }
+    .powerup-active-glow {
+      box-shadow: 0 0 20px var(--glow-color);
+      border-color: var(--glow-color);
     }
   </style>
 </head>
@@ -267,10 +281,8 @@
   <main class="flex-1 max-w-md w-full mx-auto p-4 pt-24 relative" id="app-content">
     
     <div id="view-home" class="view-section fade-in space-y-6">
-      
       <div class="relative glass-card rounded-[2rem] p-6 text-center border-t border-t-blue-400/20 overflow-hidden flex flex-col items-center justify-center min-h-[240px]">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/20 rounded-full filter blur-[40px] pointer-events-none animate-pulse-fast"></div>
-        
         <div class="relative z-10 flex flex-col items-center">
           <div class="w-14 h-14 rounded-full bg-blue-900/40 border border-blue-400/30 flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
              <i class="fa-solid fa-gem text-2xl text-crypto-glow drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]"></i>
@@ -278,7 +290,6 @@
           <p class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-1 opacity-80">Balance</p>
           <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-blue-400 tracking-tighter drop-shadow-2xl" id="main-xp-display">0 XP</h1>
         </div>
-        
         <div class="w-full mt-6 grid grid-cols-2 gap-3">
           <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md">
             <div class="bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/20"><i class="fa-solid fa-clapperboard text-blue-400"></i></div>
@@ -312,7 +323,6 @@
     </div>
 
     <div id="view-games" class="view-section hidden fade-in space-y-4 pb-4">
-      
       <div id="game-menu-container">
         <div class="text-center pt-2 mb-4">
           <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Games</h2>
@@ -321,22 +331,20 @@
 
         <div class="glass-card rounded-3xl p-6 relative overflow-hidden flex flex-col items-center min-h-[400px]">
           <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-6">Daily Levels Progress</p>
-          
-          <div class="relative w-full max-w-[250px] mx-auto py-4" id="level-map">
-            </div>
+          <div class="relative w-full max-w-[250px] mx-auto py-4" id="level-map"></div>
         </div>
       </div>
 
       <div id="game-play-container" class="hidden flex flex-col gap-3">
-        <div class="glass-card p-3 rounded-2xl flex justify-between items-center border border-blue-500/30 shrink-0">
-          <button onclick="exitGame()" class="w-10 h-10 rounded-xl bg-slate-800/50 flex items-center justify-center text-slate-400 active:scale-95 transition-all">
+        <div class="glass-card p-3 rounded-2xl flex justify-between items-center border border-blue-500/30 shrink-0 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+          <button onclick="exitGame()" class="w-10 h-10 rounded-xl bg-slate-800/50 flex items-center justify-center text-slate-400 hover:text-white active:scale-95 transition-all">
             <i class="fa-solid fa-arrow-left"></i>
           </button>
           <div class="text-center">
             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Level <span id="ingame-level-display">1</span></p>
-            <p class="text-sm font-black text-white" id="ingame-score">0</p>
+            <p class="text-lg font-black text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]" id="ingame-score">0</p>
           </div>
-          <div class="flex gap-1" id="ingame-stars">
+          <div class="flex gap-1 bg-slate-900/50 p-2 rounded-xl border border-slate-700/50" id="ingame-stars">
             <i class="fa-solid fa-star text-slate-700 text-xs"></i>
             <i class="fa-solid fa-star text-slate-700 text-xs"></i>
             <i class="fa-solid fa-star text-slate-700 text-xs"></i>
@@ -354,35 +362,33 @@
           
           <canvas id="balloon-canvas"></canvas>
 
-          <div id="game-over-modal" class="absolute inset-0 bg-[#050511]/90 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-6 hidden fade-in">
-            <h2 id="end-title" class="text-3xl font-black text-white mb-2 drop-shadow-[0_0_10px_#00f0ff]">Level Clear!</h2>
+          <div id="game-over-modal" class="absolute inset-0 bg-[#050511]/95 backdrop-blur-md z-20 flex flex-col items-center justify-center p-6 hidden fade-in">
+            <h2 id="end-title" class="text-4xl font-black text-white mb-2 drop-shadow-[0_0_15px_#00f0ff]">Level Clear!</h2>
             <div class="flex gap-2 mb-4" id="end-stars"></div>
-            <p id="end-reward" class="text-sm font-bold text-emerald-400 mb-6 bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/30">+0 XP</p>
-            <div class="flex gap-3 w-full">
-              <button onclick="exitGame()" class="flex-1 py-3 rounded-xl bg-slate-800 text-white font-bold uppercase text-xs tracking-wider">Back</button>
-              <button id="end-next-btn" onclick="nextLevel()" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold uppercase text-xs tracking-wider shadow-[0_0_15px_rgba(0,240,255,0.4)]">Next</button>
+            <p id="end-reward" class="text-lg font-bold text-emerald-400 mb-8 bg-emerald-500/10 px-6 py-3 rounded-xl border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">+0 XP</p>
+            <div class="flex gap-4 w-full max-w-[250px]">
+              <button onclick="exitGame()" class="flex-1 py-3.5 rounded-xl bg-slate-800 text-white font-black uppercase text-xs tracking-wider shadow-lg active:scale-95 transition-all border border-slate-600">Back</button>
+              <button id="end-next-btn" onclick="nextLevel()" class="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black uppercase text-xs tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.4)] active:scale-95 transition-all">Next</button>
             </div>
           </div>
         </div>
 
-        <div class="glass-card p-3 rounded-2xl flex justify-center gap-8 items-center shrink-0">
-          
-          <div class="flex flex-col items-center gap-1 group relative">
-            <button onclick="activatePowerup('bomb')" class="w-14 h-14 rounded-full bg-slate-800/80 border border-slate-600 flex items-center justify-center text-orange-400 active:scale-95 transition-all relative shadow-[0_0_15px_rgba(249,115,22,0.2)]" id="btn-power-bomb">
-              <i class="fa-solid fa-bomb text-xl"></i>
-              <span class="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511]" id="count-bomb">1</span>
+        <div class="glass-card p-3 rounded-2xl flex justify-center gap-10 items-center shrink-0 border border-slate-700/50">
+          <div class="flex flex-col items-center gap-1.5 group relative">
+            <button onclick="activatePowerup('bomb')" class="powerup-btn w-12 h-12 rounded-2xl bg-slate-800/80 border-2 border-slate-600 flex items-center justify-center text-orange-400 relative shadow-[0_4px_15px_rgba(0,0,0,0.5)]" id="btn-power-bomb" style="--glow-color: rgba(249,115,22,0.6)">
+              <i class="fa-solid fa-bomb text-xl drop-shadow-[0_0_5px_rgba(249,115,22,0.8)]"></i>
+              <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] shadow-lg" id="count-bomb">1</span>
             </button>
-            <span class="text-[9px] uppercase font-bold text-slate-400">Bomb</span>
+            <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Bomb</span>
           </div>
 
-          <div class="flex flex-col items-center gap-1 group relative">
-            <button onclick="activatePowerup('rocket')" class="w-14 h-14 rounded-full bg-slate-800/80 border border-slate-600 flex items-center justify-center text-red-400 active:scale-95 transition-all relative shadow-[0_0_15px_rgba(239,68,68,0.2)]" id="btn-power-rocket">
-              <i class="fa-solid fa-rocket text-xl"></i>
-              <span class="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511]" id="count-rocket">1</span>
+          <div class="flex flex-col items-center gap-1.5 group relative">
+            <button onclick="activatePowerup('rocket')" class="powerup-btn w-12 h-12 rounded-2xl bg-slate-800/80 border-2 border-slate-600 flex items-center justify-center text-red-400 relative shadow-[0_4px_15px_rgba(0,0,0,0.5)]" id="btn-power-rocket" style="--glow-color: rgba(239,68,68,0.6)">
+              <i class="fa-solid fa-rocket text-xl drop-shadow-[0_0_5px_rgba(239,68,68,0.8)]"></i>
+              <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] shadow-lg" id="count-rocket">1</span>
             </button>
-            <span class="text-[9px] uppercase font-bold text-slate-400">Rocket</span>
+            <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Rocket</span>
           </div>
-
         </div>
 
       </div>
@@ -467,7 +473,6 @@
     </div>
 
     <div id="view-withdraw" class="view-section hidden fade-in space-y-6">
-      
       <div class="glass-card rounded-[2rem] p-6 text-center border-t-2 border-emerald-500/40 bg-gradient-to-b from-emerald-900/30 to-[#050511]">
         <div class="w-14 h-14 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-3 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
           <i class="fa-solid fa-wallet text-xl text-emerald-400"></i>
@@ -624,7 +629,7 @@
     const getDefaultMissions = () => ({
       dailyReward: { completed: true, claimed: false, reward: 5, type: 'boolean' },
       watch5: { target: 5, claimed: false, reward: 20, type: 'progress' },
-      watch10: { target: 10, claimed: false, reward: 50, type: 'progress' },
+      watch30: { target: 30, claimed: false, reward: 50, type: 'progress' },
       all: { claimed: false, reward: 100, type: 'meta' }
     });
 
@@ -769,6 +774,7 @@
         missionsState = getDefaultMissions();
         missionsState.dailyReward.reward = streakRewards[userState.streak - 1]; 
         
+        // Reset Game Daily State
         gameState.seedDate = currentResetDay;
         gameState.levelsCompleted = Array(10).fill(false);
         gameState.stars = Array(10).fill(0);
@@ -886,7 +892,7 @@
       const missionsList = [
         { key: 'dailyReward', label: `Daily Login`, icon: 'fa-gift', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
         { key: 'watch5', label: 'Watch 5 Ads', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
-        { key: 'watch10', label: 'Watch 10 Ads', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
+        { key: 'watch30', label: 'Watch 30 Ads', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
         { key: 'all', label: 'All Tasks', icon: 'fa-crown', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' }
       ];
 
@@ -901,7 +907,7 @@
         } else if (mission.type === 'boolean') {
             isComplete = mission.completed;
         } else if (mission.type === 'meta') {
-            isComplete = ['dailyReward', 'watch5', 'watch10'].every(k => missionsState[k].claimed);
+            isComplete = ['dailyReward', 'watch5', 'watch30'].every(k => missionsState[k].claimed);
         }
 
         let btnHtml = '';
@@ -1170,7 +1176,7 @@
     // GAME ENGINE: XPVerse Balloon Blast
     // ==========================================
 
-    const LEVEL_REWARDS = [30, 40, 50, 60, 70, 80, 90, 100, 110, 120]; 
+    const LEVEL_REWARDS = [25, 35, 50, 60, 75, 80, 90, 100, 110, 125]; 
 
     function getDailyRandom(seed) {
       let t = seed += 0x6D2B79F5;
@@ -1232,14 +1238,16 @@
 
     let gameEngine = {
       canvas: null, ctx: null, isPlaying: false,
-      balloons: [], projectiles: [], particles: [], fallingBalloons: [], scoreParticles: [],
-      gridCols: 8, ballRadius: 0, containerScores: [50, 100, 250, 100, 50],
+      balloons: [], projectiles: [], particles: [], fallingBalloons: [], floatingTexts: [],
+      gridCols: 8, ballRadius: 0,
       grid: [], 
       colors: ['#ef4444', '#3b82f6', '#10b981', '#eab308', '#a855f7', '#06b6d4'],
-      launcherColor: '', nextColor: '', activePowerup: null, recentColors: [],
+      launcherColor: '', nextColor: '', activePowerup: null,
+      colorHistory: [], 
       currentLevel: 1, score: 0, shotsFired: 0, totalTarget: 0,
-      offsetY: 0, dropInterval: 5, limitY: 0, launcherY: 0, launcherX: 0,
-      mouseX: 0, mouseY: 0, rand: null
+      offsetY: 0, dropInterval: 5, limitY: 0,
+      mouseX: 0, mouseY: 0, rand: null,
+      containers: null
     };
 
     function startGame(level) {
@@ -1285,9 +1293,9 @@
       gameEngine.projectiles = [];
       gameEngine.particles = [];
       gameEngine.fallingBalloons = [];
-      gameEngine.scoreParticles = [];
-      gameEngine.recentColors = [];
+      gameEngine.floatingTexts = [];
       gameEngine.activePowerup = null;
+      gameEngine.colorHistory = [];
 
       document.getElementById('ingame-level-display').innerText = level;
       document.getElementById('ingame-score').innerText = '0';
@@ -1300,9 +1308,12 @@
       resizeCanvas();
       generateLevel(level);
       
+      // Setup correct initial colors
       let avail = getAvailableColors();
       gameEngine.launcherColor = avail[Math.floor(gameEngine.rand() * avail.length)];
-      gameEngine.nextColor = avail[Math.floor(gameEngine.rand() * avail.length)];
+      updateColorHistory(gameEngine.launcherColor);
+      gameEngine.nextColor = gameEngine.launcherColor; // Temporary, updated immediately below
+      updateLauncherColors(true); // Force generation of an optimal nextColor from the start
 
       gameEngine.canvas.addEventListener('touchstart', handleInput, {passive: false});
       gameEngine.canvas.addEventListener('touchmove', handleMove, {passive: false});
@@ -1320,10 +1331,16 @@
       gameEngine.canvas.height = container.clientHeight;
       gameEngine.ballRadius = (gameEngine.canvas.width / (gameEngine.gridCols + 0.5)) / 2;
       
-      const bucketHeight = 50;
-      gameEngine.launcherY = gameEngine.canvas.height - bucketHeight - 30;
-      gameEngine.launcherX = gameEngine.canvas.width / 2;
-      gameEngine.limitY = gameEngine.canvas.height - 150; 
+      let ch = 40;
+      let cy = gameEngine.canvas.height - ch;
+      let cw = gameEngine.canvas.width / 5;
+      gameEngine.containers = {
+        cy: cy, cw: cw, ch: ch,
+        scores: [10, 50, 100, 50, 10],
+        colors: ['#3b82f6', '#10b981', '#ffb800', '#10b981', '#3b82f6']
+      };
+
+      gameEngine.limitY = cy - 80; 
     }
 
     function getAvailableColors() {
@@ -1341,25 +1358,42 @@
       return arr.length > 0 ? arr : gameEngine.colors;
     }
 
-    function updateLauncherColors() {
+    function updateColorHistory(color) {
+      gameEngine.colorHistory.unshift(color);
+      if(gameEngine.colorHistory.length > 2) {
+         gameEngine.colorHistory.pop();
+      }
+    }
+
+    // YENİLƏNMİŞ DÜZGÜN MƏNTİQ
+    function updateLauncherColors(forceNewNext = false) {
        let avail = getAvailableColors();
        if(avail.length === 0) return; 
        
-       function getNextColor(currentArray) {
-           let valid = currentArray.filter(c => {
-               let rc = gameEngine.recentColors;
-               if (rc.length >= 2 && rc[rc.length-1] === c && rc[rc.length-2] === c) return false;
-               return true;
-           });
-           if(valid.length === 0) valid = currentArray;
-           return valid[Math.floor(Math.random() * valid.length)];
+       let isColorAllowed = (color) => {
+         // Eyni rəng dalbadal çox gəlməsin deyə (max 2 dəfə) yoxlama:
+         if (gameEngine.colorHistory.length >= 2 && 
+             gameEngine.colorHistory[0] === color && 
+             gameEngine.colorHistory[1] === color) {
+            return false;
+         }
+         return true;
+       };
+
+       // 1. Mövcud atan şarın yoxlanması (əgər lövhədə belə bir rəng bitibsə, onu mütləq dəyiş)
+       if(!avail.includes(gameEngine.launcherColor)) {
+           let safeColors = avail.filter(isColorAllowed);
+           if(safeColors.length === 0) safeColors = avail; // Əgər başqa çarə yoxdursa
+           gameEngine.launcherColor = safeColors[Math.floor(Math.random() * safeColors.length)];
        }
 
-       if(!avail.includes(gameEngine.launcherColor)) {
-           gameEngine.launcherColor = getNextColor(avail);
-       }
-       if(!avail.includes(gameEngine.nextColor)) {
-           gameEngine.nextColor = getNextColor(avail);
+       // 2. Növbəti rəngin generasiya edilməsi (atəşdən sonra mütləq yenisi yaranmalıdır!)
+       if(forceNewNext || !avail.includes(gameEngine.nextColor)) {
+           // Çalışıb fərqli və tarixçəyə uyğun rəng seçək
+           let safeColors = avail.filter(c => c !== gameEngine.launcherColor && isColorAllowed(c));
+           if(safeColors.length === 0) safeColors = avail.filter(c => c !== gameEngine.launcherColor); // Qaydanı yumşalt
+           if(safeColors.length === 0) safeColors = avail; // Bütün qaydaları yumşalt (lövhədə tək rəng qalıbsa)
+           gameEngine.nextColor = safeColors[Math.floor(Math.random() * safeColors.length)];
        }
     }
 
@@ -1380,7 +1414,6 @@
         for (let c = 0; c < colsInRow; c++) {
           let type = 'normal';
           let hp = 1;
-          
           let rVal = gameEngine.rand();
           
           if ((r + c) % 2 === 0 && rVal < 0.2) {
@@ -1399,9 +1432,7 @@
           
           gameEngine.grid[r][c] = {
             color: type === 'armored' ? '#64748b' : gameEngine.colors[Math.floor(gameEngine.rand() * gameEngine.colors.length)],
-            type: type,
-            hp: hp,
-            r: r, c: c
+            type: type, hp: hp, r: r, c: c
           };
           gameEngine.totalTarget++;
         }
@@ -1423,24 +1454,51 @@
           let b = gameEngine.grid[r][c];
           if (b) {
             let pos = getGridPos(r, c);
-            drawBalloon(ctx, pos.x, pos.y, gameEngine.ballRadius * 0.9, b.color, b.type, b.hp);
+            drawBalloon(ctx, pos.x, pos.y, gameEngine.ballRadius * 0.95, b.color, b.type, b.hp);
           }
         }
       }
     }
 
-    function lightenColor(color, percent) {
-        let R = parseInt(color.substring(1,3),16);
-        let G = parseInt(color.substring(3,5),16);
-        let B = parseInt(color.substring(5,7),16);
-        R = parseInt(R + (256 - R) * percent / 100);
-        G = parseInt(G + (256 - G) * percent / 100);
-        B = parseInt(B + (256 - B) * percent / 100);
-        R = (R<255)?R:255; G = (G<255)?G:255; B = (B<255)?B:255;
-        let RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
-        let GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
-        let BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
-        return "#"+RR+GG+BB;
+    function drawBalloon(ctx, x, y, r, color, type, hp, isGhost = false) {
+      ctx.globalAlpha = isGhost ? 0.3 : 1.0;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      
+      let grad = ctx.createRadialGradient(x - r/2, y - r/2, r/10, x, y, r * 1.2);
+      grad.addColorStop(0, '#ffffff'); 
+      grad.addColorStop(0.2, shadeColor(color, 40));
+      grad.addColorStop(0.6, color);
+      grad.addColorStop(1, shadeColor(color, -60)); 
+      ctx.fillStyle = grad;
+      ctx.fill();
+      
+      ctx.beginPath();
+      ctx.ellipse(x - r*0.35, y - r*0.35, r*0.4, r*0.2, Math.PI / -4, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.stroke();
+
+      if (type === 'locked') {
+        ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fill();
+        ctx.fillStyle = '#f8fafc'; ctx.font = `900 ${r}px FontAwesome`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('\uf023', x, y); 
+        if(hp === 2) {
+           ctx.beginPath(); ctx.arc(x, y, r*0.8, 0, Math.PI*2); ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=3; ctx.stroke();
+        }
+      } else if (type === 'virus') {
+        ctx.fillStyle = '#bef264'; ctx.font = `900 ${r}px FontAwesome`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('\uf0e7', x, y); 
+      } else if (type === 'armored') {
+        ctx.beginPath(); ctx.arc(x, y, r*0.7, 0, Math.PI*2); ctx.fillStyle='#1e293b'; ctx.fill();
+        ctx.beginPath(); ctx.arc(x, y, r*0.3, 0, Math.PI*2); ctx.fillStyle='#94a3b8'; ctx.fill();
+      }
+      ctx.globalAlpha = 1.0;
     }
 
     function shadeColor(color, percent) {
@@ -1457,45 +1515,12 @@
       return "#"+RR+GG+BB;
     }
 
-    function drawBalloon(ctx, x, y, r, color, type, hp) {
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      
-      let grad = ctx.createRadialGradient(x - r/3, y - r/3, r/8, x, y, r);
-      grad.addColorStop(0, '#ffffff'); 
-      grad.addColorStop(0.2, lightenColor(color, 40));
-      grad.addColorStop(0.6, color);
-      grad.addColorStop(1, shadeColor(color, -50)); 
-      ctx.fillStyle = grad;
-      ctx.fill();
-      
-      ctx.beginPath();
-      ctx.ellipse(x - r*0.35, y - r*0.35, r*0.4, r*0.15, Math.PI / -4, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-      ctx.fill();
-
-      if (type === 'locked') {
-        ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fill();
-        ctx.fillStyle = '#cbd5e1'; ctx.font = `900 ${r}px FontAwesome`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText('\uf023', x, y); 
-        if(hp === 2) {
-           ctx.beginPath(); ctx.arc(x, y, r*0.8, 0, Math.PI*2); ctx.strokeStyle='#94a3b8'; ctx.lineWidth=3; ctx.stroke();
-        }
-      } else if (type === 'virus') {
-        ctx.fillStyle = '#bef264'; ctx.font = `900 ${r}px FontAwesome`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText('\uf0e7', x, y); 
-      } else if (type === 'armored') {
-        ctx.beginPath(); ctx.arc(x, y, r*0.7, 0, Math.PI*2); ctx.fillStyle='#334155'; ctx.fill();
-        ctx.beginPath(); ctx.arc(x, y, r*0.3, 0, Math.PI*2); ctx.fillStyle='#94a3b8'; ctx.fill();
-      }
-    }
-
     function drawAimLine() {
       if (!gameEngine.mouseX || !gameEngine.mouseY || gameEngine.projectiles.length > 0) return;
       
       const ctx = gameEngine.ctx;
-      const lx = gameEngine.launcherX;
-      const ly = gameEngine.launcherY;
+      const lx = gameEngine.canvas.width / 2;
+      const ly = gameEngine.canvas.height - 120; 
       
       let dy = gameEngine.mouseY - ly;
       if (dy > -10) return; 
@@ -1514,7 +1539,7 @@
       let path = [{x, y}];
       let steps = 0;
 
-      while (y > radius && steps < 150) {
+      while (y > radius && steps < 200) {
           x += vx;
           y += vy;
           
@@ -1538,60 +1563,110 @@
           steps++;
       }
 
-      ctx.save();
       ctx.beginPath();
       ctx.moveTo(path[0].x, path[0].y);
       for (let i = 1; i < path.length; i++) {
           ctx.lineTo(path[i].x, path[i].y);
       }
       
+      let finalX = path[path.length - 1].x;
+      let finalY = path[path.length - 1].y;
+
       if (gameEngine.activePowerup === 'rocket') {
-          ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)';
-          ctx.lineWidth = 6;
-          ctx.shadowColor = '#ef4444';
-          ctx.shadowBlur = 15;
+          ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
+          ctx.lineWidth = radius * 2.5;
           ctx.setLineDash([]);
+          ctx.lineCap = 'round';
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(path[0].x, path[0].y);
+          for (let i = 1; i < path.length; i++) {
+              ctx.lineTo(path[i].x, path[i].y);
+          }
+          ctx.strokeStyle = '#ef4444';
+          ctx.lineWidth = 3;
+          ctx.stroke();
+
+      } else if (gameEngine.activePowerup === 'bomb') {
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([8, 8]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          
+          ctx.beginPath();
+          ctx.arc(finalX, finalY, radius * 5, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(249, 115, 22, 0.2)';
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = 'rgba(249, 115, 22, 0.8)';
           ctx.stroke();
       } else {
           ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
           ctx.lineWidth = 2;
           ctx.setLineDash([8, 8]);
           ctx.stroke();
+          ctx.setLineDash([]);
+
+          drawBalloon(ctx, finalX, finalY, radius, gameEngine.launcherColor, 'normal', 1, true);
+      }
+    }
+
+    function drawContainers() {
+      const ctx = gameEngine.ctx;
+      const c = gameEngine.containers;
+
+      ctx.save();
+      for(let i=0; i<5; i++) {
+         let cx = i * c.cw;
+         
+         ctx.fillStyle = c.colors[i] + '30';
+         ctx.fillRect(cx, c.cy, c.cw, c.ch);
+         
+         ctx.strokeStyle = c.colors[i] + 'aa';
+         ctx.lineWidth = 2;
+         ctx.strokeRect(cx, c.cy, c.cw, c.ch);
+
+         ctx.fillStyle = 'rgba(255,255,255,0.2)';
+         ctx.fillRect(cx, c.cy, c.cw, 4);
+
+         ctx.fillStyle = '#ffffff';
+         ctx.font = '900 14px "Outfit"';
+         ctx.textAlign = 'center';
+         ctx.textBaseline = 'middle';
+         ctx.shadowColor = c.colors[i];
+         ctx.shadowBlur = 10;
+         ctx.fillText(c.scores[i], cx + c.cw/2, c.cy + c.ch/2);
+         ctx.shadowBlur = 0;
       }
       ctx.restore();
-      
-      let lastPoint = path[path.length - 1];
-      if (gameEngine.activePowerup === 'bomb') {
-          ctx.beginPath();
-          ctx.arc(lastPoint.x, lastPoint.y, gameEngine.ballRadius * 3, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(249, 115, 22, 0.2)'; 
-          ctx.fill();
-          ctx.strokeStyle = 'rgba(249, 115, 22, 0.8)';
-          ctx.lineWidth = 2;
-          ctx.stroke();
-      }
     }
 
     function drawLauncher() {
       const ctx = gameEngine.ctx;
-      const lx = gameEngine.launcherX;
-      const ly = gameEngine.launcherY;
+      const lx = gameEngine.canvas.width / 2;
+      const ly = gameEngine.canvas.height - 120;
       
       drawAimLine();
 
-      drawBalloon(ctx, lx - 60, ly + 10, gameEngine.ballRadius * 0.6, gameEngine.nextColor, 'normal', 1);
-      ctx.fillStyle = '#64748b'; ctx.font = "10px sans-serif"; ctx.fillText("NEXT", lx - 60, ly - 15);
+      drawBalloon(ctx, lx - 70, ly + 10, gameEngine.ballRadius * 0.6, gameEngine.nextColor, 'normal', 1);
+      ctx.fillStyle = '#94a3b8'; ctx.font = "bold 10px sans-serif"; ctx.fillText("NEXT", lx - 70, ly - 15);
       
-      ctx.beginPath(); ctx.arc(lx, ly, 30, Math.PI, 0); ctx.fillStyle = '#1e293b'; ctx.fill();
+      let grad = ctx.createRadialGradient(lx, ly, 10, lx, ly, 35);
+      grad.addColorStop(0, '#1e293b');
+      grad.addColorStop(1, '#0f172a');
+      ctx.beginPath(); ctx.arc(lx, ly, 35, Math.PI, 0); ctx.fillStyle = grad; ctx.fill();
+      ctx.strokeStyle = '#334155'; ctx.lineWidth = 2; ctx.stroke();
       
       if (gameEngine.projectiles.length === 0) {
         let type = 'normal';
         let color = gameEngine.activePowerup ? (gameEngine.activePowerup === 'rocket' ? '#ef4444' : (gameEngine.activePowerup === 'bomb' ? '#f97316' : '#ffffff')) : gameEngine.launcherColor;
         
         if (gameEngine.activePowerup === 'rocket') {
-           ctx.font = '24px FontAwesome'; ctx.fillStyle='#ef4444'; ctx.textAlign = 'center'; ctx.textBaseline='middle'; ctx.fillText('\uf135', lx, ly);
+           ctx.font = '28px FontAwesome'; ctx.fillStyle='#ef4444'; ctx.fillText('\uf135', lx, ly);
         } else if (gameEngine.activePowerup === 'bomb') {
-           ctx.font = '24px FontAwesome'; ctx.fillStyle='#f97316'; ctx.textAlign = 'center'; ctx.textBaseline='middle'; ctx.fillText('\uf1e2', lx, ly);
+           ctx.font = '28px FontAwesome'; ctx.fillStyle='#f97316'; ctx.fillText('\uf1e2', lx, ly);
         } else {
            drawBalloon(ctx, lx, ly, gameEngine.ballRadius, color, type, 1);
         }
@@ -1603,9 +1678,9 @@
       e.preventDefault();
       updateMousePos(e);
       
-      const lx = gameEngine.launcherX;
-      const ly = gameEngine.launcherY;
-      const dist = Math.hypot(gameEngine.mouseX - (lx - 60), gameEngine.mouseY - (ly + 10));
+      const lx = gameEngine.canvas.width / 2;
+      const ly = gameEngine.canvas.height - 120;
+      const dist = Math.hypot(gameEngine.mouseX - (lx - 70), gameEngine.mouseY - (ly + 10));
       const distMain = Math.hypot(gameEngine.mouseX - lx, gameEngine.mouseY - ly);
       
       if (dist < 40 || distMain < 40) {
@@ -1627,8 +1702,8 @@
       if (!gameEngine.isPlaying || gameEngine.projectiles.length > 0 || !gameEngine.mouseX) return;
       e.preventDefault();
       
-      const lx = gameEngine.launcherX;
-      const ly = gameEngine.launcherY;
+      const lx = gameEngine.canvas.width / 2;
+      const ly = gameEngine.canvas.height - 120;
       
       let dy = gameEngine.mouseY - ly;
       if (dy > -10) { 
@@ -1641,13 +1716,13 @@
       if (angle > -0.1) angle = -0.1; 
       if (angle < -Math.PI + 0.1) angle = -Math.PI + 0.1;
 
-      let speed = 18;
+      let speed = 22;
       let type = 'normal';
       let color = gameEngine.launcherColor;
 
       if (gameEngine.activePowerup) {
          type = gameEngine.activePowerup;
-         if(type === 'rocket') { speed = 30; color = '#ef4444'; }
+         if(type === 'rocket') { speed = 35; color = '#ef4444'; }
          if(type === 'bomb') { color = '#f97316'; }
       }
 
@@ -1659,10 +1734,9 @@
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
       
       if (!gameEngine.activePowerup) {
-         gameEngine.recentColors.push(color);
-         if (gameEngine.recentColors.length > 3) gameEngine.recentColors.shift();
+         updateColorHistory(gameEngine.launcherColor);
          gameEngine.launcherColor = gameEngine.nextColor;
-         updateLauncherColors(); 
+         updateLauncherColors(true); // YENİ: Hər atəşdən sonra mütləq yeni rəngin yaranmasını məcbur edir!
       } else {
          consumePowerup(gameEngine.activePowerup);
       }
@@ -1700,7 +1774,7 @@
                  if(gameEngine.grid[r][c]) {
                     let pos = getGridPos(r, c);
                     if(Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius * 2.5) {
-                       popBalloon(r, c, true); 
+                       popBalloon(r, c, true);
                        hitAny = true;
                     }
                  }
@@ -1710,7 +1784,8 @@
            if (p.y < -50 || p.x < -50 || p.x > gameEngine.canvas.width + 50) {
                gameEngine.projectiles.splice(i, 1);
                if(hitAny) dropFloaters();
-               updateLauncherColors();
+               checkWinLoss();
+               updateLauncherColors(); // Sadəcə vəziyyəti tənzimləyir
            }
            continue;
         }
@@ -1738,6 +1813,75 @@
            gameEngine.projectiles.splice(i, 1);
         }
       }
+
+      for (let i = gameEngine.fallingBalloons.length - 1; i >= 0; i--) {
+          let fb = gameEngine.fallingBalloons[i];
+          fb.vy += 0.4; 
+          fb.x += fb.vx;
+          fb.y += fb.vy;
+
+          if (fb.x - fb.radius < 0) { fb.x = fb.radius; fb.vx *= -0.6; }
+          if (fb.x + fb.radius > gameEngine.canvas.width) { fb.x = gameEngine.canvas.width - fb.radius; fb.vx *= -0.6; }
+
+          if (fb.y + fb.radius > gameEngine.containers.cy) {
+              let idx = Math.floor(fb.x / gameEngine.containers.cw);
+              if (idx >= 0 && idx < 5) {
+                  let pts = gameEngine.containers.scores[idx];
+                  addScore(pts);
+                  showFloatingText(`+${pts}`, fb.x, fb.y, gameEngine.containers.colors[idx]);
+                  if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+              }
+              gameEngine.fallingBalloons.splice(i, 1);
+          }
+      }
+
+      for (let i = gameEngine.particles.length - 1; i >= 0; i--) {
+          let p = gameEngine.particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.life -= 0.03;
+          if (p.life <= 0) gameEngine.particles.splice(i, 1);
+      }
+
+      for (let i = gameEngine.floatingTexts.length - 1; i >= 0; i--) {
+          let ft = gameEngine.floatingTexts[i];
+          ft.y -= 1;
+          ft.life -= 0.02;
+          if (ft.life <= 0) gameEngine.floatingTexts.splice(i, 1);
+      }
+    }
+
+    function showFloatingText(text, x, y, color = '#fff') {
+        gameEngine.floatingTexts.push({text: text, x: x, y: y, life: 1, color: color});
+    }
+
+    function drawPhysicsObjects() {
+      const ctx = gameEngine.ctx;
+
+      gameEngine.particles.forEach(p => {
+          ctx.globalAlpha = p.life;
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, gameEngine.ballRadius * 0.3, 0, Math.PI * 2);
+          ctx.fill();
+      });
+      ctx.globalAlpha = 1.0;
+
+      gameEngine.fallingBalloons.forEach(fb => {
+          drawBalloon(ctx, fb.x, fb.y, fb.radius, fb.color, fb.type, 1);
+      });
+
+      ctx.textAlign = 'center';
+      ctx.font = '900 16px "Outfit"';
+      gameEngine.floatingTexts.forEach(ft => {
+          ctx.globalAlpha = ft.life;
+          ctx.fillStyle = ft.color;
+          ctx.shadowColor = '#000';
+          ctx.shadowBlur = 4;
+          ctx.fillText(ft.text, ft.x, ft.y);
+      });
+      ctx.globalAlpha = 1.0;
+      ctx.shadowBlur = 0;
     }
 
     function snapProjectile(p, forceRow = -1) {
@@ -1778,7 +1922,8 @@
           checkMatches(targetR, targetC);
        }
        
-       updateLauncherColors(); 
+       checkWinLoss();
+       updateLauncherColors(); // Sadəcə vəziyyəti tənzimləyir (şar silinibsə)
     }
 
     function getNeighborsDirs(r) {
@@ -1834,22 +1979,12 @@
 
         if (matchGroup.length >= 3) { 
             matchGroup.forEach(m => popBalloon(m.r, m.c));
+            addScore(matchGroup.length * 10);
             if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             dropFloaters();
         } else {
             spreadVirus();
         }
-    }
-
-    function convertToFalling(r, c) {
-        let b = gameEngine.grid[r][c];
-        if(!b) return;
-        let pos = getGridPos(r, c);
-        gameEngine.fallingBalloons.push({
-            x: pos.x, y: pos.y, color: b.color, vx: (Math.random()-0.5)*5, vy: -1 - Math.random()*2, type: b.type, radius: gameEngine.ballRadius
-        });
-        createParticles(r, c, b.color); 
-        gameEngine.grid[r][c] = null;
     }
 
     function popBalloon(r, c, force = false) {
@@ -1862,7 +1997,19 @@
            return;
        }
 
-       convertToFalling(r, c);
+       let pos = getGridPos(r, c);
+       
+       if (b.type === 'normal') {
+           gameEngine.fallingBalloons.push({
+               x: pos.x, y: pos.y, 
+               vx: (Math.random() - 0.5) * 6, vy: 0, 
+               radius: gameEngine.ballRadius, color: b.color, type: 'normal'
+           });
+       } else {
+           createParticles(r, c, b.color);
+       }
+       
+       gameEngine.grid[r][c] = null;
     }
 
     function dropFloaters() {
@@ -1889,14 +2036,17 @@
             });
         }
 
+        let dropped = 0;
         for(let r=0; r<gameEngine.grid.length; r++) {
             if(!gameEngine.grid[r]) continue;
             for(let c=0; c<gameEngine.grid[r].length; c++) {
                 if(gameEngine.grid[r][c] && !visited.has(`${r},${c}`)) {
-                    convertToFalling(r, c);
+                    popBalloon(r, c, true); 
+                    dropped++;
                 }
             }
         }
+        if(dropped > 0) addScore(dropped * 20);
     }
 
     function spreadVirus() {
@@ -1924,11 +2074,11 @@
 
     function createParticles(r, c, color) {
         let pos = getGridPos(r, c);
-        for(let i=0; i<5; i++) {
+        for(let i=0; i<8; i++) {
             gameEngine.particles.push({
                 x: pos.x, y: pos.y,
-                vx: (Math.random() - 0.5) * 10,
-                vy: (Math.random() - 0.5) * 10,
+                vx: (Math.random() - 0.5) * 12,
+                vy: (Math.random() - 0.5) * 12,
                 life: 1, color: color
             });
         }
@@ -1954,85 +2104,7 @@
         document.getElementById('ingame-stars').innerHTML = html;
     }
 
-    function updateFallingBalloons() {
-        const yFloor = gameEngine.canvas.height - 50; 
-        const segmentWidth = gameEngine.canvas.width / 5;
-        
-        for (let i = gameEngine.fallingBalloons.length - 1; i >= 0; i--) {
-            let fb = gameEngine.fallingBalloons[i];
-            fb.vy += 0.3; 
-            fb.x += fb.vx;
-            fb.y += fb.vy;
-            
-            if (fb.x < fb.radius) { fb.x = fb.radius; fb.vx *= -1; }
-            if (fb.x > gameEngine.canvas.width - fb.radius) { fb.x = gameEngine.canvas.width - fb.radius; fb.vx *= -1; }
-            
-            if (fb.y > yFloor) {
-                let bucketIndex = Math.floor(fb.x / segmentWidth);
-                if (bucketIndex < 0) bucketIndex = 0;
-                if (bucketIndex > 4) bucketIndex = 4;
-                
-                let pts = gameEngine.containerScores[bucketIndex];
-                addScore(pts);
-                
-                gameEngine.scoreParticles.push({
-                    x: fb.x, y: yFloor - 20, text: `+${pts}`, life: 1, vy: -1.5
-                });
-                
-                gameEngine.fallingBalloons.splice(i, 1);
-            }
-        }
-    }
-
-    function drawContainers() {
-        const ctx = gameEngine.ctx;
-        const containerHeight = 50;
-        const yFloor = gameEngine.canvas.height - containerHeight;
-        const w = gameEngine.canvas.width / 5;
-        
-        ctx.save();
-        ctx.font = "bold 16px Outfit";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        for (let i = 0; i < 5; i++) {
-            ctx.fillStyle = (i%2===0) ? 'rgba(59, 130, 246, 0.15)' : 'rgba(0, 240, 255, 0.1)';
-            ctx.fillRect(i * w, yFloor, w, containerHeight);
-            
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-            ctx.lineWidth = 1;
-            ctx.strokeRect(i * w, yFloor, w, containerHeight);
-            
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-            ctx.fillText(gameEngine.containerScores[i], i * w + w/2, yFloor + containerHeight/2);
-        }
-        ctx.restore();
-    }
-
-    function drawScoreParticles() {
-        const ctx = gameEngine.ctx;
-        for (let i = gameEngine.scoreParticles.length - 1; i >= 0; i--) {
-            let sp = gameEngine.scoreParticles[i];
-            sp.y += sp.vy;
-            sp.life -= 0.02;
-            if (sp.life <= 0) {
-                gameEngine.scoreParticles.splice(i, 1);
-                continue;
-            }
-            ctx.save();
-            ctx.globalAlpha = sp.life;
-            ctx.fillStyle = '#34d399'; 
-            ctx.font = "900 22px Outfit";
-            ctx.textAlign = "center";
-            ctx.shadowColor = '#10b981';
-            ctx.shadowBlur = 10;
-            ctx.fillText(sp.text, sp.x, sp.y);
-            ctx.restore();
-        }
-    }
-
     function checkWinLoss() {
-        if (!gameEngine.isPlaying || gameEngine.projectiles.length > 0 || gameEngine.fallingBalloons.length > 0) return;
-
         let isEmpty = true;
         let reachedBottom = false;
 
@@ -2047,7 +2119,7 @@
             }
         }
 
-        if (isEmpty) {
+        if (isEmpty && gameEngine.fallingBalloons.length === 0) {
             endGame(true);
         } else if (reachedBottom) {
             endGame(false);
@@ -2069,22 +2141,24 @@
             let stars = calculateStars();
             let idx = gameEngine.currentLevel - 1;
             
-            title.innerText = "Level Clear!";
-            title.className = "text-3xl font-black text-white mb-2 drop-shadow-[0_0_10px_#00f0ff]";
+            let alreadyCompleted = gameState.levelsCompleted[idx];
+            let xpEarned = alreadyCompleted ? 0 : (LEVEL_REWARDS[idx] || 100);
             
-            if (!gameState.levelsCompleted[idx]) {
-                let xpEarned = LEVEL_REWARDS[idx] || 50;
+            title.innerText = "Level Clear!";
+            title.className = "text-4xl font-black text-white mb-2 drop-shadow-[0_0_15px_#00f0ff]";
+            
+            if (!alreadyCompleted) {
+                endReward.innerText = `+${xpEarned} XP`;
+                endReward.className = "text-lg font-bold text-emerald-400 mb-8 bg-emerald-500/10 px-6 py-3 rounded-xl border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]";
                 userState.xp += xpEarned;
                 userState.totalXp += xpEarned;
                 gameState.levelsCompleted[idx] = true;
                 checkLevelUp();
-                
-                endReward.innerText = `+${xpEarned} XP`;
-                endReward.className = "text-sm font-bold text-emerald-400 mb-6 bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/30";
             } else {
-                endReward.innerText = `Reward Claimed`;
-                endReward.className = "text-xs font-bold text-slate-400 mb-6 bg-slate-800 px-4 py-2 rounded-xl border border-slate-700";
+                endReward.innerText = `+0 XP (Replay)`;
+                endReward.className = "text-sm font-bold text-slate-400 mb-8 bg-slate-800 px-4 py-2 rounded-xl border border-slate-700";
             }
+            
             endReward.style.display = 'block';
             
             let starsHtml = '';
@@ -2106,8 +2180,8 @@
             
         } else {
             title.innerText = "Level Failed";
-            title.className = "text-3xl font-black text-red-400 mb-2 drop-shadow-[0_0_10px_#ef4444]";
-            endStars.innerHTML = '<i class="fa-solid fa-skull-crossbones text-4xl text-slate-600"></i>';
+            title.className = "text-4xl font-black text-red-400 mb-2 drop-shadow-[0_0_15px_#ef4444]";
+            endStars.innerHTML = '<i class="fa-solid fa-skull-crossbones text-5xl text-slate-600 drop-shadow-lg"></i>';
             endReward.style.display = 'none';
             nextBtn.innerText = "Retry";
             nextBtn.onclick = () => { startGame(gameEngine.currentLevel); };
@@ -2133,12 +2207,19 @@
     function updatePowerupUI() {
         ['rocket', 'bomb'].forEach(type => {
             let el = document.getElementById(`count-${type}`);
-            if(el) {
+            let btn = document.getElementById(`btn-power-${type}`);
+            if(el && btn) {
                let count = gameState.powerups[type];
                el.innerText = count > 0 ? count : '+';
                el.className = count > 0 
-                  ? "absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511]"
-                  : "absolute -top-1 -right-1 bg-emerald-500 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511] animate-pulse";
+                  ? "absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] shadow-lg"
+                  : "absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] animate-pulse shadow-[0_0_10px_#10b981]";
+               
+               if(gameEngine.activePowerup === type) {
+                  btn.classList.add('powerup-active-glow');
+               } else {
+                  btn.classList.remove('powerup-active-glow');
+               }
             }
         });
     }
@@ -2187,46 +2268,46 @@
       ctx.clearRect(0, 0, gameEngine.canvas.width, gameEngine.canvas.height);
 
       drawContainers();
-
-      updatePhysics();
       drawGrid();
+      drawLauncher();
       
-      updateFallingBalloons();
-      gameEngine.fallingBalloons.forEach(fb => {
-         drawBalloon(ctx, fb.x, fb.y, fb.radius, fb.color, fb.type, 1);
-      });
+      if(gameEngine.projectiles.length > 0 || gameEngine.fallingBalloons.length > 0 || gameEngine.particles.length > 0) {
+         updatePhysics();
+         drawPhysicsObjects();
+      }
 
       gameEngine.projectiles.forEach(p => {
          drawBalloon(ctx, p.x, p.y, p.radius, p.color, p.type, 1);
       });
 
-      for(let i = gameEngine.particles.length - 1; i >= 0; i--) {
-          let pt = gameEngine.particles[i];
-          pt.x += pt.vx; pt.y += pt.vy; pt.life -= 0.05;
-          if(pt.life <= 0) { gameEngine.particles.splice(i, 1); continue; }
-          ctx.beginPath(); ctx.arc(pt.x, pt.y, pt.life * 5, 0, Math.PI*2);
-          ctx.fillStyle = pt.color; ctx.globalAlpha = pt.life; ctx.fill(); ctx.globalAlpha = 1;
-      }
-
-      drawLauncher();
-      drawScoreParticles();
-
       ctx.beginPath();
       ctx.moveTo(0, gameEngine.limitY);
       ctx.lineTo(gameEngine.canvas.width, gameEngine.limitY);
-      ctx.strokeStyle = 'rgba(239, 68, 68, 0.2)';
-      ctx.setLineDash([10, 10]);
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([5, 5]);
       ctx.stroke();
       ctx.setLineDash([]);
-
-      if (gameEngine.shotsFired > 0) {
-          checkWinLoss();
+      
+      if(gameEngine.projectiles.length === 0 && gameEngine.fallingBalloons.length === 0) {
+         let empty = true;
+         for(let r=0; r<gameEngine.grid.length; r++) {
+             if(!gameEngine.grid[r]) continue;
+             for(let c=0; c<gameEngine.grid[r].length; c++) {
+                 if(gameEngine.grid[r][c]) { empty = false; break; }
+             }
+         }
+         if (empty) checkWinLoss();
       }
 
+      updatePowerupUI(); 
       window.requestAnimationFrame(gameLoop);
     }
 
-    initApp();
+    document.addEventListener("DOMContentLoaded", () => {
+      initApp();
+    });
+
   </script>
 </body>
 </html>

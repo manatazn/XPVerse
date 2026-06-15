@@ -1,0 +1,7 @@
+name = "xpverse-app"
+main = "worker.js"
+compatibility_date = "2024-05-20"
+
+# Statik fayllarınızı (HTML, CSS, JS) yayımlamaq üçün bu hissə vacibdir:
+[site]
+bucket = "./"

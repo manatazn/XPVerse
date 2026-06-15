@@ -55,8 +55,16 @@
       user-select: none;
     }
 
-    .bg-orb-1 { position: fixed; top: -10%; left: -10%; width: 50vw; height: 50vw; background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(0, 0, 0, 0) 70%); z-index: -1; filter: blur(40px); }
-    .bg-orb-2 { position: fixed; bottom: -10%; right: -10%; width: 60vw; height: 60vw; background: radial-gradient(circle, rgba(0, 240, 255, 0.1) 0%, rgba(0, 0, 0, 0) 70%); z-index: -1; filter: blur(50px); }
+    .bg-orb-1 {
+      position: fixed; top: -10%; left: -10%; width: 50vw; height: 50vw;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+      z-index: -1; filter: blur(40px);
+    }
+    .bg-orb-2 {
+      position: fixed; bottom: -10%; right: -10%; width: 60vw; height: 60vw;
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+      z-index: -1; filter: blur(50px);
+    }
 
     input { user-select: auto !important; }
     img { pointer-events: none; }
@@ -64,13 +72,16 @@
 
     .glass-card {
       background: linear-gradient(145deg, rgba(20, 22, 45, 0.6) 0%, rgba(10, 11, 26, 0.8) 100%);
-      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
     }
     
     .glass-button {
       background: linear-gradient(135deg, rgba(59,130,246,0.2) 0%, rgba(0,240,255,0.1) 100%);
-      border: 1px solid rgba(0,240,255,0.3); box-shadow: 0 0 15px rgba(0,240,255,0.1) inset;
+      border: 1px solid rgba(0,240,255,0.3);
+      box-shadow: 0 0 15px rgba(0,240,255,0.1) inset;
     }
 
     .fade-in { animation: fadeIn 0.3s ease-out forwards; }
@@ -80,18 +91,35 @@
     .nav-active i { filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.6)); }
     .nav-active::before {
       content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-      width: 20px; height: 4px; background: #00f0ff; border-radius: 4px; box-shadow: 0 0 12px #00f0ff, 0 0 20px #3b82f6;
+      width: 24px; height: 4px; background: #00f0ff; border-radius: 4px;
+      box-shadow: 0 0 12px #00f0ff, 0 0 20px #3b82f6;
     }
 
-    #bottom-nav { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out; }
-    .nav-hidden { transition: none !important; transform: translate(-50%, 150px) !important; opacity: 0 !important; pointer-events: none !important; }
+    #bottom-nav {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out;
+    }
+    .nav-hidden {
+      transition: none !important;
+      transform: translate(-50%, 150px) !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
 
-    .btn-3d { background: linear-gradient(to bottom, #3b82f6, #2563eb); border-bottom: 3px solid #1e3a8a; transition: all 0.1s; }
-    .btn-3d:active { transform: translateY(3px); border-bottom-width: 0px; margin-bottom: 3px; }
+    .btn-3d {
+      background: linear-gradient(to bottom, #3b82f6, #2563eb);
+      border-bottom: 3px solid #1e3a8a;
+      transition: all 0.1s;
+    }
+    .btn-3d:active {
+      transform: translateY(3px);
+      border-bottom-width: 0px;
+      margin-bottom: 3px;
+    }
 
     #toast-container {
       position: fixed; top: 1.5rem; left: 50%; transform: translate(-50%, -150%) scale(0.9);
-      width: 90%; max-width: 380px; z-index: 9999; transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      width: 90%; max-width: 380px; z-index: 9999;
+      transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
       opacity: 0; pointer-events: none;
     }
     .toast-show { transform: translate(-50%, 0) scale(1) !important; opacity: 1 !important; }
@@ -99,16 +127,6 @@
     .box-bronze { background: linear-gradient(135deg, rgba(205,127,50,0.1), rgba(139,69,19,0.2)); border: 1px solid rgba(205,127,50,0.4); }
     .box-silver { background: linear-gradient(135deg, rgba(226,232,240,0.1), rgba(148,163,184,0.2)); border: 1px solid rgba(226,232,240,0.4); }
     .box-gold { background: linear-gradient(135deg, rgba(255,184,0,0.15), rgba(217,119,6,0.25)); border: 1px solid rgba(255,184,0,0.5); }
-
-    /* Game Styles */
-    #game-canvas { background: #050511; border-radius: 1.5rem; box-shadow: inset 0 0 30px rgba(0, 240, 255, 0.05); border: 1px solid rgba(0,240,255,0.2); }
-    .level-btn { background: #0a0b1a; border: 1px solid rgba(59,130,246,0.3); border-radius: 12px; height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: bold; transition: 0.2s; position: relative; overflow: hidden; }
-    .level-btn.locked { opacity: 0.5; filter: grayscale(1); pointer-events: none; border-color: #333; }
-    .level-btn:active { transform: scale(0.95); }
-    .stars-container i { font-size: 8px; margin: 0 1px; color: #475569; }
-    .stars-container i.active { color: #fbbf24; text-shadow: 0 0 5px rgba(251, 191, 36, 0.8); }
-    
-    #game-splash { position: absolute; inset: 0; background: #050511; z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: inherit; }
   </style>
 </head>
 <body class="flex flex-col min-h-screen pb-32">
@@ -133,7 +151,9 @@
   </div>
 
   <div id="toast-container" class="glass-card rounded-2xl p-4 flex items-center gap-4">
-    <div id="toast-icon" class="w-12 h-12 rounded-full flex shrink-0 items-center justify-center text-xl shadow-inner"><i class="fa-solid fa-bell"></i></div>
+    <div id="toast-icon" class="w-12 h-12 rounded-full flex shrink-0 items-center justify-center text-xl shadow-inner">
+      <i class="fa-solid fa-bell"></i>
+    </div>
     <div class="flex-1">
       <h4 id="toast-title" class="text-sm font-black text-white tracking-wide">Notification</h4>
       <p id="toast-message" class="text-xs text-slate-300 mt-0.5 leading-tight">Message goes here</p>
@@ -197,10 +217,6 @@
         </div>
       </div>
 
-      <button onclick="switchTab('game')" class="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 hover:brightness-110 active:scale-95 text-white font-black text-sm tracking-[0.15em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(147,51,234,0.3)] transition-all">
-        <i class="fa-solid fa-gamepad text-lg"></i> PLAY GAME & EARN XP
-      </button>
-
       <button onclick="watchAd()" id="watch-ad-btn" class="w-full py-4 rounded-2xl text-white font-black text-sm tracking-[0.15em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(59,130,246,0.3)] btn-3d relative overflow-hidden group">
         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
         <i class="fa-solid fa-play bg-white/20 p-2 rounded-full text-[10px]"></i> 
@@ -208,60 +224,92 @@
       </button>
 
       <div class="glass-card rounded-xl p-3 flex justify-between items-center">
-        <div class="flex items-center gap-2 text-slate-400 text-xs"><i class="fa-solid fa-rotate text-blue-400"></i> Resets in:</div>
+        <div class="flex items-center gap-2 text-slate-400 text-xs">
+          <i class="fa-solid fa-rotate text-blue-400"></i> Resets in:
+        </div>
         <span class="text-white font-mono font-bold tracking-widest" id="reset-timer">--:--:--</span>
       </div>
     </div>
 
-    <div id="view-game" class="view-section hidden fade-in space-y-4 pb-4 h-[calc(100vh-140px)] flex flex-col relative">
-      <div id="game-splash" class="hidden rounded-[2rem]">
-         <div class="w-20 h-20 border-t-4 border-crypto-glow border-solid rounded-full animate-spin mb-4"></div>
-         <h2 class="text-white font-black tracking-[0.2em] text-xl uppercase bg-clip-text text-transparent bg-gradient-to-r from-crypto-glow to-blue-500">XPVerse Studios</h2>
-         <p class="text-xs text-slate-400 tracking-widest mt-2 uppercase">Loading Level...</p>
-      </div>
-
-      <div id="game-ui" class="flex-1 flex flex-col hidden">
-         <div class="flex justify-between items-center bg-[#0a0b1a] p-3 rounded-2xl border border-slate-700/50 mb-3 shadow-md">
-           <div class="text-center">
-             <p class="text-[9px] text-slate-400 uppercase font-bold tracking-widest">Score</p>
-             <p id="game-score" class="text-sm font-black text-white">0</p>
-           </div>
-           <div class="text-center">
-             <p class="text-[9px] text-slate-400 uppercase font-bold tracking-widest">Level</p>
-             <p id="game-level-display" class="text-lg font-black text-crypto-glow">1</p>
-           </div>
-           <div class="text-center">
-             <p class="text-[9px] text-slate-400 uppercase font-bold tracking-widest">Left</p>
-             <p id="game-shots" class="text-sm font-black text-amber-400">20</p>
-           </div>
-         </div>
-         
-         <div class="flex-1 relative w-full flex justify-center items-center overflow-hidden" id="canvas-container">
-           <canvas id="game-canvas" width="320" height="420" class="max-w-full touch-none"></canvas>
-         </div>
-
-         <div class="flex justify-between items-center mt-3 gap-2">
-            <button onclick="usePowerup('bomb')" class="flex-1 bg-slate-800 border border-slate-600 rounded-xl py-2 flex flex-col items-center justify-center text-white text-xs font-bold active:scale-95 transition-all">
-              <i class="fa-solid fa-bomb text-red-400 mb-1"></i> Bomb (500 XP)
-            </button>
-            <div class="w-16 h-16 rounded-full bg-slate-800 border-2 border-crypto-glow flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.2)] relative cursor-pointer active:scale-95" onclick="swapBubble()">
-               <div id="next-bubble-preview" class="w-8 h-8 rounded-full bg-red-500 shadow-inner absolute top-1 left-1"></div>
-               <div id="current-bubble-preview" class="w-10 h-10 rounded-full bg-blue-500 shadow-inner absolute bottom-1 right-1 z-10 border-2 border-slate-800"></div>
-               <i class="fa-solid fa-rotate text-white/50 text-[10px] absolute z-20"></i>
-            </div>
-            <button onclick="usePowerup('rocket')" class="flex-1 bg-slate-800 border border-slate-600 rounded-xl py-2 flex flex-col items-center justify-center text-white text-xs font-bold active:scale-95 transition-all">
-              <i class="fa-solid fa-rocket text-blue-400 mb-1"></i> Rocket (Ad)
-            </button>
-         </div>
-         <button onclick="quitGame()" class="mt-2 text-[10px] text-slate-500 uppercase tracking-widest font-bold w-full text-center py-2">Quit Level</button>
-      </div>
-
-      <div id="level-selection" class="flex-1 overflow-y-auto pb-6">
-        <div class="text-center pt-2 mb-4">
-          <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Play & Earn</h2>
-          <p class="text-xs text-blue-400 mt-1 uppercase tracking-widest font-bold">1000+ Levels Available</p>
+    <div id="view-game" class="view-section hidden fade-in space-y-4">
+      <div id="game-intro-overlay" class="hidden glass-card rounded-3xl p-8 text-center flex flex-col items-center justify-center space-y-4 min-h-[350px]">
+        <div class="animate-bounce text-6xl text-crypto-glow drop-shadow-[0_0_15px_#00f0ff]">
+          <i class="fa-solid fa-circle-dot"></i>
         </div>
-        <div class="grid grid-cols-4 gap-3 p-1" id="levels-grid"></div>
+        <h2 class="text-2xl font-black tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-crypto-glow to-blue-500">XPVERSE BALLOONS</h2>
+        <p class="text-xs text-slate-400 uppercase tracking-wider">Loading Strategy Engine...</p>
+      </div>
+
+      <div id="game-main-content" class="space-y-4">
+        <div class="flex justify-between items-center bg-[#0a0b1a]/80 p-3 rounded-2xl border border-slate-800">
+          <div>
+            <span class="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Current Arena</span>
+            <span id="game-current-level-title" class="text-sm font-black text-white">Level 1</span>
+          </div>
+          <div class="flex items-center gap-1" id="game-level-stars">
+            <i class="fa-solid fa-star text-slate-600"></i>
+            <i class="fa-solid fa-star text-slate-600"></i>
+            <i class="fa-solid fa-star text-slate-600"></i>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Score Multiplier</span>
+            <span id="game-score-display" class="text-sm font-black text-crypto-glow font-mono">0000</span>
+          </div>
+        </div>
+
+        <div id="game-map-container" class="glass-card rounded-2xl p-4 space-y-3">
+          <h3 class="text-xs font-black uppercase text-slate-400 tracking-widest flex items-center gap-2">
+            <i class="fa-solid fa-map text-blue-400"></i> Select Level (10 Daily Challenges)
+          </h3>
+          <div class="grid grid-cols-5 gap-2" id="level-buttons-grid"></div>
+        </div>
+
+        <div id="canvas-wrapper" class="relative hidden overflow-hidden rounded-2xl border border-slate-800 bg-[#03030b] shadow-2xl aspect-[3/4] w-full">
+          <canvas id="gameCanvas" class="w-full h-full block"></canvas>
+          
+          <div class="absolute bottom-3 left-3 right-3 flex justify-between items-center pointer-events-auto">
+            <div class="flex gap-2">
+              <button onclick="usePowerup('bomb')" class="bg-red-900/80 border border-red-500/50 p-2 rounded-xl text-white flex flex-col items-center min-w-[45px] transition active:scale-95">
+                <i class="fa-solid fa-bomb text-sm text-red-400"></i>
+                <span id="bomb-count-label" class="text-[9px] font-black mt-0.5">0</span>
+              </button>
+              <button onclick="usePowerup('rocket')" class="bg-purple-900/80 border border-purple-500/50 p-2 rounded-xl text-white flex flex-col items-center min-w-[45px] transition active:scale-95">
+                <i class="fa-solid fa-rocket text-sm text-purple-400"></i>
+                <span id="rocket-count-label" class="text-[9px] font-black mt-0.5">0</span>
+              </button>
+            </div>
+            
+            <button onclick="swapProjectiles()" class="w-11 h-11 rounded-full bg-blue-600/30 border border-crypto-glow flex items-center justify-center text-white backdrop-blur shadow-lg active:scale-90 transition">
+              <i class="fa-solid fa-rotate text-crypto-glow text-lg"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-4 space-y-3">
+          <h3 class="text-xs font-black uppercase text-slate-400 tracking-widest"><i class="fa-solid fa-store text-amber-400 mr-1"></i> Armory & Powerup Shop</h3>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="bg-[#050511]/60 p-3 rounded-xl border border-slate-800 flex flex-col justify-between">
+              <div>
+                <h4 class="text-xs font-black text-white">Tactical Fire Bomb</h4>
+                <p class="text-[9px] text-slate-400 mt-0.5">Blasts cluster of balloons</p>
+              </div>
+              <div class="flex gap-1 mt-2">
+                <button onclick="buyItem('bomb', 'xp')" class="flex-1 text-[9px] font-black bg-blue-900/40 border border-blue-500/30 py-1 rounded text-center text-slate-200">500 XP</button>
+                <button onclick="buyItem('bomb', 'ad')" class="text-[9px] font-black bg-emerald-900/40 border border-emerald-500/30 px-1.5 rounded text-emerald-400"><i class="fa-solid fa-ad"></i></button>
+              </div>
+            </div>
+            <div class="bg-[#050511]/60 p-3 rounded-xl border border-slate-800 flex flex-col justify-between">
+              <div>
+                <h4 class="text-xs font-black text-white">Sonic Plasma Rocket</h4>
+                <p class="text-[9px] text-slate-400 mt-0.5">Pierces full direct columns</p>
+              </div>
+              <div class="flex gap-1 mt-2">
+                <button onclick="buyItem('rocket', 'xp')" class="flex-1 text-[9px] font-black bg-blue-900/40 border border-blue-500/30 py-1 rounded text-center text-slate-200">750 XP</button>
+                <button onclick="buyItem('rocket', 'ad')" class="text-[9px] font-black bg-emerald-900/40 border border-emerald-500/30 px-1.5 rounded text-emerald-400"><i class="fa-solid fa-ad"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -349,19 +397,21 @@
         <p class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-1 opacity-80">Withdrawal Balance</p>
         <h1 class="text-5xl font-black text-white tracking-tighter mb-3">$<span id="withdraw-balance-display">0.00</span></h1>
         <div class="inline-block bg-[#050511]/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-700/50">
-          <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> USDT ONLY - Min: $5.00</p>
+          <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> Minimum: $5.00</p>
         </div>
       </div>
+
       <div class="glass-card rounded-[1.5rem] p-5 space-y-4 border-slate-800">
         <div>
           <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">TON Wallet Address</label>
           <div class="relative group">
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <img src="https://cryptologos.cc/logos/tether-usdt-logo.png" class="w-5 h-5 opacity-70 group-focus-within:opacity-100 transition-opacity" alt="USDT">
+              <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="w-5 h-5 opacity-70 group-focus-within:opacity-100 transition-opacity" alt="TON">
             </div>
             <input type="text" id="wallet-address" placeholder="UQ..." class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-sm font-medium text-white focus:outline-none focus:border-blue-500 transition-colors placeholder-slate-600 shadow-inner">
           </div>
         </div>
+        
         <div>
           <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">Amount (USD)</label>
           <div class="relative group">
@@ -371,10 +421,12 @@
             <input type="number" id="withdraw-amount" placeholder="5.00" min="5" step="0.5" class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-sm font-bold text-emerald-400 focus:outline-none focus:border-emerald-500 transition-colors placeholder-slate-600 shadow-inner">
           </div>
         </div>
+
         <button onclick="requestWithdrawal()" id="withdraw-btn" class="w-full py-3.5 mt-2 bg-gradient-to-r from-emerald-600 to-teal-500 hover:brightness-110 active:scale-95 transition-all text-white font-black rounded-xl text-sm uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-[0_10px_20px_rgba(16,185,129,0.3)]">
           <i class="fa-solid fa-money-bill-transfer"></i> Request Withdrawal
         </button>
       </div>
+
       <div>
         <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">History</h3>
         <div id="withdraw-history-container" class="space-y-3"></div>
@@ -387,13 +439,16 @@
            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
            <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 w-full h-20 bg-gradient-to-t from-[#0a0b1a] to-transparent"></div>
         </div>
+        
         <div class="px-6 pb-8 -mt-16 relative z-10">
           <div class="relative w-24 h-24 mx-auto rounded-full bg-gradient-to-b from-crypto-glow to-blue-600 p-1 mb-3 shadow-[0_0_30px_rgba(0,240,255,0.4)]">
              <img id="profile-photo-large" src="https://via.placeholder.com/150" class="w-full h-full rounded-full border-4 border-[#0a0b1a] object-cover">
              <div class="absolute -bottom-2 -right-2 bg-gradient-to-br from-[#0a0b1a] to-blue-900 border-2 border-crypto-glow text-white w-8 h-8 rounded-full flex items-center justify-center font-black text-xs shadow-[0_0_15px_#00f0ff]" id="profile-badge-level">1</div>
           </div>
+          
           <h2 id="profile-name" class="text-2xl font-black text-white tracking-tight">User</h2>
           <p id="profile-tgid" class="text-[10px] text-blue-400 font-mono mt-1 tracking-widest bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20">ID: 00000000</p>
+          
           <div class="mt-6">
             <div class="flex justify-between items-end mb-1.5 px-1">
                <span class="text-[10px] font-black text-crypto-glow uppercase tracking-wider">Level Progress</span>
@@ -410,6 +465,7 @@
           </div>
         </div>
       </div>
+
       <div class="grid grid-cols-2 gap-3">
         <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-blue-500/30">
           <div class="w-10 h-10 mx-auto bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center mb-2 text-lg shadow-[0_0_15px_rgba(59,130,246,0.2)inset]"><i class="fa-solid fa-chart-line"></i></div>
@@ -423,44 +479,63 @@
         </div>
       </div>
     </div>
+
   </main>
 
-  <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] max-w-[420px] glass-card rounded-2xl pb-safe z-50 shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-slate-700/50 backdrop-blur-xl">
+  <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[420px] glass-card rounded-2xl pb-safe z-50 shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-slate-700/50 backdrop-blur-xl">
     <div class="flex justify-between items-center px-2 py-2.5 relative">
       <button onclick="switchTab('home')" class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="home">
-        <i class="fa-solid fa-house text-lg transition-transform group-active:scale-90"></i><span class="text-[7px] font-black uppercase tracking-widest">Home</span>
+        <i class="fa-solid fa-house text-base transition-transform group-active:scale-90"></i>
+        <span class="text-[7px] font-black uppercase tracking-wider">Home</span>
       </button>
       <button onclick="switchTab('game')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="game">
-        <i class="fa-solid fa-gamepad text-lg transition-transform group-active:scale-90"></i><span class="text-[7px] font-black uppercase tracking-widest">Game</span>
+        <i class="fa-solid fa-gamepad text-base transition-transform group-active:scale-90"></i>
+        <span class="text-[7px] font-black uppercase tracking-wider">Game</span>
       </button>
       <button onclick="switchTab('tasks')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="tasks">
-        <i class="fa-solid fa-list-check text-lg transition-transform group-active:scale-90"></i><span class="text-[7px] font-black uppercase tracking-widest">Tasks</span>
+        <i class="fa-solid fa-list-check text-base transition-transform group-active:scale-90"></i>
+        <span class="text-[7px] font-black uppercase tracking-wider">Tasks</span>
       </button>
       <button onclick="switchTab('boxes')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="boxes">
-        <i class="fa-solid fa-box-open text-lg transition-transform group-active:scale-90"></i><span class="text-[7px] font-black uppercase tracking-widest">Box</span>
+        <i class="fa-solid fa-box-open text-base transition-transform group-active:scale-90"></i>
+        <span class="text-[7px] font-black uppercase tracking-wider">Box</span>
       </button>
       <button onclick="switchTab('withdraw')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="withdraw">
-        <i class="fa-solid fa-wallet text-lg transition-transform group-active:scale-90"></i><span class="text-[7px] font-black uppercase tracking-widest">Withdraw</span>
+        <i class="fa-solid fa-wallet text-base transition-transform group-active:scale-90"></i>
+        <span class="text-[7px] font-black uppercase tracking-wider">Withdraw</span>
       </button>
       <button onclick="switchTab('profile')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="profile">
-        <i class="fa-solid fa-user-astronaut text-lg transition-transform group-active:scale-90"></i><span class="text-[7px] font-black uppercase tracking-widest">Profile</span>
+        <i class="fa-solid fa-user-astronaut text-base transition-transform group-active:scale-90"></i>
+        <span class="text-[7px] font-black uppercase tracking-wider">Profile</span>
       </button>
     </div>
   </nav>
 
   <script>
     const tg = window.Telegram.WebApp;
-    tg.expand(); tg.ready();
-    tg.setHeaderColor('#0a0b1a'); tg.setBackgroundColor('#050511');
+    tg.expand(); 
+    tg.ready();
+
+    tg.setHeaderColor('#0a0b1a');
+    tg.setBackgroundColor('#050511');
 
     const defaultUserState = {
       tgId: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : 123456789,
       firstName: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : "Crypto User",
       username: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.username : "xpverse",
       photoUrl: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.photo_url : "",
-      xp: 0, totalXp: 0, usdBalance: 0.00, level: 1,
-      adsWatchedToday: 0, boxesOpened: 0, streak: 1, lastResetDay: "", withdrawHistory: [],
-      gameUnlockedLevel: 1, gameStars: {} 
+      xp: 0,
+      totalXp: 0,
+      usdBalance: 0.00,
+      level: 1,
+      adsWatchedToday: 0,
+      boxesOpened: 0,
+      streak: 1,
+      lastResetDay: "",
+      withdrawHistory: [],
+      // Game specifics
+      highestLevelUnlocked: 1,
+      inventory: { bomb: 1, rocket: 1 }
     };
 
     const getDefaultMissions = () => ({
@@ -475,7 +550,67 @@
     let missionsState = getDefaultMissions();
     const streakRewards = [5, 10, 15, 20, 25, 30, 50]; 
     const boxCosts = { bronze: 10000, silver: 50000, gold: 100000 };
+
+    let accurateTimeOffset = null;
     let headerTimeout; 
+
+    // ---- Visual Viewport Keyboard Guard ----
+    const bottomNavElement = document.getElementById('bottom-nav');
+    let maxViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+    function handleKeyboardState() {
+      let currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      if (currentHeight > maxViewportHeight) maxViewportHeight = currentHeight;
+      if (maxViewportHeight - currentHeight > 100) {
+        bottomNavElement.classList.add('nav-hidden');
+      } else {
+        bottomNavElement.classList.remove('nav-hidden');
+      }
+    }
+
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', handleKeyboardState);
+    window.addEventListener('resize', handleKeyboardState);
+    if (tg.onEvent) tg.onEvent('viewportChanged', handleKeyboardState);
+
+    // ---- Core Game Core Variables Engine ----
+    let canvas, ctx;
+    let gameInterval = null;
+    let gameActive = false;
+    let activeLevelId = 1;
+    let score = 0;
+    let ammoLeft = 20;
+    let totalAmmoAllocated = 20;
+    
+    // Bubble Matrix Engine config definitions
+    const gridCols = 8;
+    let gridRows = 6;
+    let bubbleRadius = 18;
+    let bubbleGrid = [];
+    const colorPalette = ['#00f0ff', '#ffb800', '#34d399', '#ef4444']; // Cyan, Gold, Green, Pink
+
+    let currentBallColor = '';
+    let nextBallColor = '';
+    let projectile = null; 
+    let activePowerupSelected = null; // 'bomb' or 'rocket'
+
+    async function fetchServerTime() {
+      const apis = [
+        async () => { let res = await fetch('https://api.binance.com/api/v3/time'); let data = await res.json(); return data.serverTime; },
+        async () => { let res = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC'); let data = await res.json(); return new Date(data.utc_datetime).getTime(); }
+      ];
+      for (let apiFunc of apis) {
+        try {
+          const serverTime = await apiFunc();
+          if (serverTime) { accurateTimeOffset = serverTime - performance.now(); return true; }
+        } catch (e) { console.warn("Fallback time route activated..."); }
+      }
+      return false;
+    }
+
+    function getNow() {
+      if (!accurateTimeOffset) return new Date(); 
+      return new Date(accurateTimeOffset + performance.now());
+    }
 
     function showToast(title, message, type = 'info') {
       const toast = document.getElementById('toast-container');
@@ -502,14 +637,15 @@
         borderStyle = '1px solid rgba(0, 240, 255, 0.4)';
       }
 
-      icon.innerHTML = iconHtml; icon.className = `w-12 h-12 rounded-xl flex shrink-0 items-center justify-center text-xl ${iconClass}`;
+      icon.innerHTML = iconHtml;
+      icon.className = `w-12 h-12 rounded-xl flex shrink-0 items-center justify-center text-xl ${iconClass}`;
       toast.style.border = borderStyle;
       toast.classList.add('toast-show');
       
       if (tg.HapticFeedback) {
         if (type === 'success' || type === 'jackpot') tg.HapticFeedback.notificationOccurred('success');
         else if (type === 'error') tg.HapticFeedback.notificationOccurred('error');
-        else tg.HapticFeedback.notificationOccurred('warning');
+        else tg.HapticFeedback.impactOccurred('light');
       }
       setTimeout(() => { toast.classList.remove('toast-show'); }, type === 'jackpot' ? 5000 : 3000); 
     }
@@ -524,22 +660,82 @@
       const savedMissions = localStorage.getItem(`xpverse_missions_${userState.tgId}`);
       if (savedUser) userState = { ...userState, ...JSON.parse(savedUser) };
       if (savedMissions) missionsState = { ...getDefaultMissions(), ...JSON.parse(savedMissions) };
-      if (!userState.gameUnlockedLevel) userState.gameUnlockedLevel = 1;
-      if (!userState.gameStars) userState.gameStars = {};
+      if (!userState.inventory) userState.inventory = { bomb: 1, rocket: 1 };
     }
 
-    // (UI Update functions excluded for brevity - they are same as before, see updated elements below)
-    function checkLevelUp() { /* same */ }
-    function updateProfileProgress() { /* same */ }
+    function getResetDay(serverDate) { return serverDate.toISOString().split('T')[0]; }
+
+    function checkDailyReset() {
+      const now = getNow();
+      if (!now) return false;
+      const currentResetDay = getResetDay(now);
+      
+      if (userState.lastResetDay !== currentResetDay) {
+        if (userState.lastResetDay) {
+            let last = new Date(userState.lastResetDay);
+            let curr = new Date(currentResetDay);
+            let diff = Math.floor((curr - last) / (1000 * 3600 * 24));
+            if (diff === 1) {
+                userState.streak += 1;
+                if (userState.streak > 7) userState.streak = 1;
+            } else if (diff > 1) {
+                userState.streak = 1;
+            }
+        } else {
+            userState.streak = 1;
+        }
+
+        userState.adsWatchedToday = 0;
+        userState.lastResetDay = currentResetDay;
+        missionsState = getDefaultMissions();
+        missionsState.dailyReward.reward = streakRewards[userState.streak - 1]; 
+        saveState();
+        return true; 
+      }
+      return false;
+    }
+
+    function checkLevelUp() {
+      const xp = userState.totalXp;
+      let newLevel = 1;
+      if (xp >= 20000) newLevel = 10;
+      else if (xp >= 3000) newLevel = 5;
+      else if (xp >= 1500) newLevel = 4;
+      else if (xp >= 750) newLevel = 3;
+      else if (xp >= 250) newLevel = 2;
+      
+      if (newLevel > userState.level) {
+        userState.level = newLevel;
+        showToast("Level Up!", `Congratulations! New Level: ${newLevel}!`, "success");
+      }
+    }
+
+    function updateProfileProgress() {
+      const xp = userState.totalXp;
+      let nextLvlXp = 250, prevLvlXp = 0;
+      if (xp >= 20000) { nextLvlXp = 20000; prevLvlXp = 20000; }
+      else if (xp >= 3000) { nextLvlXp = 20000; prevLvlXp = 3000; }
+      else if (xp >= 1500) { nextLvlXp = 3000; prevLvlXp = 1500; }
+      else if (xp >= 750) { nextLvlXp = 1500; prevLvlXp = 750; }
+      else if (xp >= 250) { nextLvlXp = 750; prevLvlXp = 250; }
+
+      let progress = nextLvlXp === prevLvlXp ? 100 : ((xp - prevLvlXp) / (nextLvlXp - prevLvlXp)) * 100;
+      document.getElementById('profile-xp-progress').style.width = `${progress}%`;
+      document.getElementById('profile-current-xp-text').innerText = `${xp.toLocaleString()} XP`;
+      document.getElementById('profile-next-xp-text').innerText = (nextLvlXp === 20000 && xp >= 20000) ? 'MAX' : `${nextLvlXp.toLocaleString()} XP`;
+      document.getElementById('profile-badge-level').innerText = userState.level;
+    }
 
     function updateUI() {
       document.getElementById('user-name').innerText = userState.firstName;
       document.getElementById('user-xp').innerHTML = `${userState.xp.toLocaleString()} <span class="text-[10px] text-crypto-glow font-bold">XP</span>`;
       document.getElementById('user-usd').innerText = userState.usdBalance.toFixed(2);
+      
       if (userState.photoUrl) {
         document.getElementById('user-photo').src = userState.photoUrl;
         document.getElementById('profile-photo-large').src = userState.photoUrl;
       }
+
       document.getElementById('main-xp-display').innerText = `${userState.xp.toLocaleString()} XP`;
       document.getElementById('ads-watched').innerText = userState.adsWatchedToday;
       document.getElementById('streak-days').innerText = userState.streak;
@@ -550,416 +746,731 @@
       document.getElementById('profile-total-xp').innerText = userState.totalXp.toLocaleString();
       document.getElementById('profile-boxes').innerText = userState.boxesOpened;
       
-      renderLevelGrid(); // New game ui call
+      document.getElementById('bomb-count-label').innerText = userState.inventory.bomb;
+      document.getElementById('rocket-count-label').innerText = userState.inventory.rocket;
+
+      renderWithdrawHistory();
+      updateProfileProgress();
+      renderMissions();
+      renderStreakTracker();
+      renderMapLevels();
+    }
+
+    // ---- Tasks Component Render Modules ----
+    function renderStreakTracker() {
+      const container = document.getElementById('streak-tracker-container');
+      container.innerHTML = '';
+      for (let i = 1; i <= 7; i++) {
+        const isPast = i < userState.streak || (i === userState.streak && missionsState.dailyReward.claimed);
+        const isToday = i === userState.streak && !missionsState.dailyReward.claimed;
+        const reward = streakRewards[i-1];
+        let styles = "bg-[#050511] border-slate-700 text-slate-600", icon = `<span class="text-[9px] font-black">${reward}</span>`, lineStyle = "bg-slate-800";
+        if (isPast) {
+          styles = "bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]";
+          icon = `<i class="fa-solid fa-check text-xs"></i>`;
+          lineStyle = "bg-emerald-500/50 shadow-[0_0_5px_#34d399]";
+        } else if (isToday) {
+          styles = "bg-blue-600/30 border-crypto-glow shadow-[0_0_20px_rgba(0,240,255,0.5)] text-white";
+        }
+        container.innerHTML += `
+          <div class="relative flex flex-col items-center gap-1.5 z-10 flex-1">
+            <div class="w-9 h-9 rounded-xl border-2 flex items-center justify-center transition-all duration-300 ${styles} z-10 relative bg-[#0a0b1a]">${icon}</div>
+            <span class="text-[8px] font-black tracking-widest ${isToday ? 'text-crypto-glow drop-shadow-[0_0_5px_#00f0ff]' : 'text-slate-500'}">DAY ${i}</span>
+            ${i < 7 ? `<div class="absolute top-4 left-[50%] w-full h-1 -z-0 ${lineStyle} rounded-full"></div>` : ''}
+          </div>`;
+      }
+    }
+
+    function renderMissions() {
+      const container = document.getElementById('missions-container');
+      container.innerHTML = '';
+      const missionsList = [
+        { key: 'dailyReward', label: `Daily Login`, icon: 'fa-gift', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
+        { key: 'watch5', label: 'Watch 5 Ads', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
+        { key: 'watch10', label: 'Watch 10 Ads', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
+        { key: 'watch20', label: 'Watch 20 Ads', icon: 'fa-clapperboard', color: 'text-cyan-400', bg: 'bg-cyan-500/10 border-cyan-500/20' },
+        { key: 'all', label: 'All Tasks', icon: 'fa-crown', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' }
+      ];
+
+      missionsList.forEach(m => {
+        const mission = missionsState[m.key];
+        let isComplete = false, progressText = '';
+        if (mission.type === 'progress') {
+            isComplete = userState.adsWatchedToday >= mission.target;
+            progressText = `(${Math.min(userState.adsWatchedToday, mission.target)}/${mission.target})`;
+        } else if (mission.type === 'boolean') { isComplete = mission.completed; }
+        else if (mission.type === 'meta') { isComplete = ['dailyReward', 'watch5', 'watch10', 'watch20'].every(k => missionsState[k].claimed); }
+
+        let btnHtml = '';
+        if (mission.claimed) {
+            btnHtml = `<span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/30 flex items-center gap-1"><i class="fa-solid fa-check-double"></i> Claimed</span>`;
+        } else if (isComplete) {
+            btnHtml = `<button onclick="claimMission('${m.key}')" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-1.5 rounded-xl shadow-[0_0_15px_rgba(0,240,255,0.4)] uppercase tracking-wider">Claim</button>`;
+        } else {
+            btnHtml = `<span class="text-[10px] font-black bg-slate-800/50 text-slate-200 px-3 py-1.5 rounded-xl border border-slate-600">+${mission.reward} XP</span>`;
+        }
+
+        container.innerHTML += `
+          <div class="glass-card rounded-2xl p-3 flex justify-between items-center border border-slate-800">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl border ${m.bg} flex items-center justify-center"><i class="fa-solid ${m.icon} ${m.color} text-lg"></i></div>
+              <div class="flex flex-col">
+                <span class="text-xs font-black text-white tracking-wide">${m.label}</span>
+                <span class="text-crypto-glow text-[10px] font-bold tracking-widest uppercase opacity-80 mt-0.5">${progressText}</span>
+              </div>
+            </div>
+            ${btnHtml}
+          </div>`;
+      });
+    }
+
+    function claimMission(key) {
+        const mission = missionsState[key];
+        if (mission.claimed) return;
+        mission.claimed = true;
+        userState.xp += mission.reward;
+        userState.totalXp += mission.reward;
+        checkLevelUp(); saveState(); updateUI();
+        showToast("Task Complete!", `Earned +${mission.reward} XP!`, "success");
     }
 
     function watchAd() {
-      if (userState.adsWatchedToday >= 30) { showToast("Limit", "Daily limit reached.", "error"); return; }
+      if (userState.adsWatchedToday >= 30) {
+        showToast("Limit", "Daily 30 ads threshold reached.", "error"); return;
+      }
       const btn = document.getElementById('watch-ad-btn');
       const originalHTML = btn.innerHTML;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Loading...</span>';
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Requesting Stream...</span>';
       btn.classList.add('opacity-80', 'pointer-events-none');
 
       if (window.Adsgram) {
         const AdController = window.Adsgram.init({ blockId: "int-34999" });
         AdController.show().then(() => {
           userState.xp += 10; userState.totalXp += 10; userState.adsWatchedToday += 1;
-          saveState(); updateUI();
-          showToast("Reward Granted!", "+10 XP earned.", "success");
+          checkLevelUp(); saveState(); updateUI();
+          showToast("Reward Verified!", "Granted +10 XP.", "success");
           btn.innerHTML = originalHTML; btn.classList.remove('opacity-80', 'pointer-events-none');
         }).catch(() => {
           btn.innerHTML = originalHTML; btn.classList.remove('opacity-80', 'pointer-events-none');
         });
       } else {
-        showToast("Error", "Ad system not working.", "error");
-        btn.innerHTML = originalHTML; btn.classList.remove('opacity-80', 'pointer-events-none');
+        // Mock Ads Integration for local sandbox testing safely
+        setTimeout(() => {
+          userState.xp += 10; userState.totalXp += 10; userState.adsWatchedToday += 1;
+          saveState(); updateUI();
+          showToast("Mock Ad Complete!", "Earned +10 XP.", "success");
+          btn.innerHTML = originalHTML; btn.classList.remove('opacity-80', 'pointer-events-none');
+        }, 1200);
       }
     }
 
+    // ---- Dynamic Boxes Module Engine ----
     function openBox(type) {
       const cost = boxCosts[type];
-      if (userState.xp < cost) { showToast("Not enough XP", `Need ${cost} XP.`, "error"); return; }
-      userState.xp -= cost; userState.boxesOpened += 1;
+      if (userState.xp < cost) {
+        showToast("Insufficient XP", `Needs ${cost.toLocaleString()} XP.`, "error"); return;
+      }
+      userState.xp -= cost;
+      userState.boxesOpened += 1;
       
-      let reward = 0; const isJackpot = Math.random() >= 0.9999; 
-      if (type === 'bronze') reward = isJackpot ? 1.00 : 0.10;
-      else if (type === 'silver') reward = isJackpot ? 7.00 : 0.50;
-      else if (type === 'gold') reward = isJackpot ? 15.00 : 1.00;
+      let reward = 0;
+      const jackpotDraw = Math.random() >= 0.98;
+      if (type === 'bronze') reward = jackpotDraw ? 1.00 : 0.10;
+      else if (type === 'silver') reward = jackpotDraw ? 7.00 : 0.50;
+      else if (type === 'gold') reward = jackpotDraw ? 15.00 : 1.20;
 
       userState.usdBalance += reward;
       saveState(); updateUI();
-
-      if (isJackpot) showToast("🎉 JACKPOT! 🎉", `Won $${reward.toFixed(2)}!`, "jackpot");
-      else showToast("🎁 Box Opened!", `Won $${reward.toFixed(2)}!`, "success");
+      if (jackpotDraw) showToast("🎉 SUPER JACKPOT! 🎉", `Boom! You pulled $${reward.toFixed(2)}!`, "jackpot");
+      else showToast("Box Unlocked!", `Obtained $${reward.toFixed(2)} from chest storage.`, "success");
     }
 
+    // ---- Withdrawals Processor Logic ----
+    function requestWithdrawal() {
+      const address = document.getElementById('wallet-address').value;
+      const amount = parseFloat(document.getElementById('withdraw-amount').value);
+      if (!address || address.length < 10) { showToast("Invalid Wallet", "Check TON address syntax.", "error"); return; }
+      if (isNaN(amount) || amount < 5) { showToast("Limit Error", "Minimum validation amount is $5.00.", "error"); return; }
+      if (amount > userState.usdBalance) { showToast("No Liquidity", "Requested sum higher than wallet balance.", "error"); return; }
+
+      userState.usdBalance -= amount;
+      const now = getNow() || new Date(); 
+      const record = {
+        id: '#' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+        date: now.toLocaleDateString(),
+        amount: amount,
+        address: address.substring(0, 6) + '...' + address.substring(address.length - 4),
+        status: 'Pending'
+      };
+      userState.withdrawHistory.unshift(record);
+      saveState(); updateUI();
+      document.getElementById('wallet-address').value = '';
+      document.getElementById('withdraw-amount').value = '';
+      showToast("Transaction Pending", `Request for $${amount.toFixed(2)} transmitted to node pipelines.`, "success");
+    }
+
+    function renderWithdrawHistory() {
+      const container = document.getElementById('withdraw-history-container');
+      if (userState.withdrawHistory.length === 0) {
+        container.innerHTML = `
+          <div class="glass-card rounded-2xl p-6 text-center border-dashed border-2 border-slate-700">
+            <i class="fa-solid fa-clock-rotate-left text-3xl text-slate-600 mb-2"></i>
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">No Log Data Available</p>
+          </div>`; return;
+      }
+      container.innerHTML = '';
+      userState.withdrawHistory.forEach(r => {
+        container.innerHTML += `
+          <div class="glass-card rounded-2xl p-4 flex justify-between items-center border border-slate-800">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center"><i class="fa-solid fa-arrow-right-arrow-left text-slate-400"></i></div>
+              <div>
+                <p class="text-xs font-black text-white">${r.id} <span class="text-[9px] text-slate-400 ml-1">${r.date}</span></p>
+                <p class="text-[10px] text-blue-400 mt-0.5 font-mono bg-blue-500/10 inline-block px-1.5 py-0.5 rounded">${r.address}</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-sm font-black text-emerald-400">-$${r.amount.toFixed(2)}</p>
+              <p class="text-[9px] font-black text-amber-400 uppercase tracking-widest mt-0.5 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">${r.status}</p>
+            </div>
+          </div>`;
+      });
+    }
+
+    // ---- NAVIGATION ROUTER SYSTEM ----
     function switchTab(tabId) {
       document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('nav-active'));
+
       document.getElementById(`view-${tabId}`).classList.remove('hidden');
-      
       const activeBtn = document.querySelector(`[data-target="${tabId}"]`);
-      if(activeBtn) activeBtn.classList.add('nav-active');
+      if (activeBtn) activeBtn.classList.add('nav-active');
       
       const header = document.getElementById('main-header');
       const mainContent = document.getElementById('app-content');
       clearTimeout(headerTimeout);
 
-      if (tabId === 'withdraw' || tabId === 'profile' || tabId === 'game') {
+      if (['withdraw', 'profile', 'game'].includes(tabId)) {
         header.style.transform = 'translateY(-100%)';
         headerTimeout = setTimeout(() => header.style.display = 'none', 300);
         mainContent.classList.remove('pt-24'); mainContent.classList.add('pt-4');
-        if(tabId === 'game') renderLevelGrid();
       } else {
         header.style.display = 'block'; 
         setTimeout(() => header.style.transform = 'translateY(0)', 10);
         mainContent.classList.remove('pt-4'); mainContent.classList.add('pt-24');
       }
       
+      if (tabId === 'game') { triggerGameSplashInit(); } else { stopGameEngineLoop(); }
       if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    /* -----------------------------------------------------------
-       XPVERSE BUBBLE SHOOTER GAME LOGIC 
-       ----------------------------------------------------------- */
-    const canvas = document.getElementById('game-canvas');
-    const ctx = canvas.getContext('2d');
-    const ROW_H = 26; const COL_W = 30; const BUBBLE_R = 14;
-    const colors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#00f0ff'];
-    let grid = []; let currB, nextB; 
-    let gShots = 0, gScore = 0, gLevel = 1, isShooting = false;
-    let proj = null; let particles = [];
-    let rafId;
-
-    function renderLevelGrid() {
-      const g = document.getElementById('levels-grid');
-      g.innerHTML = '';
-      const totalLevels = 1000;
-      // Optimised render (show only up to unlocked + 11)
-      const limit = Math.min(totalLevels, userState.gameUnlockedLevel + 11);
+    // ---- MODERN BALLOON GAME ENGINE CODE ----
+    function triggerGameSplashInit() {
+      document.getElementById('game-main-content').classList.add('hidden');
+      document.getElementById('game-intro-overlay').classList.remove('hidden');
       
-      for(let i = 1; i <= limit; i++) {
-         const isLocked = i > userState.gameUnlockedLevel;
-         const stars = userState.gameStars[i] || 0;
-         let starHtml = '';
-         for(let s=1; s<=3; s++) starHtml += `<i class="fa-solid fa-star ${s<=stars ? 'active' : ''}"></i>`;
-         
-         g.innerHTML += `
-           <div class="level-btn ${isLocked ? 'locked' : ''}" onclick="startGame(${i})">
-             <span class="text-xs mb-1">Lvl ${i}</span>
-             ${isLocked ? `<i class="fa-solid fa-lock text-slate-500 text-sm"></i>` : `<div class="stars-container">${starHtml}</div>`}
-           </div>
-         `;
-      }
-    }
-
-    function startGame(lvl) {
-      if(lvl > userState.gameUnlockedLevel) return;
-      gLevel = lvl;
-      document.getElementById('level-selection').classList.add('hidden');
-      document.getElementById('game-splash').classList.remove('hidden');
-      document.getElementById('bottom-nav').style.display = 'none';
-
       setTimeout(() => {
-         document.getElementById('game-splash').classList.add('hidden');
-         document.getElementById('game-ui').classList.remove('hidden');
-         initGameEngine();
-      }, 2000);
+        document.getElementById('game-intro-overlay').classList.add('hidden');
+        document.getElementById('game-main-content').classList.remove('hidden');
+        initCanvasFramework();
+      }, 2500);
     }
 
-    function quitGame() {
-      cancelAnimationFrame(rafId);
-      document.getElementById('game-ui').classList.add('hidden');
-      document.getElementById('level-selection').classList.remove('hidden');
-      document.getElementById('bottom-nav').style.display = 'block';
-      updateUI();
-    }
-
-    function initGameEngine() {
-      gShots = 15 + Math.floor(gLevel * 1.5);
-      gScore = 0;
-      document.getElementById('game-level-display').innerText = gLevel;
-      updateGameUI();
-      
-      // Generate Grid
-      grid = [];
-      const numRows = Math.min(10, 4 + Math.floor(gLevel/5));
-      for(let r=0; r<12; r++) { // Max rows 12
-         grid[r] = [];
-         let cols = (r%2===0) ? 10 : 9;
-         for(let c=0; c<cols; c++) {
-            if(r < numRows) grid[r][c] = { color: colors[Math.floor(Math.random()*colors.length)] };
-            else grid[r][c] = null;
-         }
+    function renderMapLevels() {
+      const grid = document.getElementById('level-buttons-grid');
+      grid.innerHTML = '';
+      for (let i = 1; i <= 10; i++) {
+        const isUnlocked = i <= userState.highestLevelUnlocked;
+        let btnStyle = "bg-slate-900 border-slate-800 text-slate-600 pointer-events-none";
+        if (isUnlocked) {
+          btnStyle = (i === activeLevelId && gameActive) 
+            ? "bg-cyan-500/20 border-crypto-glow text-crypto-glow shadow-[0_0_10px_#00f0ff]" 
+            : "bg-blue-600/20 border-blue-500/40 text-white active:scale-95";
+        }
+        grid.innerHTML += `<button onclick="bootLevel(${i})" class="aspect-square border-2 font-black rounded-xl text-xs flex items-center justify-center transition-all ${btnStyle}">${i}</button>`;
       }
+    }
+
+    function bootLevel(levelId) {
+      if (levelId > userState.highestLevelUnlocked) {
+        showToast("Locked", "Complete anterior levels first.", "error"); return;
+      }
+      stopGameEngineLoop();
+      activeLevelId = levelId;
+      score = 0;
       
-      currB = getRandomColor(); nextB = getRandomColor();
-      updatePreviews();
+      // Procedural Difficulty scaling allocation curves
+      totalAmmoAllocated = 18 + (levelId * 3); 
+      ammoLeft = totalAmmoAllocated;
+      gridRows = 4 + Math.floor(levelId / 3);
       
-      canvas.addEventListener('pointerdown', handleAim);
-      gameLoop();
+      document.getElementById('game-current-level-title').innerText = `Level ${levelId}`;
+      document.getElementById('canvas-wrapper').classList.remove('hidden');
+      document.getElementById('game-map-container').classList.add('hidden');
+
+      generateBubbleMatrix();
+      rollNextProjectiles();
+      
+      gameActive = true;
+      renderMapLevels();
+      updateGameStarsUI();
+      startGameLoop();
+      showToast(`Challenge ${levelId}`, "Clear all balloons to unlock next phase!", "info");
     }
 
-    function getRandomColor() { return colors[Math.floor(Math.random()*colors.length)]; }
-    function updatePreviews() {
-      document.getElementById('current-bubble-preview').style.backgroundColor = currB;
-      document.getElementById('next-bubble-preview').style.backgroundColor = nextB;
-    }
-    
-    function swapBubble() {
-       let temp = currB; currB = nextB; nextB = temp;
-       updatePreviews();
-    }
-
-    function updateGameUI() {
-      document.getElementById('game-score').innerText = gScore;
-      document.getElementById('game-shots').innerText = gShots;
+    function initCanvasFramework() {
+      canvas = document.getElementById('gameCanvas');
+      ctx = canvas.getContext('2d');
+      
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = 320 * dpr;
+      canvas.height = 420 * dpr;
+      ctx.scale(dpr, dpr);
+      
+      canvas.addEventListener('click', handleCanvasInteraction);
     }
 
-    function handleAim(e) {
-      if(isShooting || gShots <= 0) return;
+    function generateBubbleMatrix() {
+      bubbleGrid = [];
+      for (let r = 0; r < gridRows; r++) {
+        bubbleGrid[r] = [];
+        for (let c = 0; c < gridCols; c++) {
+          // Leave lower rows lighter to avoid insta-fail variants
+          if (r >= gridRows - 2 && Math.random() > 0.5) {
+            bubbleGrid[r][c] = null;
+          } else {
+            bubbleGrid[r][c] = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+          }
+        }
+      }
+    }
+
+    function rollNextProjectiles() {
+      currentBallColor = currentBallColor || colorPalette[Math.floor(Math.random() * colorPalette.length)];
+      nextBallColor = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+    }
+
+    function swapProjectiles() {
+      if (!gameActive || projectile) return;
+      let temp = currentBallColor;
+      currentBallColor = nextBallColor;
+      nextBallColor = temp;
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    }
+
+    function handleCanvasInteraction(e) {
+      if (!gameActive || projectile) return;
+      
       const rect = canvas.getBoundingClientRect();
-      const tx = e.clientX - rect.left;
-      const ty = e.clientY - rect.top;
-      
-      const startX = canvas.width/2; const startY = canvas.height - 20;
-      const dx = tx - startX; const dy = ty - startY;
-      const angle = Math.atan2(dy, dx);
-      
-      if(dy > -10) return; // Cant shoot down
-      
-      isShooting = true; gShots--; updateGameUI();
-      proj = { x: startX, y: startY, vx: Math.cos(angle)*12, vy: Math.sin(angle)*12, color: currB };
-      currB = nextB; nextB = getRandomColor();
-      updatePreviews();
-      if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-    }
+      const scaleX = 320 / rect.width;
+      const scaleY = 420 / rect.height;
+      const targetX = (e.clientX - rect.left) * scaleX;
+      const targetY = (e.clientY - rect.top) * scaleY;
 
-    function getCenter(r, c) {
-      return { x: c * COL_W + (r%2===0 ? 20 : 35), y: r * ROW_H + 20 };
-    }
-
-    function snapToGrid(p) {
-      let bestD = Infinity; let br=-1, bc=-1;
-      for(let r=0; r<12; r++) {
-         let cols = (r%2===0) ? 10 : 9;
-         for(let c=0; c<cols; c++) {
-            if(!grid[r][c]) {
-               let center = getCenter(r, c);
-               let d = Math.hypot(p.x - center.x, p.y - center.y);
-               if(d < bestD) { bestD = d; br = r; bc = c; }
-            }
-         }
-      }
-      if(br !== -1) {
-         grid[br][bc] = { color: p.color };
-         checkMatch(br, bc, p.color);
-      }
-      proj = null; isShooting = false;
-      checkWinLoss();
-    }
-
-    function getNeighbors(r, c) {
-      const odd = r%2!==0;
-      const dirs = odd ? [[0,-1],[0,1],[-1,0],[-1,1],[1,0],[1,1]] : [[0,-1],[0,1],[-1,-1],[-1,0],[1,-1],[1,0]];
-      let n = [];
-      for(let d of dirs) {
-         let nr = r + d[0], nc = c + d[1];
-         let cols = (nr%2===0)?10:9;
-         if(nr>=0 && nr<12 && nc>=0 && nc<cols) n.push({r:nr, c:nc});
-      }
-      return n;
-    }
-
-    function checkMatch(r, c, col) {
-      let q = [{r,c}]; let matched = [{r,c}]; let vis = new Set();
-      vis.add(`${r},${c}`);
+      // Shooter core physics calculations anchor point coordinates (160, 395)
+      const startX = 160;
+      const startY = 395;
       
-      while(q.length > 0) {
-         let curr = q.pop();
-         let nbs = getNeighbors(curr.r, curr.c);
-         for(let nb of nbs) {
-            if(!vis.has(`${nb.r},${nb.c}`) && grid[nb.r][nb.c] && grid[nb.r][nb.c].color === col) {
-               vis.add(`${nb.r},${nb.c}`);
-               matched.push(nb); q.push(nb);
-            }
-         }
-      }
+      const dx = targetX - startX;
+      const dy = targetY - startY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
       
-      if(matched.length >= 3) {
-         if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-         matched.forEach(m => { createParticles(m.r, m.c, col); grid[m.r][m.c] = null; gScore += 10; });
-         removeFloaters();
+      if (dy >= 0) return; // Prevent horizontal or down fires backwards
+
+      if (ammoLeft <= 0 && !activePowerupSelected) {
+        showToast("Out of Ammo!", "Refill projectiles or use powerups!", "error"); return;
+      }
+
+      const speed = 9;
+      projectile = {
+        x: startX,
+        y: startY,
+        vx: (dx / distance) * speed,
+        vy: (dy / distance) * speed,
+        color: currentBallColor,
+        isPowerup: activePowerupSelected
+      };
+
+      if (!activePowerupSelected) {
+        ammoLeft--;
       } else {
-         if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-      }
-      updateGameUI();
-    }
-
-    function removeFloaters() {
-      let vis = new Set(); let q = [];
-      for(let c=0; c<10; c++) if(grid[0][c]) { q.push({r:0,c}); vis.add(`0,${c}`); }
-      
-      while(q.length>0) {
-         let curr = q.pop();
-         let nbs = getNeighbors(curr.r, curr.c);
-         for(let nb of nbs) {
-            if(!vis.has(`${nb.r},${nb.c}`) && grid[nb.r][nb.c]) {
-               vis.add(`${nb.r},${nb.c}`); q.push(nb);
-            }
-         }
+        userState.inventory[activePowerupSelected]--;
+        activePowerupSelected = null;
+        document.getElementById('bomb-count-label').innerText = userState.inventory.bomb;
+        document.getElementById('rocket-count-label').innerText = userState.inventory.rocket;
       }
       
-      for(let r=0; r<12; r++) {
-         let cols = (r%2===0)?10:9;
-         for(let c=0; c<cols; c++) {
-            if(grid[r][c] && !vis.has(`${r},${c}`)) {
-               createParticles(r, c, grid[r][c].color);
-               grid[r][c] = null; gScore += 20;
-            }
-         }
-      }
-    }
-
-    function createParticles(r, c, color) {
-       let cen = getCenter(r, c);
-       for(let i=0; i<5; i++) {
-         particles.push({
-           x: cen.x, y: cen.y, color: color,
-           vx: (Math.random()-0.5)*10, vy: (Math.random()-0.5)*10, life: 1
-         });
-       }
+      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
     }
 
     function usePowerup(type) {
-       if(type === 'rocket') {
-          if(!window.Adsgram) { showToast("Ad Not Ready", "Try again later", "error"); return; }
-          const AdController = window.Adsgram.init({ blockId: "int-34999" });
-          AdController.show().then(() => fireRocket()).catch(()=>{});
-       } else if (type === 'bomb') {
-          if(userState.xp < 500) { showToast("Need XP", "Not enough XP for Bomb", "error"); return; }
-          userState.xp -= 500; updateUI(); saveState();
-          fireBomb();
-       }
+      if (!gameActive) return;
+      if (userState.inventory[type] <= 0) {
+        showToast("Empty Stock", "Purchase powerups in store below.", "error"); return;
+      }
+      activePowerupSelected = type;
+      showToast("Weapon Primed", `${type.toUpperCase()} weapon loaded into launch rail!`, "info");
     }
 
-    function fireRocket() {
-       let c = Math.floor(Math.random()*9);
-       for(let r=0; r<12; r++) {
-          if(grid[r][c]) { createParticles(r,c,grid[r][c].color); grid[r][c]=null; gScore+=10; }
-       }
-       removeFloaters(); updateGameUI();
+    function buyItem(type, currency) {
+      if (currency === 'xp') {
+        const itemCost = type === 'bomb' ? 500 : 750;
+        if (userState.xp < itemCost) { showToast("Error", "Insufficient XP balance.", "error"); return; }
+        userState.xp -= itemCost;
+        userState.inventory[type]++;
+        saveState(); updateUI();
+        showToast("Acquired", `${type.toUpperCase()} added to loadout stash.`, "success");
+      } else {
+        // Adsgram hooks for powerup acquisition paths safely
+        showToast("Loading Stream Ad", "Complete structural video ad sequence to receive tactical item.", "info");
+        setTimeout(() => {
+          userState.inventory[type]++;
+          saveState(); updateUI();
+          showToast("Ad Reward Granted", `Obtained tactical ${type.toUpperCase()} unit.`, "success");
+        }, 1500);
+      }
+    }
+
+    // ---- ENGINE TICK GRAPHICS LOOP RUNNERS ----
+    function startGameLoop() {
+      if (!gameInterval) {
+        gameInterval = setInterval(processEngineFrame, 1000 / 60);
+      }
+    }
+
+    function stopGameEngineLoop() {
+      if (gameInterval) { clearInterval(gameInterval); gameInterval = null; }
+      projectile = null;
+      gameActive = false;
+    }
+
+    function processEngineFrame() {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, 320, 420);
+      
+      drawGridMatrix();
+      drawShooterInterface();
+      updateAndDrawProjectile();
+      
+      document.getElementById('game-score-display').innerText = String(score).padStart(4, '0');
+    }
+
+    function drawGridMatrix() {
+      bubbleRadius = 15.5; 
+      for (let r = 0; r < gridRows; r++) {
+        for (let c = 0; c < gridCols; c++) {
+          if (bubbleGrid[r][c]) {
+            // Hexagon row offset configurations
+            const xOffset = (r % 2 === 1) ? bubbleRadius : 0;
+            const x = c * (bubbleRadius * 2) + bubbleRadius + xOffset + 4;
+            const y = r * (bubbleRadius * 2 * 0.88) + bubbleRadius + 10;
+            
+            ctx.beginPath();
+            ctx.arc(x, y, bubbleRadius - 1.5, 0, Math.PI * 2);
+            ctx.fillStyle = bubbleGrid[r][c];
+            ctx.shadowBlur = 4;
+            ctx.shadowColor = bubbleGrid[r][c];
+            ctx.fill();
+            ctx.shadowBlur = 0; // reset
+          }
+        }
+      }
+
+      // Ceiling boundary structural danger line limit warning wire
+      ctx.beginPath();
+      ctx.moveTo(0, 320); ctx.lineTo(320, 320);
+      ctx.strokeStyle = "rgba(239, 68, 68, 0.25)";
+      ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
+    }
+
+    function drawShooterInterface() {
+      const sx = 160; const sy = 395;
+      
+      // Render upcoming queue slots
+      ctx.beginPath();
+      ctx.arc(sx + 40, sy, 10, 0, Math.PI * 2);
+      ctx.fillStyle = nextBallColor;
+      ctx.fill();
+
+      // Core chamber node indicator active state highlights
+      ctx.beginPath();
+      ctx.arc(sx, sy, 14, 0, Math.PI * 2);
+      ctx.fillStyle = currentBallColor;
+      ctx.shadowBlur = 8; ctx.shadowColor = currentBallColor;
+      ctx.fill(); ctx.shadowBlur = 0;
+      
+      // Ammo count graphic overlay
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 10px Outfit";
+      ctx.textAlign = "center";
+      ctx.fillText(ammoLeft, sx, sy + 3);
+    }
+
+    function updateAndDrawProjectile() {
+      if (!projectile) return;
+      
+      projectile.x += projectile.vx;
+      projectile.y += projectile.vy;
+      
+      // Reflector reflection bounds checks walls
+      if (projectile.x - 12 <= 0 || projectile.x + 12 >= 320) {
+        projectile.vx *= -1;
+        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+      }
+
+      // Render asset travel frames
+      ctx.beginPath();
+      ctx.arc(projectile.x, projectile.y, 12, 0, Math.PI * 2);
+      ctx.fillStyle = projectile.isPowerup ? '#ffffff' : projectile.color;
+      ctx.fill();
+
+      // Matrix entry grid lock calculations metrics checks
+      if (projectile.y < 340) {
+        let hitGrid = false;
+        let targetR = -1, targetC = -1;
+        let minDist = 9999;
+
+        // Trace interception nodes matrix arrays grids mapping targets
+        for (let r = 0; r < gridRows; r++) {
+          for (let c = 0; c < gridCols; c++) {
+            const xOffset = (r % 2 === 1) ? bubbleRadius : 0;
+            const bX = c * (bubbleRadius * 2) + bubbleRadius + xOffset + 4;
+            const bY = r * (bubbleRadius * 2 * 0.88) + bubbleRadius + 10;
+            
+            const dist = Math.sqrt((projectile.x - bX) ** 2 + (projectile.y - bY) ** 2);
+            if (dist < bubbleRadius * 1.6) {
+              if (bubbleGrid[r][c] || projectile.y <= bY + 2) {
+                hitGrid = true;
+              }
+            }
+            if (!bubbleGrid[r][c] && dist < minDist) {
+              minDist = dist; targetR = r; targetC = c;
+            }
+          }
+        }
+
+        if (hitGrid || projectile.y <= bubbleRadius * 2) {
+          if (projectile.isPowerup) {
+            triggerSpecialBlastEngine(targetR, targetC, projectile.isPowerup);
+          } else if (targetR !== -1 && targetC !== -1) {
+            bubbleGrid[targetR][targetC] = projectile.color;
+            evaluateMatchPopping(targetR, targetC, projectile.color);
+          }
+          projectile = null;
+          rollNextProjectiles();
+          verifyEndgameScoringStates();
+        }
+      }
+
+      // Safeguard limits out of window tracking logic boundaries frames
+      if (projectile && (projectile.y < 0 || projectile.y > 420)) {
+        projectile = null;
+        rollNextProjectiles();
+        verifyEndgameScoringStates();
+      }
+    }
+
+    function triggerSpecialBlastEngine(r, c, type) {
+      if (r === -1) r = 0; if (c === -1) c = 4;
+      let burstCount = 0;
+      
+      if (type === 'bomb') {
+        // Destroy target row and adjacent rings components grids nodes
+        for (let i = Math.max(0, r - 1); i <= Math.min(gridRows - 1, r + 1); i++) {
+          for (let j = Math.max(0, c - 1); j <= Math.min(gridCols - 1, c + 1); j++) {
+            if (bubbleGrid[i][j]) { bubbleGrid[i][j] = null; burstCount++; }
+          }
+        }
+        score += burstCount * 25;
+        showToast("Explosion!", `Bomb wiped ${burstCount} balloons!`, "success");
+      } else if (type === 'rocket') {
+        // Linear direct vector column processing sweeps
+        for (let i = 0; i < gridRows; i++) {
+          if (bubbleGrid[i][c]) { bubbleGrid[i][c] = null; burstCount++; }
+        }
+        score += burstCount * 30;
+        showToast("Laser Strike!", `Rocket cleared column.`, "success");
+      }
+    }
+
+    function evaluateMatchPopping(startR, startC, targetColor) {
+      let matches = [];
+      let searched = Array(gridRows).fill().map(() => Array(gridCols).fill(false));
+      let parseQueue = [[startR, startC]];
+      searched[startR][startC] = true;
+
+      while (parseQueue.length > 0) {
+        let [r, c] = parseQueue.shift();
+        matches.push([r, c]);
+
+        // Hex diagonal configuration trace vectors offsets mapping array tracking
+        let adjVecs = [
+          [0, -1], [0, 1], [-1, 0], [1, 0],
+          [r % 2 === 1 ? -1 : 1, -1], [r % 2 === 1 ? -1 : 1, 1]
+        ];
+
+        adjVecs.forEach(([dr, dc]) => {
+          let nr = r + dr, nc = c + dc;
+          if (nr >= 0 && nr < gridRows && nc >= 0 && nc < gridCols) {
+            if (!searched[nr][nc] && bubbleGrid[nr][nc] === targetColor) {
+              searched[nr][nc] = true;
+              parseQueue.push([nr, nc]);
+            }
+          }
+        });
+      }
+
+      if (matches.length >= 3) {
+        matches.forEach(([r, c]) => bubbleGrid[r][c] = null);
+        score += matches.length * 15;
+        dropFloatingOrphans();
+      }
+    }
+
+    function dropFloatingOrphans() {
+      let attached = Array(gridRows).fill().map(() => Array(gridCols).fill(false));
+      let queue = [];
+      
+      // Top row baseline anchor initialization seeding checks validation pass
+      for (let c = 0; c < gridCols; c++) {
+        if (bubbleGrid[0][c]) { attached[0][c] = true; queue.push([0, c]); }
+      }
+
+      while (queue.length > 0) {
+        let [r, c] = queue.shift();
+        let adjVecs = [
+          [0, -1], [0, 1], [-1, 0], [1, 0],
+          [r % 2 === 1 ? -1 : 1, -1], [r % 2 === 1 ? -1 : 1, 1]
+        ];
+
+        adjVecs.forEach(([dr, dc]) => {
+          let nr = r + dr, nc = c + dc;
+          if (nr >= 0 && nr < gridRows && nc >= 0 && nc < gridCols) {
+            if (!attached[nr][nc] && bubbleGrid[nr][nc]) {
+              attached[nr][nc] = true; queue.push([nr, nc]);
+            }
+          }
+        });
+      }
+
+      for (let r = 1; r < gridRows; r++) {
+        for (let c = 0; c < gridCols; c++) {
+          if (bubbleGrid[r][c] && !attached[r][c]) {
+            bubbleGrid[r][c] = null; score += 20; // floating collapse prize
+          }
+        }
+      }
+    }
+
+    function updateGameStarsUI() {
+      const container = document.getElementById('game-level-stars');
+      let starsCount = 1;
+      if (score >= 450) starsCount = 3;
+      else if (score >= 200) starsCount = 2;
+      
+      container.innerHTML = '';
+      for (let i = 1; i <= 3; i++) {
+        if (i <= starsCount) {
+          container.innerHTML += `<i class="fa-solid fa-star text-crypto-gold drop-shadow-[0_0_4px_#ffb800]"></i>`;
+        } else {
+          container.innerHTML += `<i class="fa-solid fa-star text-slate-700"></i>`;
+        }
+      }
+    }
+
+    function verifyEndgameScoringStates() {
+      let gridEmpty = true;
+      let gridBreached = false;
+
+      for (let r = 0; r < gridRows; r++) {
+        for (let c = 0; c < gridCols; c++) {
+          if (bubbleGrid[r][c]) {
+            gridEmpty = false;
+            if (r >= gridRows - 1) gridBreached = true;
+          }
+        }
+      }
+
+      if (gridEmpty) {
+        executeWinSequence();
+      } else if (gridBreached || (ammoLeft <= 0 && !projectile)) {
+        executeLoseSequence();
+      }
+      updateGameStarsUI();
+    }
+
+    function executeWinSequence() {
+      stopGameEngineLoop();
+      
+      // Auto Remaining Ammo pop sequence bonus
+      if (ammoLeft > 0) {
+        let ammoBonus = ammoLeft * 35;
+        score += ammoBonus;
+        showToast("Ammo Popping Bonus!", `Launched ${ammoLeft} unused shells for +${ammoBonus} Score points!`, "success");
+      }
+
+      let winPrizeXp = 50 + (activeLevelId * 15);
+      userState.xp += winPrizeXp;
+      userState.totalXp += winPrizeXp;
+
+      if (activeLevelId === userState.highestLevelUnlocked && userState.highestLevelUnlocked < 10) {
+        userState.highestLevelUnlocked++;
+      }
+
+      saveState(); updateUI();
+      document.getElementById('canvas-wrapper').classList.add('hidden');
+      document.getElementById('game-map-container').classList.remove('hidden');
+      
+      showToast("VICTORY!", `Stage complete! Awarded +${winPrizeXp} XP points!`, "success");
+      if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+    }
+
+    function executeLoseSequence() {
+      stopGameEngineLoop();
+      document.getElementById('canvas-wrapper').classList.add('hidden');
+      document.getElementById('game-map-container').classList.remove('hidden');
+      
+      showToast("DEFEAT!", "Field compromised. Upgrade munitions configuration loadouts and retry.", "error");
+    }
+
+    // ---- CHRONO TIMER COUNTERS ----
+    function updateTimer() {
+        const now = getNow();
+        if (!now) return;
+        const tomorrow = new Date(now);
+        tomorrow.setUTCHours(24, 0, 0, 0); 
+        
+        const diff = tomorrow.getTime() - now.getTime();
+        const h = Math.floor(diff / 1000 / 60 / 60);
+        const m = Math.floor((diff / 1000 / 60) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+        
+        const timerEl = document.getElementById('reset-timer');
+        if (timerEl) {
+            timerEl.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+        if (checkDailyReset()) {
+            updateUI();
+            showToast("Cycle Refreshed", "Daily records tracking matrices have been zeroed out.", "info");
+        }
     }
     
-    function fireBomb() {
-       let tr=5, tc=4; 
-       let nbs = getNeighbors(tr,tc); nbs.push({r:tr,c:tc});
-       nbs.forEach(n => {
-          if(grid[n.r] && grid[n.r][n.c]) { createParticles(n.r,n.c,grid[n.r][n.c].color); grid[n.r][n.c]=null; gScore+=10;}
-       });
-       removeFloaters(); updateGameUI();
-    }
-
-    function checkWinLoss() {
-       let empty = true;
-       for(let r=0; r<12; r++) for(let c=0; c<10; c++) if(grid[r] && grid[r][c]) empty = false;
-       
-       if(empty) levelComplete(true);
-       else if(gShots <= 0) levelComplete(false);
-    }
-
-    function levelComplete(win) {
-       cancelAnimationFrame(rafId);
-       if(win) {
-          let stars = 1; if(gShots > 5) stars = 2; if(gShots > 10) stars = 3;
-          let earnedXp = gLevel * 10 + (stars * 20);
-          userState.gameStars[gLevel] = Math.max(userState.gameStars[gLevel]||0, stars);
-          if(gLevel === userState.gameUnlockedLevel) userState.gameUnlockedLevel++;
-          userState.xp += earnedXp; userState.totalXp += earnedXp;
-          saveState();
-          showToast("Level Cleared!", `Earned ${stars} Stars & ${earnedXp} XP!`, "success");
-          
-          // Fireworks effect for remaining shots
-          let i = 0;
-          let fwInt = setInterval(() => {
-             if(i >= gShots) { clearInterval(fwInt); quitGame(); return; }
-             particles.push({x: Math.random()*300+10, y: Math.random()*300+10, color: getRandomColor(), vx: (Math.random()-0.5)*20, vy: (Math.random()-0.5)*20, life:1});
-             gScore += 50; updateGameUI(); i++;
-          }, 100);
-       } else {
-          showToast("Out of Moves", "Try again!", "error");
-          quitGame();
-       }
-    }
-
-    function gameLoop() {
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      
-      // Draw Grid
-      for(let r=0; r<12; r++) {
-         let cols = (r%2===0)?10:9;
-         for(let c=0; c<cols; c++) {
-            if(grid[r][c]) {
-               let center = getCenter(r, c);
-               ctx.beginPath(); ctx.arc(center.x, center.y, BUBBLE_R, 0, Math.PI*2);
-               ctx.fillStyle = grid[r][c].color; ctx.fill();
-               // Gloss
-               ctx.beginPath(); ctx.arc(center.x-4, center.y-4, 4, 0, Math.PI*2);
-               ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.fill();
-            }
-         }
-      }
-
-      // Draw Projectile
-      if(proj) {
-         proj.x += proj.vx; proj.y += proj.vy;
-         if(proj.x < BUBBLE_R || proj.x > canvas.width - BUBBLE_R) proj.vx *= -1;
-         
-         ctx.beginPath(); ctx.arc(proj.x, proj.y, BUBBLE_R, 0, Math.PI*2);
-         ctx.fillStyle = proj.color; ctx.fill();
-         
-         // Collide
-         if(proj.y < BUBBLE_R) snapToGrid(proj);
-         else {
-            for(let r=0; r<12; r++) {
-               let cols = (r%2===0)?10:9;
-               for(let c=0; c<cols; c++) {
-                  if(grid[r][c]) {
-                     let cen = getCenter(r,c);
-                     if(Math.hypot(proj.x - cen.x, proj.y - cen.y) < BUBBLE_R*2 - 2) {
-                        snapToGrid(proj); return;
-                     }
-                  }
-               }
-            }
-         }
-      } else if (!isShooting) {
-         // Draw Shooter base
-         let startX = canvas.width/2; let startY = canvas.height - 20;
-         ctx.beginPath(); ctx.arc(startX, startY, BUBBLE_R, 0, Math.PI*2);
-         ctx.fillStyle = currB; ctx.fill();
-      }
-
-      // Draw Particles
-      for(let i=particles.length-1; i>=0; i--) {
-         let p = particles[i]; p.x += p.vx; p.y += p.vy; p.vy += 0.5; p.life -= 0.05;
-         ctx.globalAlpha = Math.max(0, p.life);
-         ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
-         ctx.fillStyle = p.color; ctx.fill();
-         if(p.life <= 0) particles.splice(i, 1);
-      }
-      ctx.globalAlpha = 1;
-      
-      rafId = requestAnimationFrame(gameLoop);
-    }
-    
-    // Timer & Init
-    function updateTimer() { /* same as before */ }
     async function initApp() {
-      setTimeout(() => { document.getElementById('loading-overlay').style.opacity = '0'; setTimeout(() => document.getElementById('loading-overlay').style.display = 'none', 500); }, 3000);
-      loadState(); updateUI();
+      fetchServerTime(); 
+      setTimeout(() => {
+        document.getElementById('loading-overlay').style.opacity = '0';
+        setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; }, 500); 
+      }, 3000);
+
+      loadState();
+      checkDailyReset();
+      updateUI();
+      
+      setInterval(updateTimer, 1000);
+      updateTimer();
     }
+
     initApp();
   </script>
 </body>

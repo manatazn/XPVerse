@@ -173,6 +173,25 @@
       background: linear-gradient(180deg, #050511 0%, #0a0b1a 100%);
       z-index: 100;
     }
+
+    /* FULLSCREEN GAME MODE CLASSES */
+    .fullscreen-game-container {
+      position: fixed !important;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 100vw; height: 100vh;
+      background-color: #050511;
+      z-index: 9999;
+      display: flex !important;
+      flex-direction: column;
+      padding: 1rem;
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+      box-sizing: border-box;
+    }
+    .fullscreen-game-container #game-canvas-container {
+      flex: 1 1 auto;
+      max-height: none !important;
+      height: 100%;
+    }
   </style>
 </head>
 <body class="flex flex-col min-h-screen pb-32">
@@ -236,10 +255,8 @@
   <main class="flex-1 max-w-md w-full mx-auto p-4 pt-24 relative" id="app-content">
     
     <div id="view-home" class="view-section fade-in space-y-6">
-      
       <div class="relative glass-card rounded-[2rem] p-6 text-center border-t border-t-blue-400/20 overflow-hidden flex flex-col items-center justify-center min-h-[240px]">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/20 rounded-full filter blur-[40px] pointer-events-none animate-pulse-fast"></div>
-        
         <div class="relative z-10 flex flex-col items-center">
           <div class="w-14 h-14 rounded-full bg-blue-900/40 border border-blue-400/30 flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
              <i class="fa-solid fa-gem text-2xl text-crypto-glow drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]"></i>
@@ -247,7 +264,6 @@
           <p class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-1 opacity-80">Balance</p>
           <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-blue-400 tracking-tighter drop-shadow-2xl" id="main-xp-display">0 XP</h1>
         </div>
-        
         <div class="w-full mt-6 grid grid-cols-2 gap-3">
           <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md">
             <div class="bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/20"><i class="fa-solid fa-clapperboard text-blue-400"></i></div>
@@ -265,13 +281,11 @@
           </div>
         </div>
       </div>
-
       <button onclick="watchAd()" id="watch-ad-btn" class="w-full py-4 rounded-2xl text-white font-black text-sm tracking-[0.15em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(59,130,246,0.3)] btn-3d relative overflow-hidden group">
         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
         <i class="fa-solid fa-play bg-white/20 p-2 rounded-full text-[10px]"></i> 
         <span>Watch Ad <span class="text-cyan-200">+10 XP</span></span>
       </button>
-
       <div class="glass-card rounded-xl p-3 flex justify-between items-center">
         <div class="flex items-center gap-2 text-slate-400 text-xs">
           <i class="fa-solid fa-rotate text-blue-400"></i> Resets in:
@@ -281,22 +295,18 @@
     </div>
 
     <div id="view-games" class="view-section hidden fade-in space-y-4 pb-4">
-      
       <div id="game-menu-container">
         <div class="text-center pt-2 mb-4">
           <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Games</h2>
           <p class="text-[10px] text-blue-400 mt-1 uppercase tracking-widest font-bold bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20">XPVerse Balloon Blast</p>
         </div>
-
         <div class="glass-card rounded-3xl p-6 relative overflow-hidden flex flex-col items-center min-h-[400px]">
           <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-6">Daily Levels Progress</p>
-          
-          <div class="relative w-full max-w-[250px] mx-auto py-4" id="level-map">
-            </div>
+          <div class="relative w-full max-w-[250px] mx-auto py-4" id="level-map"></div>
         </div>
       </div>
 
-      <div id="game-play-container" class="hidden flex flex-col gap-3">
+      <div id="game-play-container" class="hidden flex-col gap-3">
         <div class="glass-card p-3 rounded-2xl flex justify-between items-center border border-blue-500/30">
           <button onclick="exitGame()" class="w-10 h-10 rounded-xl bg-slate-800/50 flex items-center justify-center text-slate-400 active:scale-95 transition-all">
             <i class="fa-solid fa-arrow-left"></i>
@@ -320,7 +330,6 @@
             <h1 class="text-2xl font-black text-white tracking-widest uppercase mb-1">XPVerse</h1>
             <h2 class="text-lg font-bold text-blue-400 tracking-wider">Studios</h2>
           </div>
-          
           <canvas id="balloon-canvas"></canvas>
 
           <div id="game-over-modal" class="absolute inset-0 bg-[#050511]/90 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-6 hidden fade-in">
@@ -334,8 +343,7 @@
           </div>
         </div>
 
-        <div class="glass-card p-3 rounded-2xl flex justify-center gap-8 items-center">
-          
+        <div class="glass-card p-3 rounded-2xl flex justify-center gap-8 items-center mt-auto">
           <div class="flex flex-col items-center gap-1 group relative">
             <button onclick="activatePowerup('bomb')" class="w-14 h-14 rounded-full bg-slate-800/80 border border-slate-600 flex items-center justify-center text-orange-400 active:scale-95 transition-all relative shadow-[0_0_15px_rgba(249,115,22,0.2)]" id="btn-power-bomb">
               <i class="fa-solid fa-bomb text-xl"></i>
@@ -351,9 +359,7 @@
             </button>
             <span class="text-[9px] uppercase font-bold text-slate-400">Rocket</span>
           </div>
-
         </div>
-
       </div>
     </div>
 
@@ -362,7 +368,6 @@
         <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Tasks</h2>
         <p class="text-xs text-crypto-glow mt-1 uppercase tracking-widest font-bold">Complete to Earn XP</p>
       </div>
-      
       <div class="glass-card rounded-3xl p-5 relative overflow-hidden border-t-2 border-t-blue-500/30">
         <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl"></div>
         <h3 class="text-xs font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
@@ -370,7 +375,6 @@
         </h3>
         <div class="relative flex justify-between items-center" id="streak-tracker-container"></div>
       </div>
-
       <div>
         <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">Daily Missions</h3>
         <div id="missions-container" class="space-y-3"></div>
@@ -382,53 +386,35 @@
         <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Boxes</h2>
         <p class="text-xs text-amber-400 mt-1 uppercase tracking-widest font-bold">Try Your Luck, Win Dollars</p>
       </div>
-      
       <div class="box-bronze glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
         <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-crypto-bronze/10 rounded-full blur-2xl"></div>
         <div class="flex items-center gap-4 relative z-10">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-900 to-[#050511] border border-crypto-bronze flex items-center justify-center shadow-[0_0_15px_rgba(205,127,50,0.3)]">
-            <i class="fa-solid fa-box text-2xl text-crypto-bronze"></i>
-          </div>
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-900 to-[#050511] border border-crypto-bronze flex items-center justify-center shadow-[0_0_15px_rgba(205,127,50,0.3)]"><i class="fa-solid fa-box text-2xl text-crypto-bronze"></i></div>
           <div>
             <h3 class="text-lg font-black text-white tracking-wide">Bronze Box</h3>
-            <div class="flex flex-col mt-0.5">
-              <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 10,000 XP</span>
-              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $1.00</span>
-            </div>
+            <div class="flex flex-col mt-0.5"><span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 10,000 XP</span><span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $1.00</span></div>
           </div>
         </div>
         <button onclick="openBox('bronze')" class="relative z-10 bg-gradient-to-b from-orange-600 to-orange-800 text-white shadow-[0_4px_15px_rgba(205,127,50,0.4)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
       </div>
-
       <div class="box-silver glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
         <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-crypto-silver/10 rounded-full blur-2xl"></div>
         <div class="flex items-center gap-4 relative z-10">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-600 to-[#050511] border border-crypto-silver flex items-center justify-center shadow-[0_0_15px_rgba(226,232,240,0.2)]">
-            <i class="fa-solid fa-box-open text-2xl text-crypto-silver"></i>
-          </div>
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-600 to-[#050511] border border-crypto-silver flex items-center justify-center shadow-[0_0_15px_rgba(226,232,240,0.2)]"><i class="fa-solid fa-box-open text-2xl text-crypto-silver"></i></div>
           <div>
             <h3 class="text-lg font-black text-white tracking-wide">Silver Box</h3>
-            <div class="flex flex-col mt-0.5">
-              <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 50,000 XP</span>
-              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $7.00</span>
-            </div>
+            <div class="flex flex-col mt-0.5"><span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 50,000 XP</span><span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $7.00</span></div>
           </div>
         </div>
         <button onclick="openBox('silver')" class="relative z-10 bg-gradient-to-b from-slate-400 to-slate-600 text-crypto-dark shadow-[0_4px_15px_rgba(226,232,240,0.3)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
       </div>
-
       <div class="box-gold glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center border border-crypto-gold shadow-[0_0_20px_rgba(255,184,0,0.15)] transition-transform hover:scale-[1.02]">
         <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-crypto-gold/20 rounded-full blur-xl animate-pulse"></div>
         <div class="flex items-center gap-4 relative z-10">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-[#050511] border border-crypto-gold flex items-center justify-center shadow-[0_0_25px_rgba(255,184,0,0.5)]">
-            <i class="fa-solid fa-gem text-2xl text-crypto-gold drop-shadow-[0_0_10px_#ffb800]"></i>
-          </div>
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-[#050511] border border-crypto-gold flex items-center justify-center shadow-[0_0_25px_rgba(255,184,0,0.5)]"><i class="fa-solid fa-gem text-2xl text-crypto-gold drop-shadow-[0_0_10px_#ffb800]"></i></div>
           <div>
             <h3 class="text-lg font-black text-crypto-gold tracking-wide drop-shadow-[0_0_5px_rgba(255,184,0,0.5)]">Gold Box</h3>
-            <div class="flex flex-col mt-0.5">
-              <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 100,000 XP</span>
-              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $15.00</span>
-            </div>
+            <div class="flex flex-col mt-0.5"><span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 100,000 XP</span><span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $15.00</span></div>
           </div>
         </div>
         <button onclick="openBox('gold')" class="relative z-10 bg-gradient-to-b from-yellow-400 to-amber-600 text-crypto-dark shadow-[0_4px_20px_rgba(255,184,0,0.6)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
@@ -436,44 +422,33 @@
     </div>
 
     <div id="view-withdraw" class="view-section hidden fade-in space-y-6">
-      
       <div class="glass-card rounded-[2rem] p-6 text-center border-t-2 border-emerald-500/40 bg-gradient-to-b from-emerald-900/30 to-[#050511]">
-        <div class="w-14 h-14 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-3 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-          <i class="fa-solid fa-wallet text-xl text-emerald-400"></i>
-        </div>
+        <div class="w-14 h-14 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-3 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]"><i class="fa-solid fa-wallet text-xl text-emerald-400"></i></div>
         <p class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-1 opacity-80">Withdrawal Balance</p>
         <h1 class="text-5xl font-black text-white tracking-tighter mb-3">$<span id="withdraw-balance-display">0.00</span></h1>
         <div class="inline-block bg-[#050511]/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-700/50">
           <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> Minimum: $5.00</p>
         </div>
       </div>
-
       <div class="glass-card rounded-[1.5rem] p-5 space-y-4 border-slate-800">
         <div>
           <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">TON Wallet Address</label>
           <div class="relative group">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="w-5 h-5 opacity-70 group-focus-within:opacity-100 transition-opacity" alt="TON">
-            </div>
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="w-5 h-5 opacity-70 group-focus-within:opacity-100 transition-opacity" alt="TON"></div>
             <input type="text" id="wallet-address" placeholder="UQ..." class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-sm font-medium text-white focus:outline-none focus:border-blue-500 transition-colors placeholder-slate-600 shadow-inner">
           </div>
         </div>
-        
         <div>
           <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">Amount (USD)</label>
           <div class="relative group">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <i class="fa-solid fa-dollar-sign text-slate-500 group-focus-within:text-emerald-400 transition-colors text-lg"></i>
-            </div>
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i class="fa-solid fa-dollar-sign text-slate-500 group-focus-within:text-emerald-400 transition-colors text-lg"></i></div>
             <input type="number" id="withdraw-amount" placeholder="5.00" min="5" step="0.5" class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-sm font-bold text-emerald-400 focus:outline-none focus:border-emerald-500 transition-colors placeholder-slate-600 shadow-inner">
           </div>
         </div>
-
         <button onclick="requestWithdrawal()" id="withdraw-btn" class="w-full py-3.5 mt-2 bg-gradient-to-r from-emerald-600 to-teal-500 hover:brightness-110 active:scale-95 transition-all text-white font-black rounded-xl text-sm uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-[0_10px_20px_rgba(16,185,129,0.3)]">
           <i class="fa-solid fa-money-bill-transfer"></i> Request Withdrawal
         </button>
       </div>
-
       <div>
         <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">History</h3>
         <div id="withdraw-history-container" class="space-y-3"></div>
@@ -486,16 +461,13 @@
            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
            <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 w-full h-20 bg-gradient-to-t from-[#0a0b1a] to-transparent"></div>
         </div>
-        
         <div class="px-6 pb-8 -mt-16 relative z-10">
           <div class="relative w-24 h-24 mx-auto rounded-full bg-gradient-to-b from-crypto-glow to-blue-600 p-1 mb-3 shadow-[0_0_30px_rgba(0,240,255,0.4)]">
              <img id="profile-photo-large" src="https://via.placeholder.com/150" class="w-full h-full rounded-full border-4 border-[#0a0b1a] object-cover">
              <div class="absolute -bottom-2 -right-2 bg-gradient-to-br from-[#0a0b1a] to-blue-900 border-2 border-crypto-glow text-white w-8 h-8 rounded-full flex items-center justify-center font-black text-xs shadow-[0_0_15px_#00f0ff]" id="profile-badge-level">1</div>
           </div>
-          
           <h2 id="profile-name" class="text-2xl font-black text-white tracking-tight">User</h2>
           <p id="profile-tgid" class="text-[10px] text-blue-400 font-mono mt-1 tracking-widest bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20">ID: 00000000</p>
-          
           <div class="mt-6">
             <div class="flex justify-between items-end mb-1.5 px-1">
                <span class="text-[10px] font-black text-crypto-glow uppercase tracking-wider">Level Progress</span>
@@ -512,7 +484,6 @@
           </div>
         </div>
       </div>
-
       <div class="grid grid-cols-2 gap-3">
         <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-blue-500/30">
           <div class="w-10 h-10 mx-auto bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center mb-2 text-lg shadow-[0_0_15px_rgba(59,130,246,0.2)inset]"><i class="fa-solid fa-chart-line"></i></div>
@@ -526,7 +497,6 @@
         </div>
       </div>
     </div>
-
   </main>
 
   <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] max-w-[420px] glass-card rounded-2xl pb-safe z-50 shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-slate-700/50 backdrop-blur-xl">
@@ -609,13 +579,17 @@
     let maxViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
     function handleKeyboardState() {
+      // Oyun ərzində naviqasiya zolağı qətiyyən ekrana çıxmasın (reklama baxılsa belə)
+      if (window.gameEngine && window.gameEngine.isPlaying) {
+          bottomNavElement.classList.add('nav-hidden');
+          return;
+      }
+      
       let currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       if (currentHeight > maxViewportHeight) maxViewportHeight = currentHeight;
       if (maxViewportHeight - currentHeight > 100) {
           bottomNavElement.classList.add('nav-hidden');
       } else {
-          // Oyunda deyilsə göstər
-          if (window.gameEngine && window.gameEngine.isPlaying) return;
           bottomNavElement.classList.remove('nav-hidden');
       }
     }
@@ -739,7 +713,6 @@
         missionsState = getDefaultMissions();
         missionsState.dailyReward.reward = streakRewards[userState.streak - 1]; 
         
-        // Reset Game Daily State
         gameState.seedDate = currentResetDay;
         gameState.levelsCompleted = Array(10).fill(false);
         gameState.stars = Array(10).fill(0);
@@ -1214,9 +1187,15 @@
     };
 
     function startGame(level) {
-      document.getElementById('bottom-nav').classList.add('nav-hidden'); // Naviqasiyanı gizlət
+      document.body.style.overflow = 'hidden'; // Scroll-u tam blokla
+      document.getElementById('bottom-nav').classList.add('nav-hidden'); 
+      document.getElementById('main-header').style.display = 'none';
       document.getElementById('game-menu-container').classList.add('hidden');
-      document.getElementById('game-play-container').classList.remove('hidden');
+      
+      const playContainer = document.getElementById('game-play-container');
+      playContainer.classList.remove('hidden');
+      playContainer.classList.add('fullscreen-game-container'); // Tam ekran klassı
+      
       document.getElementById('game-over-modal').classList.add('hidden');
       
       const splash = document.getElementById('splash-screen');
@@ -1233,8 +1212,14 @@
 
     function exitGame() {
       gameEngine.isPlaying = false;
-      document.getElementById('bottom-nav').classList.remove('nav-hidden'); // Naviqasiyanı geri qaytar
-      document.getElementById('game-play-container').classList.add('hidden');
+      document.body.style.overflow = ''; // Scroll-u geri qaytar
+      document.getElementById('bottom-nav').classList.remove('nav-hidden'); 
+      document.getElementById('main-header').style.display = 'block';
+      
+      const playContainer = document.getElementById('game-play-container');
+      playContainer.classList.add('hidden');
+      playContainer.classList.remove('fullscreen-game-container');
+      
       document.getElementById('game-menu-container').classList.remove('hidden');
       updatePowerupUI();
       renderGameMap();
@@ -1301,16 +1286,17 @@
       return arr.length > 0 ? arr : gameEngine.colors;
     }
 
-    function getRandomColor() {
-      const available = getAvailableColors();
-      return available[Math.floor(Math.random() * available.length)];
-    }
-
     function updateLauncherColors() {
        let avail = getAvailableColors();
-       if(avail.length === 0) return;
-       if(avail.indexOf(gameEngine.launcherColor) === -1) gameEngine.launcherColor = getRandomColor();
-       if(avail.indexOf(gameEngine.nextColor) === -1) gameEngine.nextColor = getRandomColor();
+       if(avail.length === 0) return; // Rəng qalmayıbsa oyun bitir zatən
+       
+       // Mövcud deyilsə rəngi dəyişirik
+       if(avail.indexOf(gameEngine.launcherColor) === -1) {
+           gameEngine.launcherColor = avail[Math.floor(Math.random() * avail.length)];
+       }
+       if(avail.indexOf(gameEngine.nextColor) === -1) {
+           gameEngine.nextColor = avail[Math.floor(Math.random() * avail.length)];
+       }
     }
 
     function generateLevel(level) {
@@ -1432,7 +1418,7 @@
       const ly = gameEngine.canvas.height - 40;
       
       let dy = gameEngine.mouseY - ly;
-      if (dy > -10) return; // Aşağı nişan alındıqda xətt itir
+      if (dy > -10) return; // Aşağı nişan alındıqda xətt itir, bu atışın ləğvini göstərir
 
       let dx = gameEngine.mouseX - lx;
       let angle = Math.atan2(dy, dx);
@@ -1552,7 +1538,7 @@
       let dy = gameEngine.mouseY - ly;
       if (dy > -10) { 
           gameEngine.mouseX = null; 
-          return; // Atışı ləğv et
+          return; // Atış ləğv edilir!
       }
 
       let dx = gameEngine.mouseX - lx;
@@ -1580,7 +1566,7 @@
       if (!gameEngine.activePowerup) {
          gameEngine.launcherColor = gameEngine.nextColor;
          gameEngine.nextColor = getRandomColor();
-         updateLauncherColors();
+         updateLauncherColors(); // Rəngi yoxlayırıq ki, sıfırlanan rəng verilməsin
       } else {
          consumePowerup(gameEngine.activePowerup);
       }
@@ -1611,24 +1597,24 @@
         let snapped = false;
 
         if (p.type === 'rocket') {
-           p.pierceCount = p.pierceCount || 0;
            let hitAny = false;
            for(let r=0; r<gameEngine.grid.length; r++) {
               if(!gameEngine.grid[r]) continue;
               for(let c=0; c<gameEngine.grid[r].length; c++) {
                  if(gameEngine.grid[r][c]) {
                     let pos = getGridPos(r, c);
-                    if(Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius * 2.5) {
+                    // Dəqiq olaraq xətt boyu hərəkət edərkən partladır (kəsir)
+                    if(Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius * 1.5) {
                        popBalloon(r, c, true);
-                       p.pierceCount++;
                        hitAny = true;
                     }
                  }
               }
            }
-           if(hitAny) dropFloaters();
+           if(hitAny) dropFloaters(); // Asılı qalanları salır
            
-           if (p.y < 0 || p.pierceCount >= 5) {
+           // Raket ancaq ekrandan tam çıxanda yox olur
+           if (p.y < -50 || p.x < -50 || p.x > gameEngine.canvas.width + 50) {
                gameEngine.projectiles.splice(i, 1);
                checkWinLoss();
                updateLauncherColors();
@@ -1700,7 +1686,6 @@
        }
        
        checkWinLoss();
-       updateLauncherColors(); // Xəta: Yox olan rəngləri təmizlə
     }
 
     function getNeighborsDirs(r) {
@@ -1728,6 +1713,7 @@
         }
         toPop.forEach(b => popBalloon(b.r, b.c, true));
         dropFloaters();
+        updateLauncherColors(); // Partlamadan sonra bitən rəngi yoxla
         if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
     }
 
@@ -1754,7 +1740,8 @@
             });
         }
 
-        if (matchGroup.length >= 3) { // Ən azı 3 şar birləşməlidir
+        // MATCH-3 Qaydası - Ən az 3 eyni rəng birləşməlidir
+        if (matchGroup.length >= 3) { 
             matchGroup.forEach(m => popBalloon(m.r, m.c));
             addScore(matchGroup.length * 10);
             if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
@@ -1762,6 +1749,8 @@
         } else {
             spreadVirus();
         }
+        
+        updateLauncherColors(); // İstənilən halda rəngləri tənzimlə
     }
 
     function popBalloon(r, c, force = false) {
@@ -1896,7 +1885,10 @@
 
     function endGame(isWin) {
         gameEngine.isPlaying = false;
+        document.body.style.overflow = ''; // Scroll kilidini aç
         document.getElementById('bottom-nav').classList.remove('nav-hidden'); 
+        document.getElementById('main-header').style.display = 'block';
+        
         const modal = document.getElementById('game-over-modal');
         const title = document.getElementById('end-title');
         const endStars = document.getElementById('end-stars');

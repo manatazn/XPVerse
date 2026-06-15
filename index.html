@@ -32,8 +32,7 @@
             'blob': 'blob 7s infinite',
             'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             'float-up': 'floatUp 2s ease-out forwards',
-            'pop': 'pop 0.3s ease-out forwards',
-            'shimmer': 'shimmer 2s infinite'
+            'pop': 'pop 0.3s ease-out forwards'
           },
           keyframes: {
             blob: {
@@ -50,9 +49,6 @@
               '0%': { transform: 'scale(1)' },
               '50%': { transform: 'scale(1.3)' },
               '100%': { transform: 'scale(0)', opacity: 0 }
-            },
-            shimmer: {
-              '100%': { transform: 'translateX(100%)' }
             }
           }
         }
@@ -70,6 +66,7 @@
       user-select: none;
     }
 
+    /* FULL SCREEN GAME STYLES */
     body.in-game {
       overflow: hidden !important;
       touch-action: none !important;
@@ -330,7 +327,7 @@
         </div>
       </div>
 
-      <div id="game-play-container" class="hidden flex flex-col gap-3 relative">
+      <div id="game-play-container" class="hidden flex flex-col gap-3">
         <div class="glass-card p-3 rounded-2xl flex justify-between items-center border border-blue-500/30 shrink-0">
           <button onclick="exitGame()" class="w-10 h-10 rounded-xl bg-slate-800/50 flex items-center justify-center text-slate-400 active:scale-95 transition-all">
             <i class="fa-solid fa-arrow-left"></i>
@@ -346,8 +343,8 @@
           </div>
         </div>
 
-        <div id="game-canvas-container" class="relative">
-          <div id="splash-screen" class="absolute inset-0 flex flex-col items-center justify-center text-center transition-opacity duration-500 z-50">
+        <div id="game-canvas-container">
+          <div id="splash-screen" class="absolute inset-0 flex flex-col items-center justify-center text-center transition-opacity duration-500">
             <div class="w-20 h-20 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-4 border border-blue-400/50 shadow-[0_0_30px_rgba(59,130,246,0.5)]">
               <i class="fa-solid fa-gamepad text-4xl text-crypto-glow"></i>
             </div>
@@ -356,33 +353,38 @@
           </div>
           
           <canvas id="balloon-canvas"></canvas>
-          
-          <div class="absolute bottom-16 right-4 flex flex-col gap-3 z-10 pointer-events-auto">
-            <div class="flex flex-col items-center gap-1 group relative">
-              <button onclick="activatePowerup('bomb')" class="w-12 h-12 rounded-full bg-slate-900/90 border border-slate-600 flex items-center justify-center text-orange-400 active:scale-95 transition-all relative shadow-[0_0_15px_rgba(249,115,22,0.4)] backdrop-blur-md" id="btn-power-bomb">
-                <i class="fa-solid fa-bomb text-lg"></i>
-                <span class="absolute -top-1 -right-1 bg-blue-600 text-white text-[9px] font-bold w-5 h-5 rounded-full flex items-center justify-center border border-[#050511]" id="count-bomb">1</span>
-              </button>
-            </div>
-            <div class="flex flex-col items-center gap-1 group relative">
-              <button onclick="activatePowerup('rocket')" class="w-12 h-12 rounded-full bg-slate-900/90 border border-slate-600 flex items-center justify-center text-red-400 active:scale-95 transition-all relative shadow-[0_0_15px_rgba(239,68,68,0.4)] backdrop-blur-md" id="btn-power-rocket">
-                <i class="fa-solid fa-rocket text-lg"></i>
-                <span class="absolute -top-1 -right-1 bg-blue-600 text-white text-[9px] font-bold w-5 h-5 rounded-full flex items-center justify-center border border-[#050511]" id="count-rocket">1</span>
-              </button>
-            </div>
-          </div>
 
-          <div id="game-over-modal" class="absolute inset-0 bg-[#050511]/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 hidden fade-in">
+          <div id="game-over-modal" class="absolute inset-0 bg-[#050511]/90 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-6 hidden fade-in">
             <h2 id="end-title" class="text-3xl font-black text-white mb-2 drop-shadow-[0_0_10px_#00f0ff]">Level Clear!</h2>
             <div class="flex gap-2 mb-4" id="end-stars"></div>
             <p id="end-reward" class="text-sm font-bold text-emerald-400 mb-6 bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/30">+0 XP</p>
-            <p id="end-farm-msg" class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-4 hidden text-center">You already claimed XP for this level.</p>
             <div class="flex gap-3 w-full">
               <button onclick="exitGame()" class="flex-1 py-3 rounded-xl bg-slate-800 text-white font-bold uppercase text-xs tracking-wider">Back</button>
               <button id="end-next-btn" onclick="nextLevel()" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold uppercase text-xs tracking-wider shadow-[0_0_15px_rgba(0,240,255,0.4)]">Next</button>
             </div>
           </div>
         </div>
+
+        <div class="glass-card p-3 rounded-2xl flex justify-center gap-8 items-center shrink-0">
+          
+          <div class="flex flex-col items-center gap-1 group relative">
+            <button onclick="activatePowerup('bomb')" class="w-14 h-14 rounded-full bg-slate-800/80 border border-slate-600 flex items-center justify-center text-orange-400 active:scale-95 transition-all relative shadow-[0_0_15px_rgba(249,115,22,0.2)]" id="btn-power-bomb">
+              <i class="fa-solid fa-bomb text-xl"></i>
+              <span class="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511]" id="count-bomb">1</span>
+            </button>
+            <span class="text-[9px] uppercase font-bold text-slate-400">Bomb</span>
+          </div>
+
+          <div class="flex flex-col items-center gap-1 group relative">
+            <button onclick="activatePowerup('rocket')" class="w-14 h-14 rounded-full bg-slate-800/80 border border-slate-600 flex items-center justify-center text-red-400 active:scale-95 transition-all relative shadow-[0_0_15px_rgba(239,68,68,0.2)]" id="btn-power-rocket">
+              <i class="fa-solid fa-rocket text-xl"></i>
+              <span class="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511]" id="count-rocket">1</span>
+            </button>
+            <span class="text-[9px] uppercase font-bold text-slate-400">Rocket</span>
+          </div>
+
+        </div>
+
       </div>
     </div>
 
@@ -621,9 +623,9 @@
 
     const getDefaultMissions = () => ({
       dailyReward: { completed: true, claimed: false, reward: 5, type: 'boolean' },
-      watch15: { target: 15, claimed: false, reward: 30, type: 'progress' },
-      watch30: { target: 30, claimed: false, reward: 80, type: 'progress' },
-      all: { claimed: false, reward: 150, type: 'meta' }
+      watch5: { target: 5, claimed: false, reward: 20, type: 'progress' },
+      watch10: { target: 10, claimed: false, reward: 50, type: 'progress' },
+      all: { claimed: false, reward: 100, type: 'meta' }
     });
 
     let userState = { ...defaultUserState };
@@ -883,8 +885,8 @@
       
       const missionsList = [
         { key: 'dailyReward', label: `Daily Login`, icon: 'fa-gift', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
-        { key: 'watch15', label: 'Watch 15 Ads', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
-        { key: 'watch30', label: 'Watch 30 Ads', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
+        { key: 'watch5', label: 'Watch 5 Ads', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
+        { key: 'watch10', label: 'Watch 10 Ads', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
         { key: 'all', label: 'All Tasks', icon: 'fa-crown', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' }
       ];
 
@@ -899,7 +901,7 @@
         } else if (mission.type === 'boolean') {
             isComplete = mission.completed;
         } else if (mission.type === 'meta') {
-            isComplete = ['dailyReward', 'watch15', 'watch30'].every(k => missionsState[k].claimed);
+            isComplete = ['dailyReward', 'watch5', 'watch10'].every(k => missionsState[k].claimed);
         }
 
         let btnHtml = '';
@@ -1168,7 +1170,7 @@
     // GAME ENGINE: XPVerse Balloon Blast
     // ==========================================
 
-    const LEVEL_REWARDS = [40, 50, 60, 70, 75, 80, 85, 90, 95, 105]; 
+    const LEVEL_REWARDS = [30, 40, 50, 60, 70, 80, 90, 100, 110, 120]; 
 
     function getDailyRandom(seed) {
       let t = seed += 0x6D2B79F5;
@@ -1230,14 +1232,13 @@
 
     let gameEngine = {
       canvas: null, ctx: null, isPlaying: false,
-      balloons: [], projectiles: [], particles: [], fallingBalloons: [], scoreTexts: [],
-      gridCols: 8, ballRadius: 0,
+      balloons: [], projectiles: [], particles: [], fallingBalloons: [], scoreParticles: [],
+      gridCols: 8, ballRadius: 0, containerScores: [50, 100, 250, 100, 50],
       grid: [], 
       colors: ['#ef4444', '#3b82f6', '#10b981', '#eab308', '#a855f7', '#06b6d4'],
-      launcherColor: '', nextColor: '', activePowerup: null,
-      colorHistory: [],
+      launcherColor: '', nextColor: '', activePowerup: null, recentColors: [],
       currentLevel: 1, score: 0, shotsFired: 0, totalTarget: 0,
-      offsetY: 0, dropInterval: 5, limitY: 0,
+      offsetY: 0, dropInterval: 5, limitY: 0, launcherY: 0, launcherX: 0,
       mouseX: 0, mouseY: 0, rand: null
     };
 
@@ -1284,9 +1285,9 @@
       gameEngine.projectiles = [];
       gameEngine.particles = [];
       gameEngine.fallingBalloons = [];
-      gameEngine.scoreTexts = [];
+      gameEngine.scoreParticles = [];
+      gameEngine.recentColors = [];
       gameEngine.activePowerup = null;
-      gameEngine.colorHistory = [];
 
       document.getElementById('ingame-level-display').innerText = level;
       document.getElementById('ingame-score').innerText = '0';
@@ -1299,7 +1300,9 @@
       resizeCanvas();
       generateLevel(level);
       
-      updateLauncherColors(true);
+      let avail = getAvailableColors();
+      gameEngine.launcherColor = avail[Math.floor(gameEngine.rand() * avail.length)];
+      gameEngine.nextColor = avail[Math.floor(gameEngine.rand() * avail.length)];
 
       gameEngine.canvas.addEventListener('touchstart', handleInput, {passive: false});
       gameEngine.canvas.addEventListener('touchmove', handleMove, {passive: false});
@@ -1316,6 +1319,10 @@
       gameEngine.canvas.width = container.clientWidth;
       gameEngine.canvas.height = container.clientHeight;
       gameEngine.ballRadius = (gameEngine.canvas.width / (gameEngine.gridCols + 0.5)) / 2;
+      
+      const bucketHeight = 50;
+      gameEngine.launcherY = gameEngine.canvas.height - bucketHeight - 30;
+      gameEngine.launcherX = gameEngine.canvas.width / 2;
       gameEngine.limitY = gameEngine.canvas.height - 150; 
     }
 
@@ -1334,37 +1341,30 @@
       return arr.length > 0 ? arr : gameEngine.colors;
     }
 
-    function pickValidColor(avail, history) {
-       if (avail.length === 1) return avail[0]; 
-       if (history.length >= 2 && history[0] === history[1]) {
-           let filtered = avail.filter(c => c !== history[0]);
-           if (filtered.length > 0) {
-               return filtered[Math.floor(Math.random() * filtered.length)];
-           }
-       }
-       return avail[Math.floor(Math.random() * avail.length)];
-    }
-
-    function updateLauncherColors(initial = false) {
+    function updateLauncherColors() {
        let avail = getAvailableColors();
        if(avail.length === 0) return; 
-
-       if (initial) {
-           gameEngine.launcherColor = avail[Math.floor(gameEngine.rand() * avail.length)];
-           gameEngine.nextColor = avail[Math.floor(gameEngine.rand() * avail.length)];
-           return;
+       
+       function getNextColor(currentArray) {
+           let valid = currentArray.filter(c => {
+               let rc = gameEngine.recentColors;
+               if (rc.length >= 2 && rc[rc.length-1] === c && rc[rc.length-2] === c) return false;
+               return true;
+           });
+           if(valid.length === 0) valid = currentArray;
+           return valid[Math.floor(Math.random() * valid.length)];
        }
 
        if(!avail.includes(gameEngine.launcherColor)) {
-           gameEngine.launcherColor = pickValidColor(avail, gameEngine.colorHistory);
+           gameEngine.launcherColor = getNextColor(avail);
        }
        if(!avail.includes(gameEngine.nextColor)) {
-           gameEngine.nextColor = pickValidColor(avail, [gameEngine.launcherColor, gameEngine.colorHistory[0]]);
+           gameEngine.nextColor = getNextColor(avail);
        }
     }
 
     function generateLevel(level) {
-      let rows = 4 + Math.floor(level / 2);
+      let rows = 3 + Math.floor(level / 3);
       if (rows > 8) rows = 8;
       
       gameEngine.grid = [];
@@ -1429,19 +1429,48 @@
       }
     }
 
+    function lightenColor(color, percent) {
+        let R = parseInt(color.substring(1,3),16);
+        let G = parseInt(color.substring(3,5),16);
+        let B = parseInt(color.substring(5,7),16);
+        R = parseInt(R + (256 - R) * percent / 100);
+        G = parseInt(G + (256 - G) * percent / 100);
+        B = parseInt(B + (256 - B) * percent / 100);
+        R = (R<255)?R:255; G = (G<255)?G:255; B = (B<255)?B:255;
+        let RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
+        let GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
+        let BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
+        return "#"+RR+GG+BB;
+    }
+
+    function shadeColor(color, percent) {
+      let R = parseInt(color.substring(1,3),16);
+      let G = parseInt(color.substring(3,5),16);
+      let B = parseInt(color.substring(5,7),16);
+      R = parseInt(R * (100 + percent) / 100);
+      G = parseInt(G * (100 + percent) / 100);
+      B = parseInt(B * (100 + percent) / 100);
+      R = (R<255)?R:255; G = (G<255)?G:255; B = (B<255)?B:255;
+      let RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
+      let GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
+      let BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
+      return "#"+RR+GG+BB;
+    }
+
     function drawBalloon(ctx, x, y, r, color, type, hp) {
       ctx.beginPath();
       ctx.arc(x, y, r, 0, Math.PI * 2);
       
-      let grad = ctx.createRadialGradient(x - r*0.3, y - r*0.3, r*0.1, x, y, r);
+      let grad = ctx.createRadialGradient(x - r/3, y - r/3, r/8, x, y, r);
       grad.addColorStop(0, '#ffffff'); 
-      grad.addColorStop(0.4, color);
-      grad.addColorStop(1, shadeColor(color, -60)); 
+      grad.addColorStop(0.2, lightenColor(color, 40));
+      grad.addColorStop(0.6, color);
+      grad.addColorStop(1, shadeColor(color, -50)); 
       ctx.fillStyle = grad;
       ctx.fill();
       
       ctx.beginPath();
-      ctx.ellipse(x - r*0.3, y - r*0.4, r*0.4, r*0.15, -Math.PI / 6, 0, Math.PI * 2);
+      ctx.ellipse(x - r*0.35, y - r*0.35, r*0.4, r*0.15, Math.PI / -4, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
       ctx.fill();
 
@@ -1461,26 +1490,12 @@
       }
     }
 
-    function shadeColor(color, percent) {
-      let R = parseInt(color.substring(1,3),16);
-      let G = parseInt(color.substring(3,5),16);
-      let B = parseInt(color.substring(5,7),16);
-      R = parseInt(R * (100 + percent) / 100);
-      G = parseInt(G * (100 + percent) / 100);
-      B = parseInt(B * (100 + percent) / 100);
-      R = (R<255)?R:255; G = (G<255)?G:255; B = (B<255)?B:255;
-      let RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
-      let GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
-      let BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
-      return "#"+RR+GG+BB;
-    }
-
     function drawAimLine() {
       if (!gameEngine.mouseX || !gameEngine.mouseY || gameEngine.projectiles.length > 0) return;
       
       const ctx = gameEngine.ctx;
-      const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 40;
+      const lx = gameEngine.launcherX;
+      const ly = gameEngine.launcherY;
       
       let dy = gameEngine.mouseY - ly;
       if (dy > -10) return; 
@@ -1523,60 +1538,44 @@
           steps++;
       }
 
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(path[0].x, path[0].y);
+      for (let i = 1; i < path.length; i++) {
+          ctx.lineTo(path[i].x, path[i].y);
+      }
+      
       if (gameEngine.activePowerup === 'rocket') {
-          ctx.beginPath();
-          ctx.moveTo(path[0].x, path[0].y);
-          for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, path[i].y);
-          ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
-          ctx.lineWidth = gameEngine.ballRadius * 2;
-          ctx.stroke();
-          
-          ctx.beginPath();
-          ctx.moveTo(path[0].x, path[0].y);
-          for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, path[i].y);
-          ctx.strokeStyle = '#ef4444';
-          ctx.lineWidth = 2;
-          ctx.setLineDash([8, 8]);
-          ctx.stroke();
+          ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)';
+          ctx.lineWidth = 6;
+          ctx.shadowColor = '#ef4444';
+          ctx.shadowBlur = 15;
           ctx.setLineDash([]);
-      } else if (gameEngine.activePowerup === 'bomb') {
-          let end = path[path.length - 1];
-          ctx.beginPath();
-          ctx.arc(end.x, end.y, gameEngine.ballRadius * 4, 0, Math.PI*2);
-          ctx.fillStyle = 'rgba(249, 115, 22, 0.2)';
-          ctx.fill();
-          ctx.strokeStyle = 'rgba(249, 115, 22, 0.6)';
-          ctx.lineWidth = 2;
-          ctx.setLineDash([5, 5]);
           ctx.stroke();
-          ctx.setLineDash([]);
-
-          ctx.beginPath();
-          ctx.moveTo(path[0].x, path[0].y);
-          for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, path[i].y);
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
-          ctx.lineWidth = 2;
-          ctx.setLineDash([8, 8]);
-          ctx.stroke();
-          ctx.setLineDash([]);
       } else {
-          ctx.beginPath();
-          ctx.moveTo(path[0].x, path[0].y);
-          for (let i = 1; i < path.length; i++) {
-              ctx.lineTo(path[i].x, path[i].y);
-          }
           ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
           ctx.lineWidth = 2;
           ctx.setLineDash([8, 8]);
           ctx.stroke();
-          ctx.setLineDash([]);
+      }
+      ctx.restore();
+      
+      let lastPoint = path[path.length - 1];
+      if (gameEngine.activePowerup === 'bomb') {
+          ctx.beginPath();
+          ctx.arc(lastPoint.x, lastPoint.y, gameEngine.ballRadius * 3, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(249, 115, 22, 0.2)'; 
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(249, 115, 22, 0.8)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
       }
     }
 
     function drawLauncher() {
       const ctx = gameEngine.ctx;
-      const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 40;
+      const lx = gameEngine.launcherX;
+      const ly = gameEngine.launcherY;
       
       drawAimLine();
 
@@ -1590,49 +1589,13 @@
         let color = gameEngine.activePowerup ? (gameEngine.activePowerup === 'rocket' ? '#ef4444' : (gameEngine.activePowerup === 'bomb' ? '#f97316' : '#ffffff')) : gameEngine.launcherColor;
         
         if (gameEngine.activePowerup === 'rocket') {
-           ctx.font = '24px FontAwesome'; ctx.fillStyle='#ef4444'; ctx.fillText('\uf135', lx, ly);
+           ctx.font = '24px FontAwesome'; ctx.fillStyle='#ef4444'; ctx.textAlign = 'center'; ctx.textBaseline='middle'; ctx.fillText('\uf135', lx, ly);
         } else if (gameEngine.activePowerup === 'bomb') {
-           ctx.font = '24px FontAwesome'; ctx.fillStyle='#f97316'; ctx.fillText('\uf1e2', lx, ly);
+           ctx.font = '24px FontAwesome'; ctx.fillStyle='#f97316'; ctx.textAlign = 'center'; ctx.textBaseline='middle'; ctx.fillText('\uf1e2', lx, ly);
         } else {
            drawBalloon(ctx, lx, ly, gameEngine.ballRadius, color, type, 1);
         }
       }
-    }
-
-    function drawContainers() {
-      const ctx = gameEngine.ctx;
-      const binWidth = gameEngine.canvas.width / 5;
-      const binHeight = 30;
-      const startY = gameEngine.canvas.height - binHeight;
-      const scores = [10, 50, 100, 50, 10];
-
-      for(let i=0; i<5; i++) {
-          let x = i * binWidth;
-          
-          let grad = ctx.createLinearGradient(0, startY, 0, gameEngine.canvas.height);
-          grad.addColorStop(0, `rgba(59, 130, 246, ${i%2===0 ? 0.05 : 0.1})`);
-          grad.addColorStop(1, `rgba(59, 130, 246, 0.01)`);
-          ctx.fillStyle = grad;
-          ctx.fillRect(x, startY, binWidth, binHeight);
-
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-          ctx.font = '900 12px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(scores[i], x + binWidth/2, startY + binHeight/2);
-
-          ctx.beginPath();
-          ctx.moveTo(x, startY);
-          ctx.lineTo(x, gameEngine.canvas.height);
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-          ctx.stroke();
-      }
-      
-      ctx.beginPath();
-      ctx.moveTo(0, startY);
-      ctx.lineTo(gameEngine.canvas.width, startY);
-      ctx.strokeStyle = 'rgba(59, 130, 246, 0.3)';
-      ctx.stroke();
     }
 
     function handleInput(e) {
@@ -1640,8 +1603,8 @@
       e.preventDefault();
       updateMousePos(e);
       
-      const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 40;
+      const lx = gameEngine.launcherX;
+      const ly = gameEngine.launcherY;
       const dist = Math.hypot(gameEngine.mouseX - (lx - 60), gameEngine.mouseY - (ly + 10));
       const distMain = Math.hypot(gameEngine.mouseX - lx, gameEngine.mouseY - ly);
       
@@ -1664,8 +1627,8 @@
       if (!gameEngine.isPlaying || gameEngine.projectiles.length > 0 || !gameEngine.mouseX) return;
       e.preventDefault();
       
-      const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 40;
+      const lx = gameEngine.launcherX;
+      const ly = gameEngine.launcherY;
       
       let dy = gameEngine.mouseY - ly;
       if (dy > -10) { 
@@ -1686,9 +1649,6 @@
          type = gameEngine.activePowerup;
          if(type === 'rocket') { speed = 30; color = '#ef4444'; }
          if(type === 'bomb') { color = '#f97316'; }
-      } else {
-         gameEngine.colorHistory.unshift(gameEngine.launcherColor);
-         if(gameEngine.colorHistory.length > 2) gameEngine.colorHistory.pop();
       }
 
       gameEngine.projectiles.push({ x: lx, y: ly, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, radius: gameEngine.ballRadius, color: color, type: type });
@@ -1699,6 +1659,8 @@
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
       
       if (!gameEngine.activePowerup) {
+         gameEngine.recentColors.push(color);
+         if (gameEngine.recentColors.length > 3) gameEngine.recentColors.shift();
          gameEngine.launcherColor = gameEngine.nextColor;
          updateLauncherColors(); 
       } else {
@@ -1748,7 +1710,6 @@
            if (p.y < -50 || p.x < -50 || p.x > gameEngine.canvas.width + 50) {
                gameEngine.projectiles.splice(i, 1);
                if(hitAny) dropFloaters();
-               checkWinLoss();
                updateLauncherColors();
            }
            continue;
@@ -1776,32 +1737,6 @@
         if (snapped) {
            gameEngine.projectiles.splice(i, 1);
         }
-      }
-
-      for (let i = gameEngine.fallingBalloons.length - 1; i >= 0; i--) {
-          let fb = gameEngine.fallingBalloons[i];
-          fb.vy += 0.2; 
-          fb.x += fb.vx;
-          fb.y += fb.vy;
-
-          if (fb.y > gameEngine.canvas.height - 30) {
-              let binIndex = Math.floor((fb.x / gameEngine.canvas.width) * 5);
-              if (binIndex < 0) binIndex = 0;
-              if (binIndex > 4) binIndex = 4;
-              let pts = [10, 50, 100, 50, 10][binIndex];
-              addScore(pts);
-              
-              gameEngine.scoreTexts.push({x: fb.x, y: fb.y - 20, text: `+${pts}`, life: 1});
-              createParticles(0, 0, fb.color, fb.x, fb.y); 
-              gameEngine.fallingBalloons.splice(i, 1);
-          }
-      }
-
-      for (let i = gameEngine.scoreTexts.length - 1; i >= 0; i--) {
-          let st = gameEngine.scoreTexts[i];
-          st.y -= 1;
-          st.life -= 0.03;
-          if (st.life <= 0) gameEngine.scoreTexts.splice(i, 1);
       }
     }
 
@@ -1843,7 +1778,6 @@
           checkMatches(targetR, targetC);
        }
        
-       checkWinLoss();
        updateLauncherColors(); 
     }
 
@@ -1900,12 +1834,22 @@
 
         if (matchGroup.length >= 3) { 
             matchGroup.forEach(m => popBalloon(m.r, m.c));
-            addScore(matchGroup.length * 10);
             if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             dropFloaters();
         } else {
             spreadVirus();
         }
+    }
+
+    function convertToFalling(r, c) {
+        let b = gameEngine.grid[r][c];
+        if(!b) return;
+        let pos = getGridPos(r, c);
+        gameEngine.fallingBalloons.push({
+            x: pos.x, y: pos.y, color: b.color, vx: (Math.random()-0.5)*5, vy: -1 - Math.random()*2, type: b.type, radius: gameEngine.ballRadius
+        });
+        createParticles(r, c, b.color); 
+        gameEngine.grid[r][c] = null;
     }
 
     function popBalloon(r, c, force = false) {
@@ -1918,18 +1862,7 @@
            return;
        }
 
-       let pos = getGridPos(r, c);
-       createParticles(r, c, b.color);
-       
-       gameEngine.fallingBalloons.push({
-           x: pos.x, y: pos.y,
-           vx: (Math.random() - 0.5) * 4,
-           vy: -1 - Math.random() * 2,
-           color: b.color, type: b.type,
-           radius: gameEngine.ballRadius
-       });
-
-       gameEngine.grid[r][c] = null;
+       convertToFalling(r, c);
     }
 
     function dropFloaters() {
@@ -1956,17 +1889,14 @@
             });
         }
 
-        let dropped = 0;
         for(let r=0; r<gameEngine.grid.length; r++) {
             if(!gameEngine.grid[r]) continue;
             for(let c=0; c<gameEngine.grid[r].length; c++) {
                 if(gameEngine.grid[r][c] && !visited.has(`${r},${c}`)) {
-                    popBalloon(r, c, true);
-                    dropped++;
+                    convertToFalling(r, c);
                 }
             }
         }
-        if(dropped > 0) addScore(dropped * 20);
     }
 
     function spreadVirus() {
@@ -1992,13 +1922,13 @@
         }
     }
 
-    function createParticles(r, c, color, exactX = null, exactY = null) {
-        let pos = exactX !== null ? {x: exactX, y: exactY} : getGridPos(r, c);
-        for(let i=0; i<8; i++) {
+    function createParticles(r, c, color) {
+        let pos = getGridPos(r, c);
+        for(let i=0; i<5; i++) {
             gameEngine.particles.push({
                 x: pos.x, y: pos.y,
-                vx: (Math.random() - 0.5) * 12,
-                vy: (Math.random() - 0.5) * 12,
+                vx: (Math.random() - 0.5) * 10,
+                vy: (Math.random() - 0.5) * 10,
                 life: 1, color: color
             });
         }
@@ -2024,7 +1954,85 @@
         document.getElementById('ingame-stars').innerHTML = html;
     }
 
+    function updateFallingBalloons() {
+        const yFloor = gameEngine.canvas.height - 50; 
+        const segmentWidth = gameEngine.canvas.width / 5;
+        
+        for (let i = gameEngine.fallingBalloons.length - 1; i >= 0; i--) {
+            let fb = gameEngine.fallingBalloons[i];
+            fb.vy += 0.3; 
+            fb.x += fb.vx;
+            fb.y += fb.vy;
+            
+            if (fb.x < fb.radius) { fb.x = fb.radius; fb.vx *= -1; }
+            if (fb.x > gameEngine.canvas.width - fb.radius) { fb.x = gameEngine.canvas.width - fb.radius; fb.vx *= -1; }
+            
+            if (fb.y > yFloor) {
+                let bucketIndex = Math.floor(fb.x / segmentWidth);
+                if (bucketIndex < 0) bucketIndex = 0;
+                if (bucketIndex > 4) bucketIndex = 4;
+                
+                let pts = gameEngine.containerScores[bucketIndex];
+                addScore(pts);
+                
+                gameEngine.scoreParticles.push({
+                    x: fb.x, y: yFloor - 20, text: `+${pts}`, life: 1, vy: -1.5
+                });
+                
+                gameEngine.fallingBalloons.splice(i, 1);
+            }
+        }
+    }
+
+    function drawContainers() {
+        const ctx = gameEngine.ctx;
+        const containerHeight = 50;
+        const yFloor = gameEngine.canvas.height - containerHeight;
+        const w = gameEngine.canvas.width / 5;
+        
+        ctx.save();
+        ctx.font = "bold 16px Outfit";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        for (let i = 0; i < 5; i++) {
+            ctx.fillStyle = (i%2===0) ? 'rgba(59, 130, 246, 0.15)' : 'rgba(0, 240, 255, 0.1)';
+            ctx.fillRect(i * w, yFloor, w, containerHeight);
+            
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(i * w, yFloor, w, containerHeight);
+            
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillText(gameEngine.containerScores[i], i * w + w/2, yFloor + containerHeight/2);
+        }
+        ctx.restore();
+    }
+
+    function drawScoreParticles() {
+        const ctx = gameEngine.ctx;
+        for (let i = gameEngine.scoreParticles.length - 1; i >= 0; i--) {
+            let sp = gameEngine.scoreParticles[i];
+            sp.y += sp.vy;
+            sp.life -= 0.02;
+            if (sp.life <= 0) {
+                gameEngine.scoreParticles.splice(i, 1);
+                continue;
+            }
+            ctx.save();
+            ctx.globalAlpha = sp.life;
+            ctx.fillStyle = '#34d399'; 
+            ctx.font = "900 22px Outfit";
+            ctx.textAlign = "center";
+            ctx.shadowColor = '#10b981';
+            ctx.shadowBlur = 10;
+            ctx.fillText(sp.text, sp.x, sp.y);
+            ctx.restore();
+        }
+    }
+
     function checkWinLoss() {
+        if (!gameEngine.isPlaying || gameEngine.projectiles.length > 0 || gameEngine.fallingBalloons.length > 0) return;
+
         let isEmpty = true;
         let reachedBottom = false;
 
@@ -2053,7 +2061,6 @@
         const title = document.getElementById('end-title');
         const endStars = document.getElementById('end-stars');
         const endReward = document.getElementById('end-reward');
-        const farmMsg = document.getElementById('end-farm-msg');
         const nextBtn = document.getElementById('end-next-btn');
 
         modal.classList.remove('hidden');
@@ -2062,22 +2069,23 @@
             let stars = calculateStars();
             let idx = gameEngine.currentLevel - 1;
             
-            let isFirstTime = !gameState.levelsCompleted[idx];
-            let xpEarned = isFirstTime ? (LEVEL_REWARDS[idx] || 50) : 0;
-            
             title.innerText = "Level Clear!";
             title.className = "text-3xl font-black text-white mb-2 drop-shadow-[0_0_10px_#00f0ff]";
             
-            if (isFirstTime) {
-                endReward.innerText = `+${xpEarned} XP`;
-                endReward.style.display = 'block';
-                farmMsg.style.display = 'none';
+            if (!gameState.levelsCompleted[idx]) {
+                let xpEarned = LEVEL_REWARDS[idx] || 50;
                 userState.xp += xpEarned;
                 userState.totalXp += xpEarned;
+                gameState.levelsCompleted[idx] = true;
+                checkLevelUp();
+                
+                endReward.innerText = `+${xpEarned} XP`;
+                endReward.className = "text-sm font-bold text-emerald-400 mb-6 bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/30";
             } else {
-                endReward.style.display = 'none';
-                farmMsg.style.display = 'block';
+                endReward.innerText = `Reward Claimed`;
+                endReward.className = "text-xs font-bold text-slate-400 mb-6 bg-slate-800 px-4 py-2 rounded-xl border border-slate-700";
             }
+            endReward.style.display = 'block';
             
             let starsHtml = '';
             for(let i=1; i<=3; i++) {
@@ -2085,9 +2093,6 @@
             }
             endStars.innerHTML = starsHtml;
 
-            gameState.levelsCompleted[idx] = true;
-            checkLevelUp();
-            
             if (stars > gameState.stars[idx]) {
                gameState.stars[idx] = stars;
             }
@@ -2104,7 +2109,6 @@
             title.className = "text-3xl font-black text-red-400 mb-2 drop-shadow-[0_0_10px_#ef4444]";
             endStars.innerHTML = '<i class="fa-solid fa-skull-crossbones text-4xl text-slate-600"></i>';
             endReward.style.display = 'none';
-            farmMsg.style.display = 'none';
             nextBtn.innerText = "Retry";
             nextBtn.onclick = () => { startGame(gameEngine.currentLevel); };
             if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
@@ -2133,8 +2137,8 @@
                let count = gameState.powerups[type];
                el.innerText = count > 0 ? count : '+';
                el.className = count > 0 
-                  ? "absolute -top-1 -right-1 bg-blue-600 text-white text-[9px] font-bold w-5 h-5 rounded-full flex items-center justify-center border border-[#050511]"
-                  : "absolute -top-1 -right-1 bg-emerald-500 text-white text-[9px] font-bold w-5 h-5 rounded-full flex items-center justify-center border border-[#050511] animate-pulse";
+                  ? "absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511]"
+                  : "absolute -top-1 -right-1 bg-emerald-500 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511] animate-pulse";
             }
         });
     }
@@ -2182,17 +2186,18 @@
       const ctx = gameEngine.ctx;
       ctx.clearRect(0, 0, gameEngine.canvas.width, gameEngine.canvas.height);
 
-      updatePhysics();
-      
       drawContainers();
+
+      updatePhysics();
       drawGrid();
       
-      gameEngine.projectiles.forEach(p => {
-         drawBalloon(ctx, p.x, p.y, p.radius, p.color, p.type, 1);
-      });
-
+      updateFallingBalloons();
       gameEngine.fallingBalloons.forEach(fb => {
          drawBalloon(ctx, fb.x, fb.y, fb.radius, fb.color, fb.type, 1);
+      });
+
+      gameEngine.projectiles.forEach(p => {
+         drawBalloon(ctx, p.x, p.y, p.radius, p.color, p.type, 1);
       });
 
       for(let i = gameEngine.particles.length - 1; i >= 0; i--) {
@@ -2203,14 +2208,8 @@
           ctx.fillStyle = pt.color; ctx.globalAlpha = pt.life; ctx.fill(); ctx.globalAlpha = 1;
       }
 
-      gameEngine.scoreTexts.forEach(st => {
-          ctx.font = '900 16px sans-serif';
-          ctx.fillStyle = `rgba(255, 184, 0, ${st.life})`;
-          ctx.textAlign = 'center';
-          ctx.fillText(st.text, st.x, st.y);
-      });
-
       drawLauncher();
+      drawScoreParticles();
 
       ctx.beginPath();
       ctx.moveTo(0, gameEngine.limitY);
@@ -2219,6 +2218,10 @@
       ctx.setLineDash([10, 10]);
       ctx.stroke();
       ctx.setLineDash([]);
+
+      if (gameEngine.shotsFired > 0) {
+          checkWinLoss();
+      }
 
       window.requestAnimationFrame(gameLoop);
     }

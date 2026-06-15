@@ -6,7 +6,6 @@ const corsHeaders = {
 
 const ADMIN_ID = "7397122686";
 
-// Server tərəfli missiya təməli
 const getDefaultMissions = () => ({
   dailyReward: { completed: true, claimed: false, reward: 5, type: 'boolean' },
   watch5: { target: 5, claimed: false, reward: 20, type: 'progress' },
@@ -15,13 +14,11 @@ const getDefaultMissions = () => ({
   all: { claimed: false, reward: 100, type: 'meta' }
 });
 
-// Bazadan istifadəçini oxumaq üçün köməkçi funksiya
 async function getUser(env, tgId) {
   const row = await env.MY_KV.prepare("SELECT data FROM users WHERE tgId = ?").bind(tgId).first();
   return row ? JSON.parse(row.data) : null;
 }
 
-// Bazaya istifadəçini yazmaq üçün köməkçi funksiya
 async function saveUser(env, tgId, user) {
   await env.MY_KV.prepare("INSERT OR REPLACE INTO users (tgId, data) VALUES (?, ?)").bind(tgId, JSON.stringify(user)).run();
 }
@@ -33,14 +30,10 @@ export default {
     const path = url.pathname;
 
     try {
-      // 1. AUTH (Giriş və Bazadan Məlumat Çəkmək)
       if (path === "/auth" && request.method === "POST") {
         const body = await request.json();
         const tgId = body.tgId.toString();
-        
-        // KV yerinə D1-dən məlumat çəkilir
         let user = await getUser(env, tgId);
-        
         const currentResetDay = new Date().toISOString().split('T')[0];
 
         if (!user) {
@@ -63,8 +56,6 @@ export default {
             banned: false,
             missions: getDefaultMissions()
           };
-          
-          // Referans Sistemi
           if (body.referrerId && body.referrerId.toString() !== tgId) {
             user.referrerId = body.referrerId.toString();
             let ref = await getUser(env, user.referrerId);
@@ -74,7 +65,6 @@ export default {
             }
           }
         } else {
-          // Gündəlik Sıfırlanma
           if (user.lastResetDay !== currentResetDay) {
             user.streak = (user.streak || 1) + 1;
             if (user.streak > 7) user.streak = 1;
@@ -88,12 +78,10 @@ export default {
         }
 
         if (user.banned) return Response.json({ success: false, isBanned: true }, { headers: corsHeaders });
-        
         await saveUser(env, tgId, user);
         return Response.json({ success: true, user: user }, { headers: corsHeaders });
       }
 
-      // 2. REKLAM İZLƏMƏ
       if (path === "/watchAd" && request.method === "POST") {
         const body = await request.json();
         const tgId = body.tgId.toString();
@@ -105,7 +93,6 @@ export default {
         user.totalXp = (user.totalXp || 0) + 10;
         user.adsWatchedToday += 1;
         
-        // 25 Reklam Şərti ilə Referans Təsdiqi
         if (user.adsWatchedToday === 25 && user.referrerId) {
              let ref = await getUser(env, user.referrerId);
              if (ref) {
@@ -120,7 +107,6 @@ export default {
         return Response.json({ success: true, user: user }, { headers: corsHeaders });
       }
 
-      // 3. MİSSİYA TƏSDİQLƏMƏK
       if (path === "/claimMission" && request.method === "POST") {
         const { tgId, missionKey } = await request.json();
         let user = await getUser(env, tgId.toString());
@@ -132,7 +118,6 @@ export default {
             user.xp += mission.reward;
             user.totalXp += mission.reward;
             
-            // "Hamısını et" missiyasını yoxla
             const allDone = ['dailyReward', 'watch5', 'watch10', 'watch20'].every(k => user.missions[k].claimed);
             if (allDone && !user.missions.all.claimed) {
                user.missions.all.claimed = true;
@@ -146,7 +131,6 @@ export default {
         return Response.json({ success: false, error: "Artıq götürülüb və ya xəta var" }, { headers: corsHeaders });
       }
 
-      // 4. QUTU AÇMA
       if (path === "/openBox" && request.method === "POST") {
         const body = await request.json();
         let user = await getUser(env, body.tgId.toString());
@@ -169,7 +153,6 @@ export default {
         return Response.json({ success: true, user: user, reward: reward, isJackpot: isJackpot }, { headers: corsHeaders });
       }
 
-      // 5. ÇIXARIŞ ETMƏK
       if (path === "/withdraw" && request.method === "POST") {
         const body = await request.json();
         let user = await getUser(env, body.tgId.toString());

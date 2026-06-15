@@ -66,7 +66,6 @@
       user-select: none;
     }
 
-    /* FULL SCREEN GAME STYLES */
     body.in-game {
       overflow: hidden !important;
       touch-action: none !important;
@@ -284,7 +283,7 @@
             <div class="bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/20"><i class="fa-solid fa-clapperboard text-blue-400"></i></div>
             <div class="text-left">
               <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Daily Limit</p>
-              <p class="text-sm font-black text-white"><span id="ads-watched" class="text-blue-400">0</span> / 10</p>
+              <p class="text-sm font-black text-white"><span id="ads-watched" class="text-blue-400">0</span> / 30</p>
             </div>
           </div>
           <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md">
@@ -640,7 +639,7 @@
     let maxViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
     function handleKeyboardState() {
-      if (document.body.classList.contains('in-game')) return; // Oyun rejimində müdaxilə etmə
+      if (document.body.classList.contains('in-game')) return; 
       let currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       if (currentHeight > maxViewportHeight) maxViewportHeight = currentHeight;
       if (maxViewportHeight - currentHeight > 100) {
@@ -769,7 +768,6 @@
         missionsState = getDefaultMissions();
         missionsState.dailyReward.reward = streakRewards[userState.streak - 1]; 
         
-        // Reset Game Daily State
         gameState.seedDate = currentResetDay;
         gameState.levelsCompleted = Array(10).fill(false);
         gameState.stars = Array(10).fill(0);
@@ -947,8 +945,8 @@
     }
 
     function watchAd() {
-      if (userState.adsWatchedToday >= 10) {
-        showToast("Limit", "You have reached the daily limit of 10 ads. Come back tomorrow!", "error");
+      if (userState.adsWatchedToday >= 30) {
+        showToast("Limit", "You have reached the daily limit of 30 ads. Come back tomorrow!", "error");
         return;
       }
 
@@ -1168,10 +1166,10 @@
     }
 
     // ==========================================
-    // GAME ENGINE: XPVerse Balloon Blast
+    // GAME ENGINE: XPVerse Balloon Blast 
     // ==========================================
 
-    const LEVEL_REWARDS = [50, 75, 100, 150, 200, 250, 300, 400, 500, 750]; 
+    const LEVEL_REWARDS = [40, 50, 60, 70, 80, 90, 100, 120, 150, 200]; // Fixed Level XP Rewards
 
     function getDailyRandom(seed) {
       let t = seed += 0x6D2B79F5;
@@ -1231,20 +1229,33 @@
       container.innerHTML = html;
     }
 
-    let gameEngine = {
+    window.gameEngine = {
       canvas: null, ctx: null, isPlaying: false,
-      balloons: [], projectiles: [], particles: [], animations: [],
+      balloons: [], projectiles: [], particles: [], fallingBalloons: [],
       gridCols: 8, ballRadius: 0,
       grid: [], 
       colors: ['#ef4444', '#3b82f6', '#10b981', '#eab308', '#a855f7', '#06b6d4'],
-      launcherColor: '', nextColor: '', activePowerup: null,
+      launcherColor: '', nextColor: '', colorHistory: [], activePowerup: null,
       currentLevel: 1, score: 0, shotsFired: 0, totalTarget: 0,
       offsetY: 0, dropInterval: 5, limitY: 0,
-      mouseX: 0, mouseY: 0, rand: null
+      mouseX: 0, mouseY: 0, rand: null,
+      containers: []
     };
 
+    function initContainers() {
+        let w = gameEngine.canvas.width / 5;
+        let h = 30;
+        let y = gameEngine.canvas.height - h;
+        gameEngine.containers = [
+            { x: 0, w: w, y: y, h: h, multiplier: 2, label: "50" },
+            { x: w, w: w, y: y, h: h, multiplier: 3, label: "100" },
+            { x: w*2, w: w, y: y, h: h, multiplier: 5, label: "200" },
+            { x: w*3, w: w, y: y, h: h, multiplier: 3, label: "100" },
+            { x: w*4, w: w, y: y, h: h, multiplier: 2, label: "50" }
+        ];
+    }
+
     function startGame(level) {
-      // Full ekran oyun rejimi
       document.body.classList.add('in-game');
       document.getElementById('game-play-container').classList.add('fullscreen-mode');
       
@@ -1261,12 +1272,13 @@
         setTimeout(() => { splash.style.display = 'none'; }, 500);
       }, 1500);
 
-      initGameEngine(level);
+      setTimeout(() => {
+         initGameEngine(level);
+      }, 100); 
     }
 
     function exitGame() {
       gameEngine.isPlaying = false;
-      // Full ekran rejimini sıfırla
       document.body.classList.remove('in-game');
       document.getElementById('game-play-container').classList.remove('fullscreen-mode');
       
@@ -1276,10 +1288,44 @@
       renderGameMap();
     }
 
+    function nextLevel() {
+      if (gameEngine.currentLevel < 10) {
+         startGame(gameEngine.currentLevel + 1);
+      } else {
+         showToast("Winner!", "You completed all levels for today!", "success");
+         exitGame();
+      }
+    }
+
+    function shadeColor(color, percent) {
+        let R = parseInt(color.substring(1,3),16);
+        let G = parseInt(color.substring(3,5),16);
+        let B = parseInt(color.substring(5,7),16);
+
+        R = parseInt(R * (100 + percent) / 100);
+        G = parseInt(G * (100 + percent) / 100);
+        B = parseInt(B * (100 + percent) / 100);
+
+        R = (R<255)?R:255;  
+        G = (G<255)?G:255;  
+        B = (B<255)?B:255;  
+
+        let RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
+        let GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
+        let BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
+
+        return "#"+RR+GG+BB;
+    }
+
     function initGameEngine(level) {
       gameEngine.currentLevel = level;
       gameEngine.canvas = document.getElementById('balloon-canvas');
       gameEngine.ctx = gameEngine.canvas.getContext('2d');
+      
+      let rect = gameEngine.canvas.parentElement.getBoundingClientRect();
+      gameEngine.canvas.width = rect.width;
+      gameEngine.canvas.height = rect.height;
+
       gameEngine.isPlaying = true;
       gameEngine.score = 0;
       gameEngine.shotsFired = 0;
@@ -1287,8 +1333,12 @@
       gameEngine.balloons = [];
       gameEngine.projectiles = [];
       gameEngine.particles = [];
-      gameEngine.animations = [];
+      gameEngine.fallingBalloons = [];
+      gameEngine.colorHistory = [];
       gameEngine.activePowerup = null;
+
+      gameEngine.ballRadius = Math.floor(gameEngine.canvas.width / (gameEngine.gridCols * 2.2));
+      initContainers();
 
       document.getElementById('ingame-level-display').innerText = level;
       document.getElementById('ingame-score').innerText = '0';
@@ -1298,31 +1348,41 @@
       const seedStr = gameState.seedDate.replace(/-/g, '') + level.toString();
       gameEngine.rand = getDailyRandom(parseInt(seedStr));
 
-      resizeCanvas();
-      generateLevel(level);
-      
-      // İlkin rənglərin uyğun təyini
-      let avail = getAvailableColors();
-      gameEngine.launcherColor = avail[Math.floor(gameEngine.rand() * avail.length)];
-      gameEngine.nextColor = avail[Math.floor(gameEngine.rand() * avail.length)];
+      generateLevel();
 
-      // Listeners
-      gameEngine.canvas.addEventListener('touchstart', handleInput, {passive: false});
-      gameEngine.canvas.addEventListener('touchmove', handleMove, {passive: false});
+      gameEngine.launcherColor = gameEngine.colors[Math.floor(gameEngine.rand() * gameEngine.colors.length)];
+      gameEngine.nextColor = gameEngine.colors[Math.floor(gameEngine.rand() * gameEngine.colors.length)];
+      updateLauncherColors();
+
+      gameEngine.canvas.addEventListener('touchstart', handleInteraction, {passive: false});
+      gameEngine.canvas.addEventListener('touchmove', handleInteraction, {passive: false});
       gameEngine.canvas.addEventListener('touchend', handleFire, {passive: false});
-      gameEngine.canvas.addEventListener('mousedown', handleInput);
-      gameEngine.canvas.addEventListener('mousemove', handleMove);
-      gameEngine.canvas.addEventListener('mouseup', handleFire);
       
-      window.requestAnimationFrame(gameLoop);
+      gameEngine.canvas.addEventListener('mousemove', handleInteraction);
+      gameEngine.canvas.addEventListener('mousedown', handleFire);
+
+      requestAnimationFrame(gameLoop);
     }
 
-    function resizeCanvas() {
-      const container = document.getElementById('game-canvas-container');
-      gameEngine.canvas.width = container.clientWidth;
-      gameEngine.canvas.height = container.clientHeight;
-      gameEngine.ballRadius = (gameEngine.canvas.width / (gameEngine.gridCols + 0.5)) / 2;
-      gameEngine.limitY = gameEngine.canvas.height - 120; // Təhlükə xəttini uzaqlaşdırdıq
+    function generateLevel() {
+      let rows = 4 + Math.floor(gameEngine.currentLevel / 2);
+      gameEngine.grid = [];
+      for(let r=0; r<15; r++) { 
+         let rowArr = [];
+         let colsInRow = (r % 2 === 0) ? gameEngine.gridCols : gameEngine.gridCols - 1;
+         for(let c=0; c<colsInRow; c++) {
+            if (r < rows) {
+               rowArr.push({
+                  color: gameEngine.colors[Math.floor(gameEngine.rand() * gameEngine.colors.length)],
+                  type: 'normal',
+                  hp: 1
+               });
+            } else {
+               rowArr.push(null);
+            }
+         }
+         gameEngine.grid.push(rowArr);
+      }
     }
 
     function getAvailableColors() {
@@ -1336,762 +1396,672 @@
             }
          }
       }
+      for(let fb of gameEngine.fallingBalloons) {
+         if(fb.type === 'normal') activeColors.add(fb.color);
+      }
       let arr = Array.from(activeColors);
       return arr.length > 0 ? arr : gameEngine.colors;
     }
 
     function updateLauncherColors() {
        let avail = getAvailableColors();
-       if(avail.length === 0) return; // Qurtardı
-       
-       // Sərt Yoxlama: Mövcud rəng mövcud olanlar arasında yoxdursa YENİLƏ (Endless Bug fixi)
-       if(!avail.includes(gameEngine.launcherColor)) {
-           gameEngine.launcherColor = avail[Math.floor(Math.random() * avail.length)];
+       if(avail.length === 0) return;
+
+       let prev1 = gameEngine.colorHistory[0] || '';
+       let prev2 = gameEngine.colorHistory[1] || '';
+
+       function getValidColor(targetColor) {
+          if (avail.length === 1) return avail[0];
+          let newCol = targetColor;
+          let attempts = 0;
+          while(attempts < 15) {
+              newCol = avail[Math.floor(Math.random() * avail.length)];
+              if (!(newCol === prev1 && newCol === prev2)) {
+                  break;
+              }
+              attempts++;
+          }
+          return newCol;
+       }
+
+       if(!avail.includes(gameEngine.launcherColor) || (gameEngine.launcherColor === prev1 && gameEngine.launcherColor === prev2)) {
+           gameEngine.launcherColor = getValidColor(gameEngine.launcherColor);
        }
        if(!avail.includes(gameEngine.nextColor)) {
-           gameEngine.nextColor = avail[Math.floor(Math.random() * avail.length)];
+           gameEngine.nextColor = getValidColor(gameEngine.nextColor);
        }
     }
 
-    function generateLevel(level) {
-      // Şarların sətir sayını daha balanslı artır (başlanğıcda yuxarıdan başlasınlar)
-      let rows = 3 + Math.floor(level / 3);
-      if (rows > 8) rows = 8;
-      
-      gameEngine.grid = [];
-      gameEngine.totalTarget = 0;
-      
-      let allowLocked = level >= 4;
-      let allowVirus = level >= 7;
-      let allowArmor = level >= 9;
+    function handleInteraction(e) {
+      if(e.cancelable) e.preventDefault();
+      let rect = gameEngine.canvas.getBoundingClientRect();
+      let clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      let clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      gameEngine.mouseX = clientX - rect.left;
+      gameEngine.mouseY = clientY - rect.top;
+    }
 
-      for (let r = 0; r < rows; r++) {
-        gameEngine.grid[r] = [];
-        let colsInRow = (r % 2 === 0) ? gameEngine.gridCols : gameEngine.gridCols - 1;
-        for (let c = 0; c < colsInRow; c++) {
-          let type = 'normal';
-          let hp = 1;
-          
-          let rVal = gameEngine.rand();
-          
-          if ((r + c) % 2 === 0 && rVal < 0.2) {
-             if (level >= 3 && rVal < 0.05) { gameEngine.grid[r][c] = null; continue; }
-          }
+    function handleFire(e) {
+      if(e && e.cancelable) e.preventDefault();
+      if(!gameEngine.isPlaying || gameEngine.projectiles.length > 0) return;
 
-          if (level === 10) {
-             if(rVal < 0.1) { type = 'locked'; hp = 2; }
-             else if(rVal < 0.15) type = 'virus';
-             else if(rVal < 0.25) type = 'armored';
-          } else {
-             if (allowArmor && rVal < 0.1) type = 'armored';
-             else if (allowVirus && rVal < 0.1) type = 'virus';
-             else if (allowLocked && rVal < 0.15) { type = 'locked'; hp = 2; }
-          }
-          
-          gameEngine.grid[r][c] = {
-            color: type === 'armored' ? '#64748b' : gameEngine.colors[Math.floor(gameEngine.rand() * gameEngine.colors.length)],
-            type: type,
-            hp: hp,
-            r: r, c: c
-          };
-          gameEngine.totalTarget++;
-        }
+      let startX = gameEngine.canvas.width / 2;
+      let startY = gameEngine.canvas.height - gameEngine.ballRadius * 2;
+      
+      let dx = gameEngine.mouseX - startX;
+      let dy = gameEngine.mouseY - startY;
+      
+      if(dy > -20) dy = -20; 
+      
+      let angle = Math.atan2(dy, dx);
+      let speed = 15;
+
+      let type = gameEngine.activePowerup ? gameEngine.activePowerup : 'normal';
+      let color = gameEngine.activePowerup ? null : gameEngine.launcherColor;
+
+      gameEngine.projectiles.push({
+         x: startX, y: startY,
+         vx: Math.cos(angle) * speed,
+         vy: Math.sin(angle) * speed,
+         type: type, color: color, radius: gameEngine.ballRadius
+      });
+
+      if (!gameEngine.activePowerup) {
+         gameEngine.colorHistory.unshift(gameEngine.launcherColor);
+         if (gameEngine.colorHistory.length > 2) gameEngine.colorHistory.pop();
+         gameEngine.launcherColor = gameEngine.nextColor;
+         gameEngine.nextColor = gameEngine.colors[Math.floor(Math.random() * gameEngine.colors.length)];
+         updateLauncherColors();
+      } else {
+         gameEngine.activePowerup = null;
+         updatePowerupUI();
       }
+
+      gameEngine.shotsFired++;
     }
 
     function getGridPos(r, c) {
-      let x = c * gameEngine.ballRadius * 2 + gameEngine.ballRadius;
-      if (r % 2 !== 0) x += gameEngine.ballRadius;
-      let y = r * gameEngine.ballRadius * 1.732 + gameEngine.ballRadius + gameEngine.offsetY;
-      return {x, y};
+      let dx = gameEngine.ballRadius * 2;
+      let dy = gameEngine.ballRadius * 1.732; // sqrt(3)
+      let xOffset = (r % 2 === 0) ? dx/2 : dx;
+      return {
+         x: xOffset + c * dx,
+         y: gameEngine.offsetY + gameEngine.ballRadius + r * dy
+      };
+    }
+
+    function drawBalloon(ctx, x, y, radius, color, type, alpha=1) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.translate(x, y);
+      
+      ctx.beginPath();
+      ctx.arc(2, 2, radius, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(0,0,0,0.3)';
+      ctx.fill();
+      
+      let grad = ctx.createRadialGradient(-radius/3, -radius/3, radius/5, 0, 0, radius);
+      grad.addColorStop(0, '#ffffff'); 
+      grad.addColorStop(0.3, color);
+      grad.addColorStop(1, shadeColor(color, -40)); 
+      
+      ctx.beginPath();
+      ctx.arc(0, 0, radius, 0, Math.PI*2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+      
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.stroke();
+      
+      ctx.restore();
     }
 
     function drawGrid() {
       const ctx = gameEngine.ctx;
-      for (let r = 0; r < gameEngine.grid.length; r++) {
-        if (!gameEngine.grid[r]) continue;
-        for (let c = 0; c < gameEngine.grid[r].length; c++) {
-          let b = gameEngine.grid[r][c];
-          if (b) {
-            let pos = getGridPos(r, c);
-            drawBalloon(ctx, pos.x, pos.y, gameEngine.ballRadius * 0.9, b.color, b.type, b.hp);
-          }
-        }
+      for(let r=0; r<gameEngine.grid.length; r++) {
+         if(!gameEngine.grid[r]) continue;
+         for(let c=0; c<gameEngine.grid[r].length; c++) {
+            let b = gameEngine.grid[r][c];
+            if(b) {
+               let pos = getGridPos(r, c);
+               drawBalloon(ctx, pos.x, pos.y, gameEngine.ballRadius, b.color, b.type);
+            }
+         }
       }
     }
 
-    function drawBalloon(ctx, x, y, r, color, type, hp) {
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      
-      let grad = ctx.createRadialGradient(x - r/3, y - r/3, r/10, x, y, r);
-      grad.addColorStop(0, '#ffffff'); 
-      grad.addColorStop(0.3, color);
-      grad.addColorStop(1, shadeColor(color, -40)); 
-      ctx.fillStyle = grad;
-      ctx.fill();
-      
-      ctx.beginPath();
-      ctx.ellipse(x - r*0.3, y - r*0.3, r*0.4, r*0.2, Math.PI / -4, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-      ctx.fill();
-
-      if (type === 'locked') {
-        ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fill();
-        ctx.fillStyle = '#cbd5e1'; ctx.font = `900 ${r}px FontAwesome`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText('\uf023', x, y); 
-        if(hp === 2) {
-           ctx.beginPath(); ctx.arc(x, y, r*0.8, 0, Math.PI*2); ctx.strokeStyle='#94a3b8'; ctx.lineWidth=3; ctx.stroke();
-        }
-      } else if (type === 'virus') {
-        ctx.fillStyle = '#bef264'; ctx.font = `900 ${r}px FontAwesome`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText('\uf0e7', x, y); 
-      } else if (type === 'armored') {
-        ctx.beginPath(); ctx.arc(x, y, r*0.7, 0, Math.PI*2); ctx.fillStyle='#334155'; ctx.fill();
-        ctx.beginPath(); ctx.arc(x, y, r*0.3, 0, Math.PI*2); ctx.fillStyle='#94a3b8'; ctx.fill();
-      }
-    }
-
-    function shadeColor(color, percent) {
-      let R = parseInt(color.substring(1,3),16);
-      let G = parseInt(color.substring(3,5),16);
-      let B = parseInt(color.substring(5,7),16);
-      R = parseInt(R * (100 + percent) / 100);
-      G = parseInt(G * (100 + percent) / 100);
-      B = parseInt(B * (100 + percent) / 100);
-      R = (R<255)?R:255; G = (G<255)?G:255; B = (B<255)?B:255;
-      let RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
-      let GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
-      let BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
-      return "#"+RR+GG+BB;
-    }
-
-    function drawAimLine() {
-      if (!gameEngine.mouseX || !gameEngine.mouseY || gameEngine.projectiles.length > 0) return;
-      
-      const ctx = gameEngine.ctx;
-      const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 40;
-      
-      let dy = gameEngine.mouseY - ly;
-      if (dy > -10) return; // Aşağı nişan alındıqda xətt itir
-
-      let dx = gameEngine.mouseX - lx;
-      let angle = Math.atan2(dy, dx);
-      if (angle > -0.1) angle = -0.1; 
-      if (angle < -Math.PI + 0.1) angle = -Math.PI + 0.1;
-
-      let x = lx; 
-      let y = ly;
-      let vx = Math.cos(angle) * 10;
-      let vy = Math.sin(angle) * 10;
-      let radius = gameEngine.ballRadius;
-      
-      let path = [{x, y}];
-      let steps = 0;
-
-      while (y > radius && steps < 150) {
-          x += vx;
-          y += vy;
-          
-          if (x <= radius) { x = radius; vx *= -1; path.push({x, y}); }
-          if (x >= gameEngine.canvas.width - radius) { x = gameEngine.canvas.width - radius; vx *= -1; path.push({x, y}); }
-          
-          let hit = false;
-          for (let r=0; r<gameEngine.grid.length; r++) {
-              if(!gameEngine.grid[r]) continue;
-              for (let c=0; c<gameEngine.grid[r].length; c++) {
-                  if(gameEngine.grid[r][c]) {
-                      let pos = getGridPos(r, c);
-                      if (Math.hypot(x - pos.x, y - pos.y) <= radius * 1.8) {
-                          hit = true; break;
-                      }
-                  }
-              }
-              if(hit) break;
-          }
-          if(hit) { path.push({x, y}); break; }
-          steps++;
-      }
-
-      ctx.beginPath();
-      ctx.moveTo(path[0].x, path[0].y);
-      for (let i = 1; i < path.length; i++) {
-          ctx.lineTo(path[i].x, path[i].y);
-      }
-      
-      if (gameEngine.activePowerup === 'rocket') {
-          ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)';
-          ctx.lineWidth = 4;
-          ctx.setLineDash([]);
-      } else {
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
-          ctx.lineWidth = 2;
-          ctx.setLineDash([8, 8]);
-      }
-      ctx.stroke();
-      ctx.setLineDash([]);
-    }
-
-    function drawLauncher() {
-      const ctx = gameEngine.ctx;
-      const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 40;
-      
-      drawAimLine();
-
-      drawBalloon(ctx, lx - 60, ly + 10, gameEngine.ballRadius * 0.6, gameEngine.nextColor, 'normal', 1);
-      ctx.fillStyle = '#64748b'; ctx.font = "10px sans-serif"; ctx.fillText("NEXT", lx - 60, ly - 15);
-      
-      ctx.beginPath(); ctx.arc(lx, ly, 30, Math.PI, 0); ctx.fillStyle = '#1e293b'; ctx.fill();
-      
-      if (gameEngine.projectiles.length === 0) {
-        let type = 'normal';
-        let color = gameEngine.activePowerup ? (gameEngine.activePowerup === 'rocket' ? '#ef4444' : (gameEngine.activePowerup === 'bomb' ? '#f97316' : '#ffffff')) : gameEngine.launcherColor;
-        
-        if (gameEngine.activePowerup === 'rocket') {
-           ctx.font = '24px FontAwesome'; ctx.fillStyle='#ef4444'; ctx.fillText('\uf135', lx, ly);
-        } else if (gameEngine.activePowerup === 'bomb') {
-           ctx.font = '24px FontAwesome'; ctx.fillStyle='#f97316'; ctx.fillText('\uf1e2', lx, ly);
-        } else {
-           drawBalloon(ctx, lx, ly, gameEngine.ballRadius, color, type, 1);
-        }
-      }
-    }
-
-    function handleInput(e) {
-      if (!gameEngine.isPlaying) return;
-      e.preventDefault();
-      updateMousePos(e);
-      
-      const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 40;
-      const dist = Math.hypot(gameEngine.mouseX - (lx - 60), gameEngine.mouseY - (ly + 10));
-      const distMain = Math.hypot(gameEngine.mouseX - lx, gameEngine.mouseY - ly);
-      
-      if (dist < 40 || distMain < 40) {
-        let temp = gameEngine.launcherColor;
-        gameEngine.launcherColor = gameEngine.nextColor;
-        gameEngine.nextColor = temp;
-        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-        gameEngine.mouseX = null;
-      }
-    }
-
-    function handleMove(e) {
-      if (!gameEngine.isPlaying) return;
-      e.preventDefault();
-      updateMousePos(e);
-    }
-
-    function handleFire(e) {
-      if (!gameEngine.isPlaying || gameEngine.projectiles.length > 0 || !gameEngine.mouseX) return;
-      e.preventDefault();
-      
-      const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 40;
-      
-      let dy = gameEngine.mouseY - ly;
-      if (dy > -10) { 
-          gameEngine.mouseX = null; 
-          return; 
-      }
-
-      let dx = gameEngine.mouseX - lx;
-      let angle = Math.atan2(dy, dx);
-      if (angle > -0.1) angle = -0.1; 
-      if (angle < -Math.PI + 0.1) angle = -Math.PI + 0.1;
-
-      let speed = 18;
-      let type = 'normal';
-      let color = gameEngine.launcherColor;
-
-      if (gameEngine.activePowerup) {
-         type = gameEngine.activePowerup;
-         if(type === 'rocket') { speed = 30; color = '#ef4444'; }
-         if(type === 'bomb') { color = '#f97316'; }
-      }
-
-      gameEngine.projectiles.push({ x: lx, y: ly, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, radius: gameEngine.ballRadius, color: color, type: type });
-      
-      gameEngine.shotsFired++;
-      updateStarsUI(calculateStars());
-      
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-      
-      if (!gameEngine.activePowerup) {
-         gameEngine.launcherColor = gameEngine.nextColor;
-         updateLauncherColors(); // Yenə rəng tələbi
-      } else {
-         consumePowerup(gameEngine.activePowerup);
-      }
-      
-      gameEngine.mouseX = null;
-    }
-
-    function updateMousePos(e) {
-      const rect = gameEngine.canvas.getBoundingClientRect();
-      if (e.touches && e.touches.length > 0) {
-        gameEngine.mouseX = e.touches[0].clientX - rect.left;
-        gameEngine.mouseY = e.touches[0].clientY - rect.top;
-      } else {
-        gameEngine.mouseX = e.clientX - rect.left;
-        gameEngine.mouseY = e.clientY - rect.top;
-      }
-    }
-
-    function updatePhysics() {
-      for (let i = gameEngine.projectiles.length - 1; i >= 0; i--) {
-        let p = gameEngine.projectiles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-
-        if (p.x - p.radius < 0) { p.x = p.radius; p.vx *= -1; }
-        if (p.x + p.radius > gameEngine.canvas.width) { p.x = gameEngine.canvas.width - p.radius; p.vx *= -1; }
-
-        let snapped = false;
-
-        // Raket tam xətt boyu kəsir, məhdudiyyət yoxdur
-        if (p.type === 'rocket') {
-           let hitAny = false;
-           for(let r=0; r<gameEngine.grid.length; r++) {
-              if(!gameEngine.grid[r]) continue;
-              for(let c=0; c<gameEngine.grid[r].length; c++) {
-                 if(gameEngine.grid[r][c]) {
-                    let pos = getGridPos(r, c);
-                    // Raket geniş ərazini deşib keçir
-                    if(Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius * 2.5) {
-                       popBalloon(r, c, true); // tam kəsinti
-                       hitAny = true;
-                    }
-                 }
-              }
-           }
+    function drawContainers() {
+       const ctx = gameEngine.ctx;
+       ctx.save();
+       gameEngine.containers.forEach(c => {
+           ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+           ctx.fillRect(c.x + 2, c.y, c.w - 4, c.h);
            
-           // Əgər ekrandan çıxıbsa sil və düşmələri hesabla
-           if (p.y < -50 || p.x < -50 || p.x > gameEngine.canvas.width + 50) {
-               gameEngine.projectiles.splice(i, 1);
-               if(hitAny) dropFloaters();
-               checkWinLoss();
-               updateLauncherColors();
-           }
-           continue;
-        }
-
-        if (p.y - p.radius <= gameEngine.offsetY) {
-          snapProjectile(p, 0);
-          snapped = true;
-        } else {
-           for(let r=0; r<gameEngine.grid.length; r++) {
-              if(!gameEngine.grid[r] || snapped) continue;
-              for(let c=0; c<gameEngine.grid[r].length; c++) {
-                 if(gameEngine.grid[r][c]) {
-                    let pos = getGridPos(r, c);
-                    if(Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius * 1.8) {
-                       snapProjectile(p);
-                       snapped = true;
-                       break;
-                    }
-                 }
-              }
-           }
-        }
-
-        if (snapped) {
-           gameEngine.projectiles.splice(i, 1);
-        }
-      }
-    }
-
-    function snapProjectile(p, forceRow = -1) {
-       let rHeight = gameEngine.ballRadius * 1.732;
-       let targetR = Math.round((p.y - gameEngine.offsetY - gameEngine.ballRadius) / rHeight);
-       if(forceRow !== -1) targetR = forceRow;
-       if(targetR < 0) targetR = 0;
-       
-       let targetC = Math.round((p.x - gameEngine.ballRadius - (targetR % 2 !== 0 ? gameEngine.ballRadius : 0)) / (gameEngine.ballRadius * 2));
-       if (targetC < 0) targetC = 0;
-       let maxC = (targetR % 2 === 0) ? gameEngine.gridCols - 1 : gameEngine.gridCols - 2;
-       if (targetC > maxC) targetC = maxC;
-
-       while(gameEngine.grid.length <= targetR) gameEngine.grid.push([]);
-       
-       if (gameEngine.grid[targetR][targetC]) {
-           let bestD = Infinity, bestR = targetR, bestC = targetC;
-           const dirs = getNeighborsDirs(targetR);
-           dirs.forEach(d => {
-               let nr = targetR + d[0], nc = targetC + d[1];
-               if(nr >=0 && nc >=0 && nc <= ((nr%2===0)?gameEngine.gridCols-1:gameEngine.gridCols-2)) {
-                   if (!gameEngine.grid[nr] || !gameEngine.grid[nr][nc]) {
-                      let nPos = getGridPos(nr, nc);
-                      let dist = Math.hypot(p.x - nPos.x, p.y - nPos.y);
-                      if (dist < bestD) { bestD = dist; bestR = nr; bestC = nc; }
-                   }
-               }
-           });
-           targetR = bestR; targetC = bestC;
-       }
-
-       while(gameEngine.grid.length <= targetR) gameEngine.grid.push([]);
-
-       if (p.type === 'bomb') {
-          triggerExplosion(targetR, targetC);
-       } else {
-          gameEngine.grid[targetR][targetC] = { color: p.color, type: p.type, hp: 1, r: targetR, c: targetC };
-          checkMatches(targetR, targetC);
-       }
-       
-       checkWinLoss();
-       updateLauncherColors(); // Xəta fiksi: Rənglərin yoxlanışını et
-    }
-
-    function getNeighborsDirs(r) {
-       return r % 2 === 0 
-           ? [[-1,-1], [-1,0], [0,-1], [0,1], [1,-1], [1,0]]
-           : [[-1,0], [-1,1], [0,-1], [0,1], [1,0], [1,1]];
-    }
-
-    function getNeighbors(r, c) {
-       let n = [];
-       getNeighborsDirs(r).forEach(d => {
-           let nr = r + d[0], nc = c + d[1];
-           if (gameEngine.grid[nr] && gameEngine.grid[nr][nc]) n.push({r: nr, c: nc});
+           ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+           ctx.font = "bold 12px Outfit";
+           ctx.textAlign = "center";
+           ctx.fillText(c.label, c.x + c.w/2, c.y + 20);
        });
-       return n;
+       ctx.restore();
     }
 
-    function triggerExplosion(r, c) {
-        let toPop = [];
-        for(let ir = r-2; ir <= r+2; ir++) {
-            if(!gameEngine.grid[ir]) continue;
-            for(let ic = c-2; ic <= c+2; ic++) {
-                if(gameEngine.grid[ir][ic]) toPop.push({r:ir, c:ic});
-            }
-        }
-        toPop.forEach(b => popBalloon(b.r, b.c, true));
-        dropFloaters();
-        if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-    }
-
-    function checkMatches(r, c) {
-        let startColor = gameEngine.grid[r][c].color;
-        let matchGroup = [];
-        let visited = new Set();
-        let q = [{r, c}];
-        visited.add(`${r},${c}`);
-
-        while(q.length > 0) {
-            let cur = q.shift();
-            matchGroup.push(cur);
-            let neighbors = getNeighbors(cur.r, cur.c);
-            
-            neighbors.forEach(n => {
-                let cell = gameEngine.grid[n.r][n.c];
-                if (!visited.has(`${n.r},${n.c}`) && cell.type !== 'armored') {
-                    if (cell.color === startColor) {
-                        visited.add(`${n.r},${n.c}`);
-                        q.push({r: n.r, c: n.c});
-                    }
-                }
-            });
-        }
-
-        if (matchGroup.length >= 3) { 
-            matchGroup.forEach(m => popBalloon(m.r, m.c));
-            addScore(matchGroup.length * 10);
-            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            dropFloaters();
-        } else {
-            spreadVirus();
-        }
-    }
-
-    function popBalloon(r, c, force = false) {
-       let b = gameEngine.grid[r][c];
-       if(!b) return;
-       
-       if (b.type === 'locked' && b.hp > 1 && !force) {
-           b.hp--;
-           createParticles(r, c, '#cbd5e1'); 
-           return;
+    function drawFallingBalloons() {
+       const ctx = gameEngine.ctx;
+       for(let fb of gameEngine.fallingBalloons) {
+           drawBalloon(ctx, fb.x, fb.y, fb.radius, fb.color, fb.type, 0.9);
        }
-
-       createParticles(r, c, b.color);
-       gameEngine.grid[r][c] = null;
     }
 
-    function dropFloaters() {
-        let visited = new Set();
-        let q = [];
-        
-        if(gameEngine.grid[0]) {
-            for(let c=0; c<gameEngine.grid[0].length; c++) {
-                if(gameEngine.grid[0][c]) {
-                    q.push({r:0, c:c});
-                    visited.add(`0,${c}`);
-                }
-            }
-        }
-
-        while(q.length > 0) {
-            let cur = q.shift();
-            let neighbors = getNeighbors(cur.r, cur.c);
-            neighbors.forEach(n => {
-                if(!visited.has(`${n.r},${n.c}`)) {
-                    visited.add(`${n.r},${n.c}`);
-                    q.push({r: n.r, c: n.c});
-                }
-            });
-        }
-
-        let dropped = 0;
-        for(let r=0; r<gameEngine.grid.length; r++) {
-            if(!gameEngine.grid[r]) continue;
-            for(let c=0; c<gameEngine.grid[r].length; c++) {
-                if(gameEngine.grid[r][c] && !visited.has(`${r},${c}`)) {
-                    createParticles(r, c, gameEngine.grid[r][c].color);
-                    gameEngine.grid[r][c] = null;
-                    dropped++;
-                }
-            }
-        }
-        if(dropped > 0) addScore(dropped * 20);
+    function createParticles(x, y, color, isText=false) {
+       let count = isText ? 1 : 10;
+       for(let i=0; i<count; i++) {
+           gameEngine.particles.push({
+               x: x, y: y,
+               vx: (Math.random() - 0.5) * 6,
+               vy: (Math.random() - 0.5) * 6 - 2,
+               color: color,
+               life: 1.0,
+               isText: isText
+           });
+       }
     }
 
-    function spreadVirus() {
-        let viruses = [];
-        for(let r=0; r<gameEngine.grid.length; r++) {
-            if(!gameEngine.grid[r]) continue;
-            for(let c=0; c<gameEngine.grid[r].length; c++) {
-                if(gameEngine.grid[r][c] && gameEngine.grid[r][c].type === 'virus') {
-                    viruses.push({r,c});
-                }
-            }
-        }
-        
-        if (viruses.length > 0 && gameEngine.shotsFired % 3 === 0) {
-           let v = viruses[Math.floor(Math.random() * viruses.length)];
-           let neighbors = getNeighbors(v.r, v.c);
-           let normalN = neighbors.filter(n => gameEngine.grid[n.r][n.c].type === 'normal');
-           if (normalN.length > 0) {
-              let target = normalN[Math.floor(Math.random() * normalN.length)];
-              gameEngine.grid[target.r][target.c].type = 'virus';
-              createParticles(target.r, target.c, '#bef264');
+    function drawParticles() {
+       const ctx = gameEngine.ctx;
+       for(let i=gameEngine.particles.length-1; i>=0; i--) {
+           let p = gameEngine.particles[i];
+           p.x += p.vx;
+           p.y += p.vy;
+           p.life -= 0.02;
+           
+           if(p.life <= 0) {
+               gameEngine.particles.splice(i, 1);
+               continue;
            }
-        }
+
+           ctx.globalAlpha = p.life;
+           if(p.isText) {
+               ctx.font = "bold 16px Outfit";
+               ctx.fillStyle = "#10b981"; // Emerald
+               ctx.fillText("+" + p.color, p.x, p.y); // For text, color holds the string
+           } else {
+               ctx.fillStyle = p.color;
+               ctx.beginPath();
+               ctx.arc(p.x, p.y, 4 * p.life, 0, Math.PI*2);
+               ctx.fill();
+           }
+           ctx.globalAlpha = 1.0;
+       }
     }
 
-    function createParticles(r, c, color) {
+    function makeBalloonFall(r, c) {
+        let b = gameEngine.grid[r][c];
+        if (!b) return;
         let pos = getGridPos(r, c);
-        for(let i=0; i<8; i++) {
-            gameEngine.particles.push({
-                x: pos.x, y: pos.y,
-                vx: (Math.random() - 0.5) * 12,
-                vy: (Math.random() - 0.5) * 12,
-                life: 1, color: color
-            });
+        gameEngine.fallingBalloons.push({
+            x: pos.x, y: pos.y,
+            vx: (Math.random() - 0.5) * 5, vy: -2 - Math.random() * 2,
+            color: b.color, type: b.type, hp: b.hp, radius: gameEngine.ballRadius
+        });
+        gameEngine.grid[r][c] = null;
+    }
+
+    function snapToGrid(x, y) {
+        let dy = gameEngine.ballRadius * 1.732;
+        let dx = gameEngine.ballRadius * 2;
+        
+        let r = Math.round((y - gameEngine.offsetY - gameEngine.ballRadius) / dy);
+        if(r < 0) r = 0;
+        
+        let xOffset = (r % 2 === 0) ? dx/2 : dx;
+        let c = Math.round((x - xOffset) / dx);
+        
+        if (gameEngine.grid[r] === undefined) {
+           gameEngine.grid[r] = new Array((r % 2 === 0) ? gameEngine.gridCols : gameEngine.gridCols - 1).fill(null);
         }
+        
+        if(c < 0) c = 0;
+        if(c >= gameEngine.grid[r].length) c = gameEngine.grid[r].length - 1;
+        
+        return {r: r, c: c};
     }
 
-    function addScore(pts) {
-       gameEngine.score += pts;
-       document.getElementById('ingame-score').innerText = gameEngine.score;
-    }
-
-    function calculateStars() {
-        // Yumşaldılmış ulduz məntiqi (daha çox atışa icazə verir)
-        let ratio = gameEngine.shotsFired / (gameEngine.totalTarget || 1);
-        if (ratio <= 1.3) return 3; // Şar sayından %30-a qədər çox atış etsən belə 3 ulduz
-        if (ratio <= 2.0) return 2; // İki qatına qədər atışa 2 ulduz
-        return 1;
-    }
-
-    function updateStarsUI(count) {
-        let html = '';
-        for(let i=1; i<=3; i++) {
-            html += `<i class="fa-solid fa-star ${i<=count ? 'text-crypto-gold drop-shadow-[0_0_5px_#ffb800]' : 'text-slate-700'} text-xs transition-colors duration-300"></i>`;
-        }
-        document.getElementById('ingame-stars').innerHTML = html;
-    }
-
-    function checkWinLoss() {
-        let isEmpty = true;
-        let reachedBottom = false;
-
+    function checkCollision(px, py, pr) {
+        if(py - pr <= gameEngine.offsetY) return true; // HIt Top
+        
         for(let r=0; r<gameEngine.grid.length; r++) {
             if(!gameEngine.grid[r]) continue;
             for(let c=0; c<gameEngine.grid[r].length; c++) {
                 if(gameEngine.grid[r][c]) {
-                    isEmpty = false;
                     let pos = getGridPos(r, c);
-                    if (pos.y + gameEngine.ballRadius > gameEngine.limitY) reachedBottom = true;
+                    let dist = Math.hypot(px - pos.x, py - pos.y);
+                    if(dist < pr * 2 - 2) return true;
                 }
             }
         }
-
-        if (isEmpty) {
-            endGame(true);
-        } else if (reachedBottom) {
-            endGame(false);
-        }
+        return false;
     }
 
-    function endGame(isWin) {
-        gameEngine.isPlaying = false;
+    function getNeighbors(r, c) {
+        let n = [];
+        let dirs = (r % 2 === 0) ? 
+            [[0,-1],[0,1],[-1,-1],[-1,0],[1,-1],[1,0]] : 
+            [[0,-1],[0,1],[-1,0],[-1,1],[1,0],[1,1]];
         
-        const modal = document.getElementById('game-over-modal');
-        const title = document.getElementById('end-title');
-        const endStars = document.getElementById('end-stars');
-        const endReward = document.getElementById('end-reward');
-        const nextBtn = document.getElementById('end-next-btn');
-
-        modal.classList.remove('hidden');
-
-        if (isWin) {
-            let stars = calculateStars();
-            let idx = gameEngine.currentLevel - 1;
-            
-            let xpEarned = LEVEL_REWARDS[idx] || 1000;
-            
-            title.innerText = "Level Clear!";
-            title.className = "text-3xl font-black text-white mb-2 drop-shadow-[0_0_10px_#00f0ff]";
-            endReward.innerText = `+${xpEarned} XP`;
-            endReward.style.display = 'block';
-            
-            let starsHtml = '';
-            for(let i=1; i<=3; i++) {
-                starsHtml += `<i class="fa-solid fa-star text-4xl ${i<=stars ? 'text-crypto-gold drop-shadow-[0_0_15px_#ffb800] animate-[pop_0.5s_ease-out]' : 'text-slate-800'} mx-1" style="animation-delay: ${i*0.2}s"></i>`;
+        for(let d of dirs) {
+            let nr = r + d[0], nc = c + d[1];
+            if(nr >= 0 && nr < gameEngine.grid.length && gameEngine.grid[nr] && nc >= 0 && nc < gameEngine.grid[nr].length) {
+                if(gameEngine.grid[nr][nc]) n.push({r: nr, c: nc});
             }
-            endStars.innerHTML = starsHtml;
+        }
+        return n;
+    }
 
-            userState.xp += xpEarned;
-            userState.totalXp += xpEarned;
-            gameState.levelsCompleted[idx] = true;
-            checkLevelUp();
+    function handleCollisions() {
+        for(let i=gameEngine.projectiles.length-1; i>=0; i--) {
+            let p = gameEngine.projectiles[i];
             
-            if (stars > gameState.stars[idx]) {
-               gameState.stars[idx] = stars;
+            if(p.x - p.radius < 0) { p.x = p.radius; p.vx *= -1; }
+            if(p.x + p.radius > gameEngine.canvas.width) { p.x = gameEngine.canvas.width - p.radius; p.vx *= -1; }
+            
+            if(checkCollision(p.x, p.y, p.radius)) {
+                
+                if (p.type === 'rocket') {
+                   // Pop column
+                   let hitC = snapToGrid(p.x, p.y).c;
+                   for(let r=0; r<gameEngine.grid.length; r++) {
+                      if(gameEngine.grid[r] && gameEngine.grid[r][hitC]) {
+                         createParticles(getGridPos(r,hitC).x, getGridPos(r,hitC).y, gameEngine.grid[r][hitC].color);
+                         gameEngine.grid[r][hitC] = null;
+                      }
+                   }
+                } else if (p.type === 'bomb') {
+                   // Pop radius
+                   let center = snapToGrid(p.x, p.y);
+                   for(let r=center.r-2; r<=center.r+2; r++) {
+                      if(r>=0 && r<gameEngine.grid.length && gameEngine.grid[r]) {
+                         for(let c=center.c-2; c<=center.c+2; c++) {
+                            if(c>=0 && c<gameEngine.grid[r].length && gameEngine.grid[r][c]) {
+                               createParticles(getGridPos(r,c).x, getGridPos(r,c).y, gameEngine.grid[r][c].color);
+                               gameEngine.grid[r][c] = null;
+                            }
+                         }
+                      }
+                   }
+                } else {
+                    let cell = snapToGrid(p.x, p.y);
+                    // Adjust if snapped to filled spot
+                    if(gameEngine.grid[cell.r] && gameEngine.grid[cell.r][cell.c]) {
+                       // Basic fallback: just drop it slightly below
+                       cell.r += 1;
+                       if(!gameEngine.grid[cell.r]) {
+                           gameEngine.grid[cell.r] = new Array((cell.r % 2 === 0) ? gameEngine.gridCols : gameEngine.gridCols - 1).fill(null);
+                       }
+                    }
+
+                    gameEngine.grid[cell.r][cell.c] = { color: p.color, type: p.type, hp: 1 };
+                    
+                    // Match logic
+                    let match = findMatch(cell.r, cell.c, p.color);
+                    if(match.length >= 3) {
+                        for(let m of match) {
+                            makeBalloonFall(m.r, m.c);
+                        }
+                    }
+                }
+                
+                dropFloaters();
+                updateLauncherColors();
+                gameEngine.projectiles.splice(i, 1);
             }
-
-            nextBtn.innerText = idx < 9 ? "Next Level" : "Finish";
-            nextBtn.onclick = () => { idx < 9 ? startGame(gameEngine.currentLevel + 1) : exitGame(); };
-
-            saveState();
-            updateUI();
-            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            
-        } else {
-            title.innerText = "Level Failed";
-            title.className = "text-3xl font-black text-red-400 mb-2 drop-shadow-[0_0_10px_#ef4444]";
-            endStars.innerHTML = '<i class="fa-solid fa-skull-crossbones text-4xl text-slate-600"></i>';
-            endReward.style.display = 'none';
-            nextBtn.innerText = "Retry";
-            nextBtn.onclick = () => { startGame(gameEngine.currentLevel); };
-            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
         }
     }
 
-    function activatePowerup(type) {
-       if (gameState.powerups[type] > 0) {
-           gameEngine.activePowerup = type;
-       } else {
-           watchAdForPowerup(type);
-       }
-    }
-
-    function consumePowerup(type) {
-        gameState.powerups[type]--;
-        gameEngine.activePowerup = null;
-        saveState();
-        updatePowerupUI();
-    }
-
-    function updatePowerupUI() {
-        ['rocket', 'bomb'].forEach(type => {
-            let el = document.getElementById(`count-${type}`);
-            if(el) {
-               let count = gameState.powerups[type];
-               el.innerText = count > 0 ? count : '+';
-               el.className = count > 0 
-                  ? "absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511]"
-                  : "absolute -top-1 -right-1 bg-emerald-500 text-white text-[10px] font-bold w-6 h-6 rounded-full flex items-center justify-center border border-[#050511] animate-pulse";
+    function findMatch(r, c, color) {
+        let visited = new Set();
+        let match = [];
+        let stack = [{r:r, c:c}];
+        
+        while(stack.length > 0) {
+            let curr = stack.pop();
+            let key = curr.r + "," + curr.c;
+            if(visited.has(key)) continue;
+            visited.add(key);
+            match.push(curr);
+            
+            let neighbors = getNeighbors(curr.r, curr.c);
+            for(let n of neighbors) {
+                if(gameEngine.grid[n.r][n.c].color === color && !visited.has(n.r+","+n.c)) {
+                    stack.push(n);
+                }
             }
-        });
+        }
+        return match;
     }
 
-    function watchAdForPowerup(type) {
-       if (gameState.adLimits[type] >= 5) {
-          showToast("Limit Reached", "Max 5 powerup ads per day.", "error");
-          return;
-       }
-
-       if (window.Adsgram) {
-          const AdController = window.Adsgram.init({ blockId: "int-34999" });
-          AdController.show().then(() => {
-             gameState.powerups[type]++;
-             gameState.adLimits[type]++;
-             saveState();
-             updatePowerupUI();
-             showToast("Powerup Received!", `You got 1 ${type.toUpperCase()}!`, "success");
-          }).catch(e => {
-             if(userState.xp >= 500) {
-                userState.xp -= 500;
-                userState.totalXp -= 500;
-                gameState.powerups[type]++;
-                saveState(); updateUI(); updatePowerupUI();
-                showToast("Purchased", `Bought 1 ${type.toUpperCase()} for 500 XP.`, "info");
-             } else {
-                showToast("Error", "Not enough XP or Ads unavailable.", "error");
-             }
-          });
-       } else {
-           if(userState.xp >= 500) {
-                userState.xp -= 500;
-                gameState.powerups[type]++;
-                saveState(); updateUI(); updatePowerupUI();
-                showToast("Purchased", `Bought 1 ${type.toUpperCase()} for 500 XP.`, "info");
-             } else {
-                showToast("Error", "Need 500 XP to buy. Ads offline.", "error");
-             }
-       }
+    function dropFloaters() {
+        let visited = new Set();
+        let stack = [];
+        
+        if(gameEngine.grid[0]) {
+            for(let c=0; c<gameEngine.grid[0].length; c++) {
+                if(gameEngine.grid[0][c]) {
+                    stack.push({r:0, c:c});
+                }
+            }
+        }
+        
+        while(stack.length > 0) {
+            let curr = stack.pop();
+            let key = curr.r + "," + curr.c;
+            if(visited.has(key)) continue;
+            visited.add(key);
+            
+            let neighbors = getNeighbors(curr.r, curr.c);
+            for(let n of neighbors) {
+                if(!visited.has(n.r+","+n.c)) stack.push(n);
+            }
+        }
+        
+        for(let r=0; r<gameEngine.grid.length; r++) {
+            if(!gameEngine.grid[r]) continue;
+            for(let c=0; c<gameEngine.grid[r].length; c++) {
+                if(gameEngine.grid[r][c] && !visited.has(r+","+c)) {
+                    makeBalloonFall(r, c);
+                }
+            }
+        }
     }
 
-    function gameLoop() {
-      if (!gameEngine.isPlaying) return;
-      
+    function updatePhysics() {
+       for(let p of gameEngine.projectiles) {
+           p.x += p.vx;
+           p.y += p.vy;
+       }
+       handleCollisions();
+
+       // Falling Balloons Logic
+       for (let i = gameEngine.fallingBalloons.length - 1; i >= 0; i--) {
+            let fb = gameEngine.fallingBalloons[i];
+            fb.vy += 0.3; // Gravity
+            fb.x += fb.vx;
+            fb.y += fb.vy;
+
+            if (fb.y + fb.radius > gameEngine.canvas.height - 30) {
+                let cIndex = Math.floor(fb.x / (gameEngine.canvas.width / 5));
+                if (cIndex >= 0 && cIndex < 5) {
+                    let scoreVal = parseInt(gameEngine.containers[cIndex].label);
+                    gameEngine.score += scoreVal;
+                    document.getElementById('ingame-score').innerText = gameEngine.score;
+                    createParticles(fb.x, fb.y, scoreVal.toString(), true); 
+                }
+                createParticles(fb.x, fb.y, fb.color);
+                gameEngine.fallingBalloons.splice(i, 1);
+            }
+        }
+    }
+
+    function drawAimLine() {
+      if(!gameEngine.isPlaying || gameEngine.projectiles.length > 0) return;
       const ctx = gameEngine.ctx;
-      ctx.clearRect(0, 0, gameEngine.canvas.width, gameEngine.canvas.height);
-
-      updatePhysics();
-      drawGrid();
       
-      gameEngine.projectiles.forEach(p => {
-         drawBalloon(ctx, p.x, p.y, p.radius, p.color, p.type, 1);
-      });
-
-      for(let i = gameEngine.particles.length - 1; i >= 0; i--) {
-          let pt = gameEngine.particles[i];
-          pt.x += pt.vx; pt.y += pt.vy; pt.life -= 0.05;
-          if(pt.life <= 0) { gameEngine.particles.splice(i, 1); continue; }
-          ctx.beginPath(); ctx.arc(pt.x, pt.y, pt.life * 5, 0, Math.PI*2);
-          ctx.fillStyle = pt.color; ctx.globalAlpha = pt.life; ctx.fill(); ctx.globalAlpha = 1;
-      }
-
-      drawLauncher();
-
-      // Qırımızı təhlükə xətti (Xüsusi limitY məsafəsində)
+      let startX = gameEngine.canvas.width / 2;
+      let startY = gameEngine.canvas.height - gameEngine.ballRadius * 2;
+      
+      let dx = gameEngine.mouseX - startX;
+      let dy = gameEngine.mouseY - startY;
+      if(dy > -20) dy = -20; 
+      
+      let angle = Math.atan2(dy, dx);
+      
+      let px = startX, py = startY;
+      let vx = Math.cos(angle) * 10;
+      let vy = Math.sin(angle) * 10;
+      
       ctx.beginPath();
-      ctx.moveTo(0, gameEngine.limitY);
-      ctx.lineTo(gameEngine.canvas.width, gameEngine.limitY);
-      ctx.strokeStyle = 'rgba(239, 68, 68, 0.2)';
-      ctx.setLineDash([10, 10]);
+      ctx.moveTo(px, py);
+      
+      let hit = false;
+      let steps = 0;
+      while(!hit && steps < 100) {
+          px += vx;
+          py += vy;
+          if(px - gameEngine.ballRadius < 0) { px = gameEngine.ballRadius; vx *= -1; ctx.lineTo(px, py); }
+          if(px + gameEngine.ballRadius > gameEngine.canvas.width) { px = gameEngine.canvas.width - gameEngine.ballRadius; vx *= -1; ctx.lineTo(px, py); }
+          
+          if(checkCollision(px, py, gameEngine.ballRadius)) {
+              hit = true;
+          }
+          steps++;
+      }
+      ctx.lineTo(px, py);
+      
+      ctx.setLineDash([5, 5]);
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = gameEngine.activePowerup ? 'rgba(255,255,255,0.8)' : gameEngine.launcherColor;
       ctx.stroke();
       ctx.setLineDash([]);
 
-      window.requestAnimationFrame(gameLoop);
+      // Draw Ghost Target
+      ctx.globalAlpha = 0.5;
+      if (gameEngine.activePowerup === 'rocket') {
+          ctx.font = '28px "Font Awesome 6 Free"';
+          ctx.fontWeight = 900;
+          ctx.fillStyle='#ef4444'; 
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText('\uf135', px, py);
+      } else if (gameEngine.activePowerup === 'bomb') {
+          ctx.font = '28px "Font Awesome 6 Free"';
+          ctx.fontWeight = 900;
+          ctx.fillStyle='#f97316'; 
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText('\uf1e2', px, py);
+      } else {
+          drawBalloon(ctx, px, py, gameEngine.ballRadius, gameEngine.launcherColor, 'normal', 0.5);
+      }
+      ctx.globalAlpha = 1.0;
+    }
+
+    function drawProjectiles() {
+       const ctx = gameEngine.ctx;
+       for(let p of gameEngine.projectiles) {
+           if (p.type === 'rocket') {
+               ctx.save();
+               ctx.translate(p.x, p.y);
+               let angle = Math.atan2(p.vy, p.vx);
+               ctx.rotate(angle + Math.PI/2);
+               
+               ctx.font = '28px "Font Awesome 6 Free"';
+               ctx.fontWeight = 900;
+               ctx.fillStyle='#ef4444'; 
+               ctx.textAlign = 'center';
+               ctx.textBaseline = 'middle';
+               ctx.fillText('\uf135', 0, 0);
+               
+               ctx.beginPath();
+               ctx.arc(0, 15, 6 + Math.random()*4, 0, Math.PI*2);
+               ctx.fillStyle = '#f59e0b';
+               ctx.fill();
+               ctx.restore();
+           } else if (p.type === 'bomb') {
+               ctx.save();
+               ctx.translate(p.x, p.y);
+               ctx.rotate(Date.now() / 100);
+               ctx.font = '28px "Font Awesome 6 Free"';
+               ctx.fontWeight = 900;
+               ctx.fillStyle='#f97316'; 
+               ctx.textAlign = 'center';
+               ctx.textBaseline = 'middle';
+               ctx.fillText('\uf1e2', 0, 0);
+               ctx.restore();
+           } else {
+               drawBalloon(ctx, p.x, p.y, p.radius, p.color, p.type, 1);
+           }
+       }
+    }
+
+    function drawLauncher() {
+       const ctx = gameEngine.ctx;
+       let startX = gameEngine.canvas.width / 2;
+       let startY = gameEngine.canvas.height - gameEngine.ballRadius * 2;
+
+       if(gameEngine.projectiles.length === 0) {
+           if (gameEngine.activePowerup === 'rocket') {
+               ctx.font = '28px "Font Awesome 6 Free"';
+               ctx.fontWeight = 900;
+               ctx.fillStyle='#ef4444'; 
+               ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+               ctx.fillText('\uf135', startX, startY);
+           } else if (gameEngine.activePowerup === 'bomb') {
+               ctx.font = '28px "Font Awesome 6 Free"';
+               ctx.fontWeight = 900;
+               ctx.fillStyle='#f97316'; 
+               ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+               ctx.fillText('\uf1e2', startX, startY);
+           } else {
+               drawBalloon(ctx, startX, startY, gameEngine.ballRadius, gameEngine.launcherColor, 'normal');
+           }
+       }
+
+       // Next balloon UI
+       drawBalloon(ctx, startX + 50, startY + 10, gameEngine.ballRadius * 0.6, gameEngine.nextColor, 'normal');
+    }
+
+    function checkWinLoss() {
+      let hasBalloons = false;
+      for(let r=0; r<gameEngine.grid.length; r++) {
+         if(gameEngine.grid[r]) {
+            for(let c=0; c<gameEngine.grid[r].length; c++) {
+               if(gameEngine.grid[r][c]) hasBalloons = true;
+            }
+         }
+      }
+
+      if(!hasBalloons && gameEngine.fallingBalloons.length === 0 && gameEngine.projectiles.length === 0) {
+         endGame(true);
+      } else if (hasBalloons) {
+         // Check loss line
+         let lowest = 0;
+         for(let r=0; r<gameEngine.grid.length; r++) {
+             if(!gameEngine.grid[r]) continue;
+             for(let c=0; c<gameEngine.grid[r].length; c++) {
+                 if(gameEngine.grid[r][c] && r > lowest) lowest = r;
+             }
+         }
+         let pos = getGridPos(lowest, 0);
+         if(pos.y + gameEngine.ballRadius * 2 > gameEngine.canvas.height - 80) {
+             endGame(false);
+         }
+      }
+    }
+
+    function calculateStars() {
+        if(gameEngine.shotsFired <= gameEngine.currentLevel * 3) return 3;
+        if(gameEngine.shotsFired <= gameEngine.currentLevel * 5) return 2;
+        return 1;
+    }
+
+    function endGame(win) {
+      gameEngine.isPlaying = false;
+      let modal = document.getElementById('game-over-modal');
+      modal.classList.remove('hidden');
+      
+      let nextBtn = document.getElementById('end-next-btn');
+
+      if (win) {
+          document.getElementById('end-title').innerText = "Level Clear!";
+          
+          let xpReward = LEVEL_REWARDS[gameEngine.currentLevel - 1] || 50;
+          document.getElementById('end-reward').innerText = `+${xpReward} XP`;
+          document.getElementById('end-reward').className = "text-sm font-bold text-emerald-400 mb-6 bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/30";
+          
+          userState.xp += xpReward;
+          userState.totalXp += xpReward;
+          gameState.levelsCompleted[gameEngine.currentLevel - 1] = true;
+          
+          let stars = calculateStars();
+          gameState.stars[gameEngine.currentLevel - 1] = Math.max(gameState.stars[gameEngine.currentLevel - 1], stars);
+          
+          let starsHtml = '';
+          for(let i=0; i<3; i++) {
+              starsHtml += `<i class="fa-solid fa-star text-3xl ${i < stars ? 'text-crypto-gold drop-shadow-[0_0_10px_#ffb800]' : 'text-slate-700'}"></i>`;
+          }
+          document.getElementById('end-stars').innerHTML = starsHtml;
+          nextBtn.style.display = 'block';
+
+          checkLevelUp();
+          saveState();
+          updateUI();
+          
+          if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+      } else {
+          document.getElementById('end-title').innerText = "Game Over";
+          document.getElementById('end-reward').innerText = `Try Again!`;
+          document.getElementById('end-reward').className = "text-sm font-bold text-red-400 mb-6 bg-red-500/10 px-4 py-2 rounded-xl border border-red-500/30";
+          document.getElementById('end-stars').innerHTML = '';
+          nextBtn.style.display = 'none';
+          if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+      }
+    }
+
+    function activatePowerup(type) {
+      if(!gameEngine.isPlaying) return;
+      if (gameState.powerups[type] > 0) {
+         if (gameEngine.activePowerup === type) {
+            gameEngine.activePowerup = null; 
+         } else {
+            gameEngine.activePowerup = type;
+            gameState.powerups[type]--;
+            saveState();
+         }
+         updatePowerupUI();
+      } else {
+         showToast("No Powerups", "Watch ads from the menu to get more powerups!", "error");
+      }
+    }
+
+    function updatePowerupUI() {
+       document.getElementById('count-rocket').innerText = gameState.powerups.rocket || 0;
+       document.getElementById('count-bomb').innerText = gameState.powerups.bomb || 0;
+       
+       document.getElementById('btn-power-rocket').classList.toggle('ring-2', gameEngine.activePowerup === 'rocket');
+       document.getElementById('btn-power-rocket').classList.toggle('ring-red-400', gameEngine.activePowerup === 'rocket');
+       document.getElementById('btn-power-bomb').classList.toggle('ring-2', gameEngine.activePowerup === 'bomb');
+       document.getElementById('btn-power-bomb').classList.toggle('ring-orange-400', gameEngine.activePowerup === 'bomb');
+    }
+
+    function updateStarsUI(starsCount) {
+        let starsHtml = '';
+        for(let i=0; i<3; i++) {
+            starsHtml += `<i class="fa-solid fa-star text-xs ${i < starsCount ? 'text-crypto-gold' : 'text-slate-700'}"></i>`;
+        }
+        document.getElementById('ingame-stars').innerHTML = starsHtml;
+    }
+
+    function gameLoop() {
+      if(!gameEngine.isPlaying) return;
+      gameEngine.ctx.clearRect(0,0, gameEngine.canvas.width, gameEngine.canvas.height);
+      
+      updatePhysics();
+      
+      drawGrid();
+      drawContainers();
+      drawFallingBalloons();
+      drawProjectiles();
+      drawAimLine();
+      drawLauncher();
+      drawParticles();
+      
+      checkWinLoss();
+      
+      if(gameEngine.isPlaying) {
+          requestAnimationFrame(gameLoop);
+      }
     }
 
     initApp();
+
   </script>
 </body>
 </html>

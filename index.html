@@ -8,9 +8,6 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
   
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
@@ -446,27 +443,6 @@
   </nav>
 
   <script>
-    // ==========================================
-    // 1. FIREBASE CONFIG (SİZİN MƏLUMATLARINIZ)
-    // ==========================================
-    const firebaseConfig = {
-      apiKey: "AIzaSyC2HW57UDwGXArJxEPVXhOYjTvux3GZd30",
-      authDomain: "xpverse-app.firebaseapp.com",
-      databaseURL: "https://xpverse-app-default-rtdb.firebaseio.com", // Database URL əlavə edildi
-      projectId: "xpverse-app",
-      storageBucket: "xpverse-app.firebasestorage.app",
-      messagingSenderId: "1016706276101",
-      appId: "1:1016706276101:web:2103106aa02effc8cdf56c",
-      measurementId: "G-63KKP2VNKW"
-    };
-
-    // Firebase Init
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.database();
-
-
     const tg = window.Telegram.WebApp;
     tg.expand(); 
     tg.ready();
@@ -505,20 +481,27 @@
     let accurateTimeOffset = null;
     let headerTimeout; 
 
+    // ---- Klaviatura İzləmə Məntiqi Düzəldilmiş Versiya ----
     const bottomNavElement = document.getElementById('bottom-nav');
+    
+    // Yalnız fiziki ekran hündürlüyünün ölçülməsi.
     let maxViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
     function handleKeyboardState() {
       let currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       
+      // Əgər ekran tam açılarsa maksimum hündürlüyü yeniləyirik
       if (currentHeight > maxViewportHeight) {
         maxViewportHeight = currentHeight;
       }
 
+      // Hündürlük 100px-dən çox azalıbsa, deməli klaviatura ekranda yer tutur
       if (maxViewportHeight - currentHeight > 100) {
         bottomNavElement.classList.add('nav-hidden');
       } else {
+        // Klaviatura ekrandan gedibsə, naviqasiyanı qaytar
         bottomNavElement.classList.remove('nav-hidden');
+        // QEYD: Buralardakı document.activeElement.blur() silinib, problemi bu yaradırdı.
       }
     }
 
@@ -530,6 +513,7 @@
     if (tg.onEvent) {
        tg.onEvent('viewportChanged', handleKeyboardState);
     }
+    // ---- Klaviatura İzləmə Bitir ----
 
     async function fetchServerTime() {
       const apis = [
@@ -598,14 +582,17 @@
       setTimeout(() => { toast.classList.remove('toast-show'); }, type === 'jackpot' ? 5000 : 3000); 
     }
 
-    // ==========================================
-    // FIREBASE STATE MANAGEMENT (Save/Load)
-    // ==========================================
     function saveState() {
-      db.ref('users/' + userState.tgId).set({
-        user: userState,
-        missions: missionsState
-      });
+      localStorage.setItem(`xpverse_user_${userState.tgId}`, JSON.stringify(userState));
+      localStorage.setItem(`xpverse_missions_${userState.tgId}`, JSON.stringify(missionsState));
+    }
+
+    function loadState() {
+      const savedUser = localStorage.getItem(`xpverse_user_${userState.tgId}`);
+      const savedMissions = localStorage.getItem(`xpverse_missions_${userState.tgId}`);
+
+      if (savedUser) userState = { ...userState, ...JSON.parse(savedUser) };
+      if (savedMissions) missionsState = { ...getDefaultMissions(), ...JSON.parse(savedMissions) };
     }
 
     function getResetDay(serverDate) { return serverDate.toISOString().split('T')[0]; }
@@ -907,7 +894,6 @@
         status: 'Pending'
       };
 
-      if(!userState.withdrawHistory) userState.withdrawHistory = [];
       userState.withdrawHistory.unshift(withdrawalRecord); 
       
       saveState();
@@ -922,7 +908,7 @@
     function renderWithdrawHistory() {
       const container = document.getElementById('withdraw-history-container');
       
-      if (!userState.withdrawHistory || userState.withdrawHistory.length === 0) {
+      if (userState.withdrawHistory.length === 0) {
         container.innerHTML = `
           <div class="glass-card rounded-2xl p-6 text-center border-dashed border-2 border-slate-700">
             <i class="fa-solid fa-clock-rotate-left text-3xl text-slate-600 mb-2"></i>
@@ -1008,36 +994,22 @@
         }
     }
     
-    // ==========================================
-    // APP INITIALIZATION WITH FIREBASE
-    // ==========================================
     async function initApp() {
-      await fetchServerTime(); 
-
-      // Load State from Firebase instead of localStorage
-      db.ref('users/' + userState.tgId).once('value', snapshot => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          if (data.user) userState = { ...defaultUserState, ...data.user };
-          if (data.missions) missionsState = { ...getDefaultMissions(), ...data.missions };
-        } else {
-          saveState(); // Save default if new user
-        }
-
-        // Hide loading screen after data is fetched
+      fetchServerTime(); 
+      
+      setTimeout(() => {
+        document.getElementById('loading-overlay').style.opacity = '0';
         setTimeout(() => {
-          document.getElementById('loading-overlay').style.opacity = '0';
-          setTimeout(() => {
-            document.getElementById('loading-overlay').style.display = 'none';
-          }, 500); 
-        }, 1000); // 3 saniyə gözləməyə ehtiyac qalmır, data yüklənəndə açılır
+          document.getElementById('loading-overlay').style.display = 'none';
+        }, 500); 
+      }, 3000);
 
-        checkDailyReset();
-        updateUI();
-        
-        setInterval(updateTimer, 1000);
-        updateTimer();
-      });
+      loadState();
+      checkDailyReset();
+      updateUI();
+      
+      setInterval(updateTimer, 1000);
+      updateTimer();
     }
 
     initApp();

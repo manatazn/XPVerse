@@ -15,6 +15,17 @@ const getDefaultMissions = () => ({
   all: { claimed: false, reward: 100, type: 'meta' }
 });
 
+// Bazadan istifadəçini oxumaq üçün köməkçi funksiya
+async function getUser(env, tgId) {
+  const row = await env.MY_KV.prepare("SELECT data FROM users WHERE tgId = ?").bind(tgId).first();
+  return row ? JSON.parse(row.data) : null;
+}
+
+// Bazaya istifadəçini yazmaq üçün köməkçi funksiya
+async function saveUser(env, tgId, user) {
+  await env.MY_KV.prepare("INSERT OR REPLACE INTO users (tgId, data) VALUES (?, ?)").bind(tgId, JSON.stringify(user)).run();
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -26,7 +37,9 @@ export default {
       if (path === "/auth" && request.method === "POST") {
         const body = await request.json();
         const tgId = body.tgId.toString();
-        let user = await env.XP_DB.get(tgId, { type: "json" });
+        
+        // KV yerinə D1-dən məlumat çəkilir
+        let user = await getUser(env, tgId);
         
         const currentResetDay = new Date().toISOString().split('T')[0];
 
@@ -54,14 +67,14 @@ export default {
           // Referans Sistemi
           if (body.referrerId && body.referrerId.toString() !== tgId) {
             user.referrerId = body.referrerId.toString();
-            let ref = await env.XP_DB.get(user.referrerId, { type: "json" });
+            let ref = await getUser(env, user.referrerId);
             if (ref) {
               ref.refsPending = (ref.refsPending || 0) + 1;
-              await env.XP_DB.put(user.referrerId, JSON.stringify(ref));
+              await saveUser(env, user.referrerId, ref);
             }
           }
         } else {
-          // Gündəlik Sıfırlanma (Server tərəfindən idarə olunur)
+          // Gündəlik Sıfırlanma
           if (user.lastResetDay !== currentResetDay) {
             user.streak = (user.streak || 1) + 1;
             if (user.streak > 7) user.streak = 1;
@@ -75,7 +88,8 @@ export default {
         }
 
         if (user.banned) return Response.json({ success: false, isBanned: true }, { headers: corsHeaders });
-        await env.XP_DB.put(tgId, JSON.stringify(user));
+        
+        await saveUser(env, tgId, user);
         return Response.json({ success: true, user: user }, { headers: corsHeaders });
       }
 
@@ -83,7 +97,7 @@ export default {
       if (path === "/watchAd" && request.method === "POST") {
         const body = await request.json();
         const tgId = body.tgId.toString();
-        let user = await env.XP_DB.get(tgId, { type: "json" });
+        let user = await getUser(env, tgId);
         
         if (!user || user.adsWatchedToday >= 30) return Response.json({ success: false, error: "Limit" }, { headers: corsHeaders });
         
@@ -93,23 +107,23 @@ export default {
         
         // 25 Reklam Şərti ilə Referans Təsdiqi
         if (user.adsWatchedToday === 25 && user.referrerId) {
-             let ref = await env.XP_DB.get(user.referrerId, { type: "json" });
+             let ref = await getUser(env, user.referrerId);
              if (ref) {
                 ref.refsPending = Math.max(0, (ref.refsPending || 0) - 1);
                 ref.refsApproved = (ref.refsApproved || 0) + 1;
                 ref.xp += 50; 
                 ref.totalXp += 50;
-                await env.XP_DB.put(user.referrerId, JSON.stringify(ref));
+                await saveUser(env, user.referrerId, ref);
              }
         }
-        await env.XP_DB.put(tgId, JSON.stringify(user));
+        await saveUser(env, tgId, user);
         return Response.json({ success: true, user: user }, { headers: corsHeaders });
       }
 
       // 3. MİSSİYA TƏSDİQLƏMƏK
       if (path === "/claimMission" && request.method === "POST") {
         const { tgId, missionKey } = await request.json();
-        let user = await env.XP_DB.get(tgId.toString(), { type: "json" });
+        let user = await getUser(env, tgId.toString());
         if(!user) return Response.json({ success: false, error: "User not found" }, { headers: corsHeaders });
         
         let mission = user.missions[missionKey];
@@ -126,7 +140,7 @@ export default {
                user.totalXp += user.missions.all.reward;
             }
             
-            await env.XP_DB.put(tgId.toString(), JSON.stringify(user));
+            await saveUser(env, tgId.toString(), user);
             return Response.json({ success: true, user: user }, { headers: corsHeaders });
         }
         return Response.json({ success: false, error: "Artıq götürülüb və ya xəta var" }, { headers: corsHeaders });
@@ -135,7 +149,7 @@ export default {
       // 4. QUTU AÇMA
       if (path === "/openBox" && request.method === "POST") {
         const body = await request.json();
-        let user = await env.XP_DB.get(body.tgId.toString(), { type: "json" });
+        let user = await getUser(env, body.tgId.toString());
         if (!user) return Response.json({ success: false, error: "User not found" }, { headers: corsHeaders });
         
         const boxCosts = { bronze: 1000, silver: 5000, gold: 10000 };
@@ -151,14 +165,14 @@ export default {
                      body.boxType === 'silver' ? (isJackpot ? 7.00 : 0.50) : (isJackpot ? 15.00 : 1.00);
         
         user.usdBalance = parseFloat((parseFloat(user.usdBalance || 0) + reward).toFixed(2));
-        await env.XP_DB.put(body.tgId.toString(), JSON.stringify(user));
+        await saveUser(env, body.tgId.toString(), user);
         return Response.json({ success: true, user: user, reward: reward, isJackpot: isJackpot }, { headers: corsHeaders });
       }
 
       // 5. ÇIXARIŞ ETMƏK
       if (path === "/withdraw" && request.method === "POST") {
         const body = await request.json();
-        let user = await env.XP_DB.get(body.tgId.toString(), { type: "json" });
+        let user = await getUser(env, body.tgId.toString());
         const amount = parseFloat(body.amount);
         
         if (!user || user.usdBalance < amount) return Response.json({ success: false, error: "Kifayət qədər balans yoxdur" }, { headers: corsHeaders });
@@ -174,7 +188,7 @@ export default {
           status: 'Pending'
         });
         
-        await env.XP_DB.put(body.tgId.toString(), JSON.stringify(user));
+        await saveUser(env, body.tgId.toString(), user);
         return Response.json({ success: true, user: user }, { headers: corsHeaders });
       }
 

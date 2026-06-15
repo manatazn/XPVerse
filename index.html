@@ -611,8 +611,13 @@
     function handleKeyboardState() {
       let currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       if (currentHeight > maxViewportHeight) maxViewportHeight = currentHeight;
-      if (maxViewportHeight - currentHeight > 100) bottomNavElement.classList.add('nav-hidden');
-      else bottomNavElement.classList.remove('nav-hidden');
+      if (maxViewportHeight - currentHeight > 100) {
+          bottomNavElement.classList.add('nav-hidden');
+      } else {
+          // Oyunda deyilsə göstər
+          if (window.gameEngine && window.gameEngine.isPlaying) return;
+          bottomNavElement.classList.remove('nav-hidden');
+      }
     }
 
     if (window.visualViewport) window.visualViewport.addEventListener('resize', handleKeyboardState);
@@ -699,7 +704,6 @@
       if (savedMissions) missionsState = { ...getDefaultMissions(), ...JSON.parse(savedMissions) };
       if (savedGame) {
           let g = JSON.parse(savedGame);
-          // Removed rainbow references safely
           delete g.powerups?.rainbow;
           delete g.adLimits?.rainbow;
           gameState = { ...defaultGameState, ...g };
@@ -1137,7 +1141,6 @@
     // GAME ENGINE: XPVerse Balloon Blast
     // ==========================================
 
-    // Generous and escalating rewards for levels 1 through 10
     const LEVEL_REWARDS = [50, 75, 100, 150, 200, 250, 300, 400, 500, 750]; 
 
     function getDailyRandom(seed) {
@@ -1211,6 +1214,7 @@
     };
 
     function startGame(level) {
+      document.getElementById('bottom-nav').classList.add('nav-hidden'); // Naviqasiyanı gizlət
       document.getElementById('game-menu-container').classList.add('hidden');
       document.getElementById('game-play-container').classList.remove('hidden');
       document.getElementById('game-over-modal').classList.add('hidden');
@@ -1229,6 +1233,7 @@
 
     function exitGame() {
       gameEngine.isPlaying = false;
+      document.getElementById('bottom-nav').classList.remove('nav-hidden'); // Naviqasiyanı geri qaytar
       document.getElementById('game-play-container').classList.add('hidden');
       document.getElementById('game-menu-container').classList.remove('hidden');
       updatePowerupUI();
@@ -1281,7 +1286,6 @@
       gameEngine.ballRadius = (gameEngine.canvas.width / (gameEngine.gridCols + 0.5)) / 2;
     }
 
-    // Only fetch colors that currently exist on the board
     function getAvailableColors() {
       let activeColors = new Set();
       for(let r=0; r<gameEngine.grid.length; r++) {
@@ -1300,6 +1304,13 @@
     function getRandomColor() {
       const available = getAvailableColors();
       return available[Math.floor(Math.random() * available.length)];
+    }
+
+    function updateLauncherColors() {
+       let avail = getAvailableColors();
+       if(avail.length === 0) return;
+       if(avail.indexOf(gameEngine.launcherColor) === -1) gameEngine.launcherColor = getRandomColor();
+       if(avail.indexOf(gameEngine.nextColor) === -1) gameEngine.nextColor = getRandomColor();
     }
 
     function generateLevel(level) {
@@ -1321,9 +1332,7 @@
           
           let rVal = gameEngine.rand();
           
-          // Generate geometric patterns dynamically for fun
           if ((r + c) % 2 === 0 && rVal < 0.2) {
-             // Create empty spaces occasionally for interesting layouts
              if (level >= 3 && rVal < 0.05) { gameEngine.grid[r][c] = null; continue; }
           }
 
@@ -1369,19 +1378,17 @@
       }
     }
 
-    // High quality, sharp drawing with NO blur. Clean gradient + specular highlight.
     function drawBalloon(ctx, x, y, r, color, type, hp) {
       ctx.beginPath();
       ctx.arc(x, y, r, 0, Math.PI * 2);
       
       let grad = ctx.createRadialGradient(x - r/3, y - r/3, r/10, x, y, r);
-      grad.addColorStop(0, '#ffffff'); // bright hotspot
+      grad.addColorStop(0, '#ffffff'); 
       grad.addColorStop(0.3, color);
-      grad.addColorStop(1, shadeColor(color, -40)); // darker edge
+      grad.addColorStop(1, shadeColor(color, -40)); 
       ctx.fillStyle = grad;
       ctx.fill();
       
-      // Specular highlight for 3D glass look
       ctx.beginPath();
       ctx.ellipse(x - r*0.3, y - r*0.3, r*0.4, r*0.2, Math.PI / -4, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
@@ -1417,7 +1424,6 @@
       return "#"+RR+GG+BB;
     }
 
-    // Added clear aiming line & trajectory prediction
     function drawAimLine() {
       if (!gameEngine.mouseX || !gameEngine.mouseY || gameEngine.projectiles.length > 0) return;
       
@@ -1425,8 +1431,10 @@
       const lx = gameEngine.canvas.width / 2;
       const ly = gameEngine.canvas.height - 40;
       
-      let dx = gameEngine.mouseX - lx;
       let dy = gameEngine.mouseY - ly;
+      if (dy > -10) return; // Aşağı nişan alındıqda xətt itir
+
+      let dx = gameEngine.mouseX - lx;
       let angle = Math.atan2(dy, dx);
       if (angle > -0.1) angle = -0.1; 
       if (angle < -Math.PI + 0.1) angle = -Math.PI + 0.1;
@@ -1471,12 +1479,10 @@
       }
       
       if (gameEngine.activePowerup === 'rocket') {
-          // Intense solid red line for rocket
           ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)';
           ctx.lineWidth = 4;
           ctx.setLineDash([]);
       } else {
-          // Precise dotted line for normal targeting
           ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
           ctx.lineWidth = 2;
           ctx.setLineDash([8, 8]);
@@ -1492,11 +1498,9 @@
       
       drawAimLine();
 
-      // Next Balloon Swap
       drawBalloon(ctx, lx - 60, ly + 10, gameEngine.ballRadius * 0.6, gameEngine.nextColor, 'normal', 1);
       ctx.fillStyle = '#64748b'; ctx.font = "10px sans-serif"; ctx.fillText("NEXT", lx - 60, ly - 15);
       
-      // Base
       ctx.beginPath(); ctx.arc(lx, ly, 30, Math.PI, 0); ctx.fillStyle = '#1e293b'; ctx.fill();
       
       if (gameEngine.projectiles.length === 0) {
@@ -1518,7 +1522,6 @@
       e.preventDefault();
       updateMousePos(e);
       
-      // Check Swap
       const lx = gameEngine.canvas.width / 2;
       const ly = gameEngine.canvas.height - 40;
       const dist = Math.hypot(gameEngine.mouseX - (lx - 60), gameEngine.mouseY - (ly + 10));
@@ -1546,8 +1549,13 @@
       const lx = gameEngine.canvas.width / 2;
       const ly = gameEngine.canvas.height - 40;
       
-      let dx = gameEngine.mouseX - lx;
       let dy = gameEngine.mouseY - ly;
+      if (dy > -10) { 
+          gameEngine.mouseX = null; 
+          return; // Atışı ləğv et
+      }
+
+      let dx = gameEngine.mouseX - lx;
       let angle = Math.atan2(dy, dx);
       if (angle > -0.1) angle = -0.1; 
       if (angle < -Math.PI + 0.1) angle = -Math.PI + 0.1;
@@ -1572,6 +1580,7 @@
       if (!gameEngine.activePowerup) {
          gameEngine.launcherColor = gameEngine.nextColor;
          gameEngine.nextColor = getRandomColor();
+         updateLauncherColors();
       } else {
          consumePowerup(gameEngine.activePowerup);
       }
@@ -1602,7 +1611,8 @@
         let snapped = false;
 
         if (p.type === 'rocket') {
-           // Rockets destroy completely straight through
+           p.pierceCount = p.pierceCount || 0;
+           let hitAny = false;
            for(let r=0; r<gameEngine.grid.length; r++) {
               if(!gameEngine.grid[r]) continue;
               for(let c=0; c<gameEngine.grid[r].length; c++) {
@@ -1610,19 +1620,22 @@
                     let pos = getGridPos(r, c);
                     if(Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius * 2.5) {
                        popBalloon(r, c, true);
+                       p.pierceCount++;
+                       hitAny = true;
                     }
                  }
               }
            }
-           dropFloaters(); // Re-eval board
-           if (p.y < 0) {
+           if(hitAny) dropFloaters();
+           
+           if (p.y < 0 || p.pierceCount >= 5) {
                gameEngine.projectiles.splice(i, 1);
                checkWinLoss();
+               updateLauncherColors();
            }
            continue;
         }
 
-        // Top hit
         if (p.y - p.radius <= gameEngine.offsetY) {
           snapProjectile(p, 0);
           snapped = true;
@@ -1687,14 +1700,7 @@
        }
        
        checkWinLoss();
-       
-       // Force update colors dynamically based on remaining blocks
-       if (getAvailableColors().indexOf(gameEngine.launcherColor) === -1) {
-           gameEngine.launcherColor = getRandomColor();
-       }
-       if (getAvailableColors().indexOf(gameEngine.nextColor) === -1) {
-           gameEngine.nextColor = getRandomColor();
-       }
+       updateLauncherColors(); // Xəta: Yox olan rəngləri təmizlə
     }
 
     function getNeighborsDirs(r) {
@@ -1712,7 +1718,6 @@
        return n;
     }
 
-    // Increased radius to comfortably destroy 5-6 balloons
     function triggerExplosion(r, c) {
         let toPop = [];
         for(let ir = r-2; ir <= r+2; ir++) {
@@ -1749,8 +1754,7 @@
             });
         }
 
-        // Fun mechanic requested: even if it's 2 balloons (single shot hitting a single balloon), they pop.
-        if (matchGroup.length >= 2) {
+        if (matchGroup.length >= 3) { // Ən azı 3 şar birləşməlidir
             matchGroup.forEach(m => popBalloon(m.r, m.c));
             addScore(matchGroup.length * 10);
             if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
@@ -1774,7 +1778,6 @@
        gameEngine.grid[r][c] = null;
     }
 
-    // Identifies unconnected groups and drops them
     function dropFloaters() {
         let visited = new Set();
         let q = [];
@@ -1804,7 +1807,6 @@
             if(!gameEngine.grid[r]) continue;
             for(let c=0; c<gameEngine.grid[r].length; c++) {
                 if(gameEngine.grid[r][c] && !visited.has(`${r},${c}`)) {
-                    // Create massive visual impact for dropping groups
                     createParticles(r, c, gameEngine.grid[r][c].color);
                     gameEngine.grid[r][c] = null;
                     dropped++;
@@ -1869,7 +1871,6 @@
         document.getElementById('ingame-stars').innerHTML = html;
     }
 
-    // Instantly check for empty board to skip to win
     function checkWinLoss() {
         let isEmpty = true;
         let reachedBottom = false;
@@ -1895,6 +1896,7 @@
 
     function endGame(isWin) {
         gameEngine.isPlaying = false;
+        document.getElementById('bottom-nav').classList.remove('nav-hidden'); 
         const modal = document.getElementById('game-over-modal');
         const title = document.getElementById('end-title');
         const endStars = document.getElementById('end-stars');
@@ -1907,7 +1909,6 @@
             let stars = calculateStars();
             let idx = gameEngine.currentLevel - 1;
             
-            // Re-balanced: ALWAYS grant rewards on win.
             let xpEarned = LEVEL_REWARDS[idx] || 1000;
             
             title.innerText = "Level Clear!";
@@ -1921,7 +1922,6 @@
             }
             endStars.innerHTML = starsHtml;
 
-            // Grant XP securely
             userState.xp += xpEarned;
             userState.totalXp += xpEarned;
             gameState.levelsCompleted[idx] = true;

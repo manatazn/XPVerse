@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>XPVerse - Telegram Mini App</title>
+  <title>XPVerse - Premium Telegram Mini App</title>
   
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
@@ -47,9 +47,9 @@
               '100%': { transform: 'translateY(-100px) scale(0.5)', opacity: 0 }
             },
             pop: {
-              '0%': { transform: 'scale(1)' },
-              '50%': { transform: 'scale(1.3)' },
-              '100%': { transform: 'scale(0)', opacity: 0 }
+              '0%': { transform: 'scale(0.8)', opacity: 0.5 },
+              '50%': { transform: 'scale(1.2)', opacity: 1 },
+              '100%': { transform: 'scale(1)', opacity: 1 }
             },
             shimmer: {
               '0%': { transform: 'translateX(-100%)' },
@@ -161,7 +161,6 @@
     .box-silver { background: linear-gradient(135deg, rgba(226,232,240,0.1), rgba(148,163,184,0.2)); border: 1px solid rgba(226,232,240,0.4); }
     .box-gold { background: linear-gradient(135deg, rgba(255,184,0,0.15), rgba(217,119,6,0.25)); border: 1px solid rgba(255,184,0,0.5); }
 
-    /* Game Specific Styles */
     #game-play-container.fullscreen-mode {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -335,7 +334,7 @@
       </div>
 
       <div id="game-play-container" class="hidden flex flex-col gap-3">
-        <div class="glass-card p-3 rounded-2xl flex justify-between items-center border border-blue-500/30 shrink-0 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+        <div class="glass-card p-3 rounded-2xl flex justify-between items-center border border-blue-500/30 shrink-0 shadow-[0_4px_20px_rgba(0,0,0,0.5)] z-10 relative">
           <button onclick="exitGame()" class="w-10 h-10 rounded-xl bg-slate-800/50 flex items-center justify-center text-slate-400 hover:text-white active:scale-95 transition-all">
             <i class="fa-solid fa-arrow-left"></i>
           </button>
@@ -372,7 +371,7 @@
           </div>
         </div>
 
-        <div class="glass-card p-3 rounded-2xl flex justify-center gap-10 items-center shrink-0 border border-slate-700/50">
+        <div class="glass-card p-3 rounded-2xl flex justify-center gap-10 items-center shrink-0 border border-slate-700/50 z-10 relative">
           <div class="flex flex-col items-center gap-1.5 group relative">
             <button onclick="activatePowerup('bomb')" class="powerup-btn w-12 h-12 rounded-2xl bg-slate-800/80 border-2 border-slate-600 flex items-center justify-center text-orange-400 relative shadow-[0_4px_15px_rgba(0,0,0,0.5)]" id="btn-power-bomb" style="--glow-color: rgba(249,115,22,0.6)">
               <i class="fa-solid fa-bomb text-xl drop-shadow-[0_0_5px_rgba(249,115,22,0.8)]"></i>
@@ -1234,9 +1233,9 @@
       container.innerHTML = html;
     }
 
-    let gameEngine = {
+    window.gameEngine = {
       canvas: null, ctx: null, isPlaying: false,
-      balloons: [], projectiles: [], particles: [], fallingBalloons: [], floatingTexts: [],
+      balloons: [], projectiles: [], particles: [], fallingBalloons: [], floatingTexts: [], flashes: [],
       gridCols: 8, ballRadius: 0,
       grid: [], 
       colors: ['#ef4444', '#3b82f6', '#10b981', '#eab308', '#a855f7', '#06b6d4'],
@@ -1244,7 +1243,7 @@
       colorHistory: [], 
       currentLevel: 1, score: 0, shotsFired: 0, totalTarget: 0,
       offsetY: 0, dropInterval: 5, limitY: 0,
-      mouseX: null, mouseY: null, rand: null,
+      mouseX: 0, mouseY: 0, rand: null,
       containers: null
     };
 
@@ -1292,8 +1291,11 @@
       gameEngine.particles = [];
       gameEngine.fallingBalloons = [];
       gameEngine.floatingTexts = [];
+      gameEngine.flashes = [];
       gameEngine.activePowerup = null;
       gameEngine.colorHistory = [];
+      gameEngine.mouseX = null;
+      gameEngine.mouseY = null;
 
       document.getElementById('ingame-level-display').innerText = level;
       document.getElementById('ingame-score').innerText = '0';
@@ -1308,7 +1310,7 @@
       
       let avail = getAvailableColors();
       gameEngine.launcherColor = avail[Math.floor(gameEngine.rand() * avail.length)];
-      updateColorHistory(gameEngine.launcherColor);
+      gameEngine.nextColor = avail[Math.floor(gameEngine.rand() * avail.length)];
       updateLauncherColors(true); 
 
       gameEngine.canvas.addEventListener('touchstart', handleInput, {passive: false});
@@ -1345,7 +1347,6 @@
          if(!gameEngine.grid[r]) continue;
          for(let c=0; c<gameEngine.grid[r].length; c++) {
             let b = gameEngine.grid[r][c];
-            // Yalnız məhv edilə bilən şarların rənglərini qaytarırıq (normal, locked, ice)
             if(b && b.type !== 'armored' && b.type !== 'virus') {
                activeColors.add(b.color);
             }
@@ -1366,26 +1367,25 @@
        let avail = getAvailableColors();
        if(avail.length === 0) return; 
        
-       let isColorAllowed = (color) => {
-         if (gameEngine.colorHistory.length >= 2 && 
-             gameEngine.colorHistory[0] === color && 
-             gameEngine.colorHistory[1] === color) {
-            return false;
+       let safeColors = avail.filter(c => {
+         let count = 0;
+         for (let i = 0; i < gameEngine.colorHistory.length; i++) {
+            if (gameEngine.colorHistory[i] === c) count++;
+            else break;
          }
-         return true;
-       };
+         return count < 2; 
+       });
+       
+       if(safeColors.length === 0) safeColors = avail;
 
        if(!avail.includes(gameEngine.launcherColor)) {
-           let safeColors = avail.filter(isColorAllowed);
-           if(safeColors.length === 0) safeColors = avail; 
            gameEngine.launcherColor = safeColors[Math.floor(Math.random() * safeColors.length)];
        }
 
        if(forceNewNext || !avail.includes(gameEngine.nextColor)) {
-           let safeColors = avail.filter(c => c !== gameEngine.launcherColor && isColorAllowed(c));
-           if(safeColors.length === 0) safeColors = avail.filter(c => c !== gameEngine.launcherColor); 
-           if(safeColors.length === 0) safeColors = avail; 
-           gameEngine.nextColor = safeColors[Math.floor(Math.random() * safeColors.length)];
+           let nextSafe = safeColors.filter(c => c !== gameEngine.launcherColor);
+           if(nextSafe.length === 0) nextSafe = safeColors;
+           gameEngine.nextColor = nextSafe[Math.floor(Math.random() * nextSafe.length)];
        }
     }
 
@@ -1396,8 +1396,8 @@
       gameEngine.grid = [];
       gameEngine.totalTarget = 0;
       
+      let allowFrozen = level >= 2;
       let allowLocked = level >= 4;
-      let allowIce = level >= 5;
       let allowVirus = level >= 7;
       let allowArmor = level >= 9;
 
@@ -1407,29 +1407,20 @@
         for (let c = 0; c < colsInRow; c++) {
           let type = 'normal';
           let hp = 1;
+          let bColor = gameEngine.colors[Math.floor(gameEngine.rand() * gameEngine.colors.length)];
           let rVal = gameEngine.rand();
           
           if ((r + c) % 2 === 0 && rVal < 0.2) {
              if (level >= 3 && rVal < 0.05) { gameEngine.grid[r][c] = null; continue; }
           }
 
-          if (level === 10) {
-             if(rVal < 0.1) { type = 'locked'; hp = 2; }
-             else if(rVal < 0.2) { type = 'ice'; hp = 2; }
-             else if(rVal < 0.25) type = 'virus';
-             else if(rVal < 0.35) type = 'armored';
-          } else {
-             if (allowArmor && rVal < 0.1) type = 'armored';
-             else if (allowVirus && rVal < 0.1) type = 'virus';
-             else if (allowIce && rVal < 0.15) { type = 'ice'; hp = 2; }
-             else if (allowLocked && rVal < 0.15) { type = 'locked'; hp = 2; }
-          }
+          if (allowArmor && rVal < 0.05) { type = 'armored'; bColor = '#64748b'; }
+          else if (allowVirus && rVal < 0.1) { type = 'virus'; bColor = '#bef264'; }
+          else if (allowLocked && rVal < 0.20) { type = 'locked'; hp = 2; }
+          else if (allowFrozen && rVal < 0.30) { type = 'frozen'; hp = 1; }
           
-          gameEngine.grid[r][c] = {
-            color: type === 'armored' ? '#64748b' : gameEngine.colors[Math.floor(gameEngine.rand() * gameEngine.colors.length)],
-            type: type, hp: hp, r: r, c: c
-          };
-          gameEngine.totalTarget++;
+          gameEngine.grid[r][c] = { color: bColor, type: type, hp: hp, r: r, c: c };
+          if(type !== 'armored') gameEngine.totalTarget++;
         }
       }
     }
@@ -1456,90 +1447,75 @@
     }
 
     function drawBalloon(ctx, x, y, r, color, type, hp, isGhost = false) {
-      ctx.save();
-      ctx.globalAlpha = isGhost ? 0.4 : 1.0;
-
-      if (!isGhost) {
-        ctx.shadowColor = 'rgba(0,0,0,0.4)';
-        ctx.shadowBlur = 6;
-        ctx.shadowOffsetY = 3;
-      }
-
+      ctx.globalAlpha = isGhost ? 0.3 : 1.0;
+      
+      // Base Bubble Rendering (Premium look)
       ctx.beginPath();
       ctx.arc(x, y, r, 0, Math.PI * 2);
-
-      let grad = ctx.createRadialGradient(x - r*0.3, y - r*0.3, r*0.1, x, y, r * 1.2);
+      
+      let grad = ctx.createRadialGradient(x - r*0.3, y - r*0.3, r*0.1, x, y, r);
       grad.addColorStop(0, '#ffffff'); 
-      grad.addColorStop(0.2, shadeColor(color, 25));
-      grad.addColorStop(0.7, color);
+      grad.addColorStop(0.2, color);
+      grad.addColorStop(0.8, shadeColor(color, -30));
       grad.addColorStop(1, shadeColor(color, -60)); 
       ctx.fillStyle = grad;
       ctx.fill();
-
-      ctx.shadowColor = 'transparent';
-
+      
+      // Glossy highlight
       ctx.beginPath();
-      ctx.arc(x, y, r*0.85, 0, Math.PI * 2);
-      let innerGrad = ctx.createLinearGradient(x, y + r, x, y - r);
-      innerGrad.addColorStop(0, 'rgba(255,255,255,0.4)');
-      innerGrad.addColorStop(0.4, 'rgba(255,255,255,0)');
-      ctx.fillStyle = innerGrad;
+      ctx.ellipse(x - r*0.35, y - r*0.35, r*0.4, r*0.2, Math.PI / -4, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
       ctx.fill();
 
-      ctx.beginPath();
-      ctx.ellipse(x - r*0.4, y - r*0.4, r*0.4, r*0.2, Math.PI / -4, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-      ctx.fill();
-
+      // Premium Border glow
       ctx.beginPath();
       ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 1;
       ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
       ctx.stroke();
 
+      // Special Type Overlays
       if (type === 'locked') {
-        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
-        ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fill();
-        ctx.fillStyle = '#f8fafc'; ctx.font = `900 ${r*1.1}px FontAwesome`; 
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 4;
-        ctx.fillText('\uf023', x, y); 
-        ctx.shadowBlur = 0;
-        ctx.beginPath(); ctx.arc(x, y, r*0.85, 0, Math.PI*2); 
-        ctx.strokeStyle='#cbd5e1'; ctx.lineWidth=3; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
-      } else if (type === 'ice') {
-        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
-        ctx.fillStyle = 'rgba(224, 242, 254, 0.65)'; ctx.fill();
+        // Chains crossing
         ctx.beginPath();
-        ctx.moveTo(x, y - r*0.8); ctx.lineTo(x + r*0.6, y);
-        ctx.lineTo(x, y + r*0.8); ctx.lineTo(x - r*0.6, y);
-        ctx.closePath();
-        ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 2; ctx.stroke();
-        ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.fill();
+        ctx.moveTo(x - r*0.7, y - r*0.7); ctx.lineTo(x + r*0.7, y + r*0.7);
+        ctx.moveTo(x + r*0.7, y - r*0.7); ctx.lineTo(x - r*0.7, y + r*0.7);
+        ctx.lineWidth = r*0.3; ctx.strokeStyle = '#334155'; ctx.lineCap = 'round'; ctx.stroke();
+        ctx.lineWidth = r*0.15; ctx.strokeStyle = '#94a3b8'; ctx.stroke();
+        
+        ctx.fillStyle = '#1e293b'; ctx.beginPath(); ctx.arc(x, y, r*0.4, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = '#f8fafc'; ctx.font = `900 ${r*0.4}px FontAwesome`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('\uf023', x, y); 
+        if(hp === 2) {
+           ctx.beginPath(); ctx.arc(x, y, r*0.8, 0, Math.PI*2); ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=3; ctx.stroke();
+        }
+      } else if (type === 'frozen') {
+        // Ice crystal overlay
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.beginPath();
+        ctx.moveTo(x, y - r); ctx.lineTo(x + r*0.8, y - r*0.4);
+        ctx.lineTo(x + r*0.8, y + r*0.4); ctx.lineTo(x, y + r);
+        ctx.lineTo(x - r*0.8, y + r*0.4); ctx.lineTo(x - r*0.8, y - r*0.4);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
       } else if (type === 'virus') {
-        ctx.fillStyle = '#bef264'; ctx.font = `900 ${r}px FontAwesome`; 
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.shadowColor = '#000'; ctx.shadowBlur = 5;
+        ctx.fillStyle = '#bef264'; ctx.font = `900 ${r}px FontAwesome`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText('\uf0e7', x, y); 
-        ctx.shadowBlur = 0;
+        // Virus pulse effect
+        ctx.beginPath(); ctx.arc(x, y, r * 1.1, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(190, 242, 100, 0.4)'; ctx.lineWidth = 2; ctx.stroke();
       } else if (type === 'armored') {
-        ctx.beginPath(); ctx.arc(x, y, r*0.8, 0, Math.PI*2); 
-        let armorGrad = ctx.createLinearGradient(x-r, y-r, x+r, y+r);
-        armorGrad.addColorStop(0, '#94a3b8'); armorGrad.addColorStop(1, '#334155');
-        ctx.fillStyle = armorGrad; ctx.fill();
-        ctx.beginPath(); ctx.arc(x, y, r*0.4, 0, Math.PI*2); 
-        ctx.fillStyle='#cbd5e1'; ctx.fill();
-        ctx.fillStyle = '#0f172a';
-        ctx.beginPath(); ctx.arc(x-r*0.5, y, r*0.1, 0, Math.PI*2); ctx.fill();
-        ctx.beginPath(); ctx.arc(x+r*0.5, y, r*0.1, 0, Math.PI*2); ctx.fill();
-        ctx.beginPath(); ctx.arc(x, y-r*0.5, r*0.1, 0, Math.PI*2); ctx.fill();
-        ctx.beginPath(); ctx.arc(x, y+r*0.5, r*0.1, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(x, y, r*0.8, 0, Math.PI*2); ctx.fillStyle='#1e293b'; ctx.fill();
+        ctx.beginPath(); ctx.arc(x, y, r*0.5, 0, Math.PI*2); ctx.fillStyle='#94a3b8'; ctx.fill();
+        ctx.beginPath(); ctx.arc(x, y, r*0.2, 0, Math.PI*2); ctx.fillStyle='#cbd5e1'; ctx.fill();
       }
-
-      ctx.restore();
+      ctx.globalAlpha = 1.0;
     }
 
     function shadeColor(color, percent) {
+      if(!color) return '#ffffff';
       let R = parseInt(color.substring(1,3),16);
       let G = parseInt(color.substring(3,5),16);
       let B = parseInt(color.substring(5,7),16);
@@ -1561,51 +1537,48 @@
       const ly = gameEngine.canvas.height - 120; 
       
       let dy = gameEngine.mouseY - ly;
-      if (dy > -20) return; // Aşağı dartdıqda ləğv olunur
+      if (dy > -15) return; // Prevent aiming when dragging directly downwards
 
       let dx = gameEngine.mouseX - lx;
       let angle = Math.atan2(dy, dx);
-      // Xətanı düzəltmək üçün məhdudiyyət
-      angle = Math.max(-Math.PI + 0.15, Math.min(-0.15, angle));
+      if (angle > -0.1) angle = -0.1; 
+      if (angle < -Math.PI + 0.1) angle = -Math.PI + 0.1;
 
-      let currentX = lx; 
-      let currentY = ly;
+      let x = lx; 
+      let y = ly;
       let vx = Math.cos(angle) * 10;
       let vy = Math.sin(angle) * 10;
       let radius = gameEngine.ballRadius;
       
-      let path = [{x: currentX, y: currentY}];
+      let path = [{x, y}];
       let steps = 0;
       let hit = false;
 
-      while (!hit && steps < 300) {
-          currentX += vx;
-          currentY += vy;
-          steps++;
+      while (y > radius && steps < 500) {
+          x += vx;
+          y += vy;
           
-          if (currentX <= radius) { currentX = radius; vx *= -1; path.push({x: currentX, y: currentY}); }
-          else if (currentX >= gameEngine.canvas.width - radius) { currentX = gameEngine.canvas.width - radius; vx *= -1; path.push({x: currentX, y: currentY}); }
+          if (x <= radius) { x = radius; vx *= -1; path.push({x, y}); }
+          if (x >= gameEngine.canvas.width - radius) { x = gameEngine.canvas.width - radius; vx *= -1; path.push({x, y}); }
           
-          if (currentY <= radius + gameEngine.offsetY) {
-              currentY = radius + gameEngine.offsetY;
-              path.push({x: currentX, y: currentY});
-              hit = true;
-              break;
-          }
-
           for (let r=0; r<gameEngine.grid.length; r++) {
               if(!gameEngine.grid[r]) continue;
               for (let c=0; c<gameEngine.grid[r].length; c++) {
                   if(gameEngine.grid[r][c]) {
                       let pos = getGridPos(r, c);
-                      if (Math.hypot(currentX - pos.x, currentY - pos.y) <= radius * 1.8) {
-                          path.push({x: currentX, y: currentY});
+                      if (Math.hypot(x - pos.x, y - pos.y) <= radius * 1.8) {
                           hit = true; break;
                       }
                   }
               }
               if(hit) break;
           }
+          if(hit) { path.push({x, y}); break; }
+          steps++;
+      }
+      
+      if (!hit && path[path.length - 1].y > radius) {
+          path.push({x: x, y: radius}); // Ensure it hits the top if empty
       }
 
       ctx.beginPath();
@@ -1618,20 +1591,42 @@
       let finalY = path[path.length - 1].y;
 
       if (gameEngine.activePowerup === 'rocket') {
-          ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)'; ctx.lineWidth = radius * 2.5;
-          ctx.setLineDash([]); ctx.lineCap = 'round'; ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(path[0].x, path[0].y);
-          for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, path[i].y);
-          ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.stroke();
+          ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
+          ctx.lineWidth = radius * 2.5;
+          ctx.setLineDash([]);
+          ctx.lineCap = 'round';
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(path[0].x, path[0].y);
+          for (let i = 1; i < path.length; i++) {
+              ctx.lineTo(path[i].x, path[i].y);
+          }
+          ctx.strokeStyle = '#ef4444';
+          ctx.lineWidth = 3;
+          ctx.stroke();
+
       } else if (gameEngine.activePowerup === 'bomb') {
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'; ctx.lineWidth = 2;
-          ctx.setLineDash([8, 8]); ctx.stroke(); ctx.setLineDash([]);
-          ctx.beginPath(); ctx.arc(finalX, finalY, radius * 5, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(249, 115, 22, 0.2)'; ctx.fill();
-          ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(249, 115, 22, 0.8)'; ctx.stroke();
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([8, 8]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          
+          ctx.beginPath();
+          ctx.arc(finalX, finalY, radius * 5, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(249, 115, 22, 0.2)';
+          ctx.fill();
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = 'rgba(249, 115, 22, 0.8)';
+          ctx.stroke();
       } else {
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'; ctx.lineWidth = 2;
-          ctx.setLineDash([8, 8]); ctx.stroke(); ctx.setLineDash([]);
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([6, 6]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
           drawBalloon(ctx, finalX, finalY, radius, gameEngine.launcherColor, 'normal', 1, true);
       }
     }
@@ -1729,22 +1724,24 @@
       const ly = gameEngine.canvas.height - 120;
       
       let dy = gameEngine.mouseY - ly;
-      if (dy > -20) { 
+      if (dy > -15) { 
           gameEngine.mouseX = null; 
+          gameEngine.mouseY = null;
           return; 
       }
 
       let dx = gameEngine.mouseX - lx;
       let angle = Math.atan2(dy, dx);
-      angle = Math.max(-Math.PI + 0.15, Math.min(-0.15, angle));
+      if (angle > -0.1) angle = -0.1; 
+      if (angle < -Math.PI + 0.1) angle = -Math.PI + 0.1;
 
-      let speed = 22;
+      let speed = 24;
       let type = 'normal';
       let color = gameEngine.launcherColor;
 
       if (gameEngine.activePowerup) {
          type = gameEngine.activePowerup;
-         if(type === 'rocket') { speed = 35; color = '#ef4444'; }
+         if(type === 'rocket') { speed = 40; color = '#ef4444'; }
          if(type === 'bomb') { color = '#f97316'; }
       }
 
@@ -1764,6 +1761,7 @@
       }
       
       gameEngine.mouseX = null;
+      gameEngine.mouseY = null;
     }
 
     function updateMousePos(e) {
@@ -1771,7 +1769,7 @@
       if (e.touches && e.touches.length > 0) {
         gameEngine.mouseX = e.touches[0].clientX - rect.left;
         gameEngine.mouseY = e.touches[0].clientY - rect.top;
-      } else {
+      } else if (e.clientX) {
         gameEngine.mouseX = e.clientX - rect.left;
         gameEngine.mouseY = e.clientY - rect.top;
       }
@@ -1838,7 +1836,7 @@
 
       for (let i = gameEngine.fallingBalloons.length - 1; i >= 0; i--) {
           let fb = gameEngine.fallingBalloons[i];
-          fb.vy += 0.4; 
+          fb.vy += 0.5; 
           fb.x += fb.vx;
           fb.y += fb.vy;
 
@@ -1861,24 +1859,47 @@
           let p = gameEngine.particles[i];
           p.x += p.vx;
           p.y += p.vy;
+          p.vy += 0.2; // gravity for particles
           p.life -= 0.03;
           if (p.life <= 0) gameEngine.particles.splice(i, 1);
       }
 
       for (let i = gameEngine.floatingTexts.length - 1; i >= 0; i--) {
           let ft = gameEngine.floatingTexts[i];
-          ft.y -= 1;
+          ft.y -= 1.5;
           ft.life -= 0.02;
           if (ft.life <= 0) gameEngine.floatingTexts.splice(i, 1);
+      }
+      
+      for (let i = gameEngine.flashes.length - 1; i >= 0; i--) {
+          gameEngine.flashes[i].life -= 0.05;
+          if(gameEngine.flashes[i].life <= 0) gameEngine.flashes.splice(i, 1);
       }
     }
 
     function showFloatingText(text, x, y, color = '#fff') {
         gameEngine.floatingTexts.push({text: text, x: x, y: y, life: 1, color: color});
     }
+    
+    function addFlash(x, y, color) {
+        gameEngine.flashes.push({x: x, y: y, color: color, life: 1.0});
+    }
 
     function drawPhysicsObjects() {
       const ctx = gameEngine.ctx;
+      
+      ctx.globalCompositeOperation = 'screen';
+      gameEngine.flashes.forEach(f => {
+          ctx.globalAlpha = f.life;
+          let r = gameEngine.ballRadius * 3;
+          let grad = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, r);
+          grad.addColorStop(0, f.color);
+          grad.addColorStop(1, 'transparent');
+          ctx.fillStyle = grad;
+          ctx.beginPath(); ctx.arc(f.x, f.y, r, 0, Math.PI*2); ctx.fill();
+      });
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1.0;
 
       gameEngine.particles.forEach(p => {
           ctx.globalAlpha = p.life;
@@ -1894,7 +1915,7 @@
       });
 
       ctx.textAlign = 'center';
-      ctx.font = '900 16px "Outfit"';
+      ctx.font = '900 18px "Outfit"';
       gameEngine.floatingTexts.forEach(ft => {
           ctx.globalAlpha = ft.life;
           ctx.fillStyle = ft.color;
@@ -1965,6 +1986,9 @@
 
     function triggerExplosion(r, c) {
         let toPop = [];
+        let ePos = getGridPos(r, c);
+        addFlash(ePos.x, ePos.y, '#f97316');
+        
         for(let ir = r-2; ir <= r+2; ir++) {
             if(!gameEngine.grid[ir]) continue;
             for(let ic = c-2; ic <= c+2; ic++) {
@@ -1980,6 +2004,7 @@
         let startColor = gameEngine.grid[r][c].color;
         let matchGroup = [];
         let visited = new Set();
+        let adjacentSpecials = new Set();
         let q = [{r, c}];
         visited.add(`${r},${c}`);
 
@@ -1990,7 +2015,9 @@
             
             neighbors.forEach(n => {
                 let cell = gameEngine.grid[n.r][n.c];
-                if (!visited.has(`${n.r},${n.c}`) && cell.type !== 'armored') {
+                if (cell.type === 'frozen' || cell.type === 'locked') {
+                    adjacentSpecials.add(`${n.r},${n.c}`);
+                } else if (!visited.has(`${n.r},${n.c}`) && cell.type === 'normal') {
                     if (cell.color === startColor) {
                         visited.add(`${n.r},${n.c}`);
                         q.push({r: n.r, c: n.c});
@@ -2000,32 +2027,30 @@
         }
 
         if (matchGroup.length >= 3) { 
-            // Qonşuluqda olan kilid və ya buzları qırmaq mexanikası
-            let neighborsToBreak = new Set();
-            matchGroup.forEach(m => {
-                getNeighbors(m.r, m.c).forEach(n => {
-                    let cell = gameEngine.grid[n.r][n.c];
-                    if (cell && (cell.type === 'locked' || cell.type === 'ice') && !matchGroup.some(mg => mg.r === n.r && mg.c === n.c)) {
-                        neighborsToBreak.add(`${n.r},${n.c}`);
-                    }
-                });
-            });
-
+            let mPos = getGridPos(r, c);
+            addFlash(mPos.x, mPos.y, startColor);
             matchGroup.forEach(m => popBalloon(m.r, m.c));
-
-            neighborsToBreak.forEach(key => {
-                let [nr, nc] = key.split(',').map(Number);
-                let cell = gameEngine.grid[nr][nc];
-                if (cell) {
-                    cell.type = 'normal';
-                    cell.hp = 1;
-                    createParticles(nr, nc, '#e2e8f0'); 
-                    addScore(15);
-                    if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+            
+            // YENİ: Qonşu kilidli/buzlu şarları sındırmaq (PREMIUM mexanika)
+            adjacentSpecials.forEach(posStr => {
+                let [sr, sc] = posStr.split(',').map(Number);
+                let sb = gameEngine.grid[sr][sc];
+                if (sb) {
+                    if(sb.hp > 1) {
+                        sb.hp--;
+                        createParticles(sr, sc, '#cbd5e1');
+                        showFloatingText("CRACK!", getGridPos(sr, sc).x, getGridPos(sr, sc).y, '#fff');
+                    } else {
+                        sb.type = 'normal'; // kiliddən çıxdı
+                        createParticles(sr, sc, '#ffffff');
+                        showFloatingText("UNLOCKED", getGridPos(sr, sc).x, getGridPos(sr, sc).y, '#fff');
+                        addScore(15);
+                    }
                 }
             });
 
             addScore(matchGroup.length * 10);
+            if(matchGroup.length > 4) showFloatingText("GREAT!", mPos.x, mPos.y - 20, '#ffb800');
             if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             dropFloaters();
         } else {
@@ -2037,18 +2062,19 @@
        let b = gameEngine.grid[r][c];
        if(!b) return;
        
+       if (b.type === 'locked' && b.hp > 1 && !force) {
+           b.hp--;
+           createParticles(r, c, '#cbd5e1'); 
+           return;
+       }
+
        let pos = getGridPos(r, c);
        
-       if (b.type === 'normal' || force) {
-           let dropColor = b.color;
-           if(b.type === 'armored') dropColor = '#64748b';
-           if(b.type === 'virus') dropColor = '#84cc16';
-           if(b.type === 'locked' || b.type === 'ice') dropColor = b.color;
-
+       if (b.type === 'normal' || b.type === 'frozen' || b.type === 'locked') {
            gameEngine.fallingBalloons.push({
                x: pos.x, y: pos.y, 
-               vx: (Math.random() - 0.5) * 8, vy: -2, 
-               radius: gameEngine.ballRadius, color: dropColor, type: (b.type === 'normal' || b.type === 'locked' || b.type === 'ice') ? 'normal' : b.type
+               vx: (Math.random() - 0.5) * 8, vy: 0, 
+               radius: gameEngine.ballRadius, color: b.color, type: 'normal'
            });
        } else {
            createParticles(r, c, b.color);
@@ -2057,11 +2083,11 @@
        gameEngine.grid[r][c] = null;
     }
 
-    function dropFloaters(forceAll = false) {
+    function dropFloaters() {
         let visited = new Set();
         let q = [];
         
-        if(!forceAll && gameEngine.grid[0]) {
+        if(gameEngine.grid[0]) {
             for(let c=0; c<gameEngine.grid[0].length; c++) {
                 if(gameEngine.grid[0][c]) {
                     q.push({r:0, c:c});
@@ -2091,7 +2117,10 @@
                 }
             }
         }
-        if(dropped > 0) addScore(dropped * 20);
+        if(dropped > 0) {
+           addScore(dropped * 20);
+           if(dropped >= 5) showFloatingText("AVALANCHE!", gameEngine.canvas.width/2, gameEngine.canvas.height/2, '#00f0ff');
+        }
     }
 
     function spreadVirus() {
@@ -2119,11 +2148,11 @@
 
     function createParticles(r, c, color) {
         let pos = getGridPos(r, c);
-        for(let i=0; i<8; i++) {
+        for(let i=0; i<12; i++) {
             gameEngine.particles.push({
                 x: pos.x, y: pos.y,
-                vx: (Math.random() - 0.5) * 12,
-                vy: (Math.random() - 0.5) * 12,
+                vx: (Math.random() - 0.5) * 15,
+                vy: (Math.random() - 0.5) * 15,
                 life: 1, color: color
             });
         }
@@ -2150,27 +2179,35 @@
     }
 
     function checkWinLoss() {
-        let hasMatchable = false;
+        let isEmpty = true;
         let reachedBottom = false;
+        let matchableLeft = false;
 
         for(let r=0; r<gameEngine.grid.length; r++) {
             if(!gameEngine.grid[r]) continue;
             for(let c=0; c<gameEngine.grid[r].length; c++) {
                 let b = gameEngine.grid[r][c];
                 if(b) {
+                    isEmpty = false;
                     let pos = getGridPos(r, c);
                     if (pos.y + gameEngine.ballRadius > gameEngine.limitY) reachedBottom = true;
-                    if (b.type !== 'armored' && b.type !== 'virus') {
-                        hasMatchable = true;
-                    }
+                    if (b.type !== 'armored') matchableLeft = true; // Əgər zirehli/qırılmaz deyilsə
                 }
             }
         }
 
-        if (!hasMatchable && gameEngine.fallingBalloons.length === 0 && gameEngine.projectiles.length === 0) {
-            dropFloaters(true); 
-            setTimeout(() => endGame(true), 1500);
-        } else if (reachedBottom) {
+        // Oyunun qüsursuz bitməsi: heç nə qalmayıbsa və ya ancaq "armored" qalıbsa
+        if ((isEmpty || !matchableLeft) && gameEngine.fallingBalloons.length === 0 && gameEngine.projectiles.length === 0) {
+            // Sonda qalanları bonus olaraq aşağı salır
+            for(let r=0; r<gameEngine.grid.length; r++) {
+                if(!gameEngine.grid[r]) continue;
+                for(let c=0; c<gameEngine.grid[r].length; c++) {
+                    if(gameEngine.grid[r][c]) popBalloon(r, c, true);
+                }
+            }
+            gameEngine.isPlaying = false; // Inputu dayandırırıq
+            setTimeout(() => endGame(true), 2000); // Tökülməni izləmək üçün vaxt
+        } else if (reachedBottom && gameEngine.projectiles.length === 0) {
             endGame(false);
         }
     }
@@ -2311,16 +2348,20 @@
     }
 
     function gameLoop() {
-      if (!gameEngine.isPlaying) return;
+      // Qələbədən sonra sadəcə düşüş animasiyaları üçün renderi davam etdirir
+      if (!document.body.classList.contains('in-game')) return;
       
       const ctx = gameEngine.ctx;
       ctx.clearRect(0, 0, gameEngine.canvas.width, gameEngine.canvas.height);
 
       drawContainers();
       drawGrid();
-      drawLauncher();
       
-      if(gameEngine.projectiles.length > 0 || gameEngine.fallingBalloons.length > 0 || gameEngine.particles.length > 0) {
+      if(gameEngine.isPlaying) {
+         drawLauncher();
+      }
+      
+      if(gameEngine.projectiles.length > 0 || gameEngine.fallingBalloons.length > 0 || gameEngine.particles.length > 0 || gameEngine.flashes.length > 0) {
          updatePhysics();
          drawPhysicsObjects();
       }
@@ -2338,19 +2379,6 @@
       ctx.stroke();
       ctx.setLineDash([]);
       
-      if(gameEngine.projectiles.length === 0 && gameEngine.fallingBalloons.length === 0) {
-         let empty = true;
-         for(let r=0; r<gameEngine.grid.length; r++) {
-             if(!gameEngine.grid[r]) continue;
-             for(let c=0; c<gameEngine.grid[r].length; c++) {
-                 if(gameEngine.grid[r][c] && gameEngine.grid[r][c].type !== 'armored' && gameEngine.grid[r][c].type !== 'virus') { 
-                     empty = false; break; 
-                 }
-             }
-         }
-         if (empty) checkWinLoss();
-      }
-
       updatePowerupUI(); 
       window.requestAnimationFrame(gameLoop);
     }

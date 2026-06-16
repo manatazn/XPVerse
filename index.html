@@ -1494,32 +1494,95 @@
       ctx.fillStyle = innerGrad;
       ctx.fill();
 
-      // Advanced Obstacle Textures
+      // Yüksək keyfiyyətli qıfıl (Chained) və Buz (Ice) vizualları
       if (type === 'chained') {
-        ctx.strokeStyle = '#94a3b8'; 
-        ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.arc(x, y, r * 0.95, Math.PI * 0.25, Math.PI * 1.25); ctx.stroke();
-        ctx.beginPath(); ctx.arc(x, y, r * 0.95, -Math.PI * 0.25, -Math.PI * 1.25, true); ctx.stroke();
-        ctx.fillStyle = '#cbd5e1';
-        ctx.fillRect(x - 4, y - r*0.95 - 2, 8, 8); 
-        ctx.fillRect(x - 4, y + r*0.95 - 6, 8, 8);
-        ctx.fillStyle = '#1e293b';
-        ctx.fillRect(x - 2, y - r*0.95, 4, 4); 
-        ctx.fillRect(x - 2, y + r*0.95 - 4, 4, 4);
+          // Çarpaz metal zolaqlar
+          ctx.lineWidth = 4;
+          ctx.strokeStyle = '#334155'; // Tünd metal
+          ctx.beginPath(); ctx.ellipse(x, y, r * 0.95, r * 0.35, Math.PI / 4, 0, Math.PI * 2); ctx.stroke();
+          ctx.beginPath(); ctx.ellipse(x, y, r * 0.95, r * 0.35, -Math.PI / 4, 0, Math.PI * 2); ctx.stroke();
+
+          // Metal zolaqların parıltısı
+          ctx.lineWidth = 1.5;
+          ctx.strokeStyle = '#94a3b8'; // Açıq metal parıltısı
+          ctx.beginPath(); ctx.ellipse(x, y, r * 0.95, r * 0.35, Math.PI / 4, Math.PI * 0.8, Math.PI * 1.8); ctx.stroke();
+          ctx.beginPath(); ctx.ellipse(x, y, r * 0.95, r * 0.35, -Math.PI / 4, Math.PI * 0.8, Math.PI * 1.8); ctx.stroke();
+
+          // Mərkəzi asma qıfıl
+          let lockW = r * 0.55;
+          let lockH = r * 0.45;
+          let lockY = y + r * 0.1;
+          
+          // Qıfıl halqası (shackle)
+          ctx.lineWidth = 3.5;
+          ctx.strokeStyle = '#cbd5e1';
+          ctx.beginPath(); ctx.arc(x, lockY - lockH/2, lockW * 0.4, Math.PI, 0); ctx.stroke();
+
+          // Qıfıl gövdəsi qızılı/bürünc qradient
+          let lockGrad = ctx.createLinearGradient(x - lockW/2, lockY - lockH/2, x + lockW/2, lockY + lockH/2);
+          lockGrad.addColorStop(0, '#fcd34d'); // Açıq qızılı
+          lockGrad.addColorStop(0.5, '#d97706'); // Qızılı
+          lockGrad.addColorStop(1, '#92400e'); // Tünd mis
+          
+          ctx.fillStyle = lockGrad;
+          ctx.shadowColor = 'rgba(0,0,0,0.6)';
+          ctx.shadowBlur = 5;
+          ctx.shadowOffsetY = 2;
+          ctx.beginPath(); ctx.roundRect(x - lockW/2, lockY - lockH/2, lockW, lockH, 4); ctx.fill();
+          ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+
+          // Qıfıl üzərində parıltı effekti
+          ctx.fillStyle = 'rgba(255,255,255,0.3)';
+          ctx.beginPath(); ctx.roundRect(x - lockW/2 + 2, lockY - lockH/2 + 2, lockW - 4, lockH/2.5, 2); ctx.fill();
+
+          // Açar dəliyi
+          ctx.fillStyle = '#451a03';
+          ctx.beginPath(); ctx.arc(x, lockY - 1, 2.5, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.moveTo(x - 2, lockY); ctx.lineTo(x + 2, lockY); ctx.lineTo(x + 3, lockY + 6); ctx.lineTo(x - 3, lockY + 6); ctx.fill();
+
       } else if (type === 'ice') {
-        ctx.fillStyle = 'rgba(165, 243, 252, 0.5)';
-        ctx.beginPath();
-        ctx.moveTo(x, y - r);
-        ctx.lineTo(x + r*0.9, y - r*0.5);
-        ctx.lineTo(x + r, y + r*0.4);
-        ctx.lineTo(x + r*0.3, y + r*0.9);
-        ctx.lineTo(x - r*0.8, y + r*0.6);
-        ctx.lineTo(x - r*0.9, y - r*0.2);
-        ctx.closePath();
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
+          // Kristal/Buz quruluşu üçün poliqon
+          ctx.save();
+          ctx.beginPath();
+          const angles = [0, 0.7, 1.6, 2.4, 3.14, 4.0, 4.8, 5.5];
+          const radii = [1.05, 0.9, 1.15, 0.95, 1.1, 0.85, 1.15, 0.95];
+          for (let i = 0; i < angles.length; i++) {
+              let ix = x + Math.cos(angles[i]) * r * radii[i];
+              let iy = y + Math.sin(angles[i]) * r * radii[i];
+              if(i === 0) ctx.moveTo(ix, iy); else ctx.lineTo(ix, iy);
+          }
+          ctx.closePath();
+          
+          // Şüşəvi / buzlu qradient
+          let iceGrad = ctx.createLinearGradient(x - r, y - r, x + r, y + r);
+          iceGrad.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+          iceGrad.addColorStop(0.3, 'rgba(165, 243, 252, 0.5)'); // Açıq cyan
+          iceGrad.addColorStop(0.7, 'rgba(6, 182, 212, 0.4)');  // Normal cyan
+          iceGrad.addColorStop(1, 'rgba(255, 255, 255, 0.8)');
+          ctx.fillStyle = iceGrad;
+          ctx.fill();
+          
+          // Daxili şüşə qırıqları/parıltıları (Specular shards)
+          ctx.beginPath();
+          ctx.moveTo(x - r*0.5, y - r*0.7);
+          ctx.lineTo(x + r*0.3, y - r*0.4);
+          ctx.lineTo(x - r*0.2, y + r*0.2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.moveTo(x + r*0.4, y + r*0.7);
+          ctx.lineTo(x + r*0.8, y + r*0.1);
+          ctx.lineTo(x + r*0.1, y + r*0.5);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+          ctx.fill();
+
+          // Qalın ağ kontur
+          ctx.lineWidth = 2.5;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+          ctx.stroke();
+          ctx.restore();
+
       } else if (type === 'virus') {
          ctx.fillStyle = '#bef264'; ctx.font = `900 ${r*1.1}px FontAwesome`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
          ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 4;
@@ -1560,7 +1623,7 @@
       const ly = gameEngine.canvas.height - 120; 
       
       let dy = gameEngine.mouseY - ly;
-      if (dy >= -10) return; // Shot cancelled
+      if (dy >= -10) return; 
 
       let dx = gameEngine.mouseX - lx;
       let angle = Math.atan2(dy, dx);
@@ -1600,9 +1663,8 @@
           steps++;
       }
       
-      // If ray reached top without hitting any balloon
       if (!path.find(p => p.y <= gameEngine.offsetY + radius + 1) && steps >= 150) {
-          // Fallback just in case
+          
       } else if (y <= gameEngine.offsetY + radius) {
           path.push({x, y: gameEngine.offsetY + radius});
       }
@@ -1840,6 +1902,9 @@
 
         if (snapped) {
            gameEngine.projectiles.splice(i, 1);
+        } else if (p.y < -100) {
+           // Təhlükəsizlik şəbəkəsi: Ekrandan çox çıxan mərmiləri sil
+           gameEngine.projectiles.splice(i, 1);
         }
       }
 
@@ -1864,13 +1929,16 @@
           }
       }
 
+      // Hissəciklərin (enerjinin) mütləq silinməsi və sıfırlanması
       for (let i = gameEngine.particles.length - 1; i >= 0; i--) {
           let p = gameEngine.particles[i];
           p.x += p.vx;
           p.y += p.vy;
           p.vy += 0.2; 
           p.life -= 0.03;
-          if (p.life <= 0) gameEngine.particles.splice(i, 1);
+          if (p.life <= 0) {
+              gameEngine.particles.splice(i, 1); // Tamamilə yoxa çıxma
+          }
       }
 
       for (let i = gameEngine.floatingTexts.length - 1; i >= 0; i--) {
@@ -1888,11 +1956,19 @@
     function drawPhysicsObjects() {
       const ctx = gameEngine.ctx;
 
+      // Partlayış enerjilərinin renderi (Mənfiyə düşmənin qarşısı alınır)
       gameEngine.particles.forEach(p => {
-          ctx.globalAlpha = p.life;
+          let alpha = Math.max(0, p.life);
+          ctx.globalAlpha = alpha;
           ctx.fillStyle = p.color;
           ctx.beginPath();
-          ctx.arc(p.x, p.y, gameEngine.ballRadius * 0.3 * p.life, 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, gameEngine.ballRadius * 0.4 * alpha, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Daxili parıltı effekti (Enerji nüvəsi)
+          ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.7})`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, gameEngine.ballRadius * 0.2 * alpha, 0, Math.PI * 2);
           ctx.fill();
       });
       ctx.globalAlpha = 1.0;
@@ -1904,7 +1980,7 @@
       ctx.textAlign = 'center';
       ctx.font = '900 18px "Outfit"';
       gameEngine.floatingTexts.forEach(ft => {
-          ctx.globalAlpha = ft.life;
+          ctx.globalAlpha = Math.max(0, ft.life);
           ctx.fillStyle = ft.color;
           ctx.shadowColor = '#000';
           ctx.shadowBlur = 6;
@@ -2011,20 +2087,19 @@
             matchGroup.forEach(m => {
                 let cell = gameEngine.grid[m.r][m.c];
                 if (cell && cell.type === 'chained') {
-                    cell.type = 'normal'; // Break the chain
-                    createParticles(m.r, m.c, '#94a3b8');
+                    cell.type = 'normal'; 
+                    createParticles(m.r, m.c, '#fcd34d'); // Qızılı hissəciklər
                 } else {
                     popBalloon(m.r, m.c);
                 }
             });
             
-            // Break ice adjacent to popped balloons
             matchGroup.forEach(m => {
                 let neighbors = getNeighbors(m.r, m.c);
                 neighbors.forEach(n => {
                     let cell = gameEngine.grid[n.r][n.c];
                     if (cell && cell.type === 'ice') {
-                        cell.type = 'normal'; // Break ice
+                        cell.type = 'normal'; 
                         createParticles(n.r, n.c, '#a5f3fc');
                     }
                 });
@@ -2115,11 +2190,12 @@
 
     function createParticles(r, c, color) {
         let pos = getGridPos(r, c);
-        for(let i=0; i<8; i++) {
+        // Daha təsirli partlayış üçün hissəciklərin sayı və sürəti artırıldı
+        for(let i=0; i<15; i++) {
             gameEngine.particles.push({
                 x: pos.x, y: pos.y,
-                vx: (Math.random() - 0.5) * 12,
-                vy: (Math.random() - 0.5) * 12,
+                vx: (Math.random() - 0.5) * 16,
+                vy: (Math.random() - 0.5) * 16,
                 life: 1, color: color
             });
         }

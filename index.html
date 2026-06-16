@@ -1171,7 +1171,7 @@
     }
 
     // ==========================================
-    // GAME ENGINE: XPVerse Balloon Blast (REMASTERED)
+    // GAME ENGINE: XPVerse Balloon Blast
     // ==========================================
 
     const LEVEL_REWARDS = [25, 35, 50, 60, 75, 80, 90, 100, 110, 125]; 
@@ -1234,7 +1234,7 @@
       container.innerHTML = html;
     }
 
-    window.gameEngine = {
+    let gameEngine = {
       canvas: null, ctx: null, isPlaying: false,
       balloons: [], projectiles: [], particles: [], fallingBalloons: [], floatingTexts: [],
       gridCols: 8, ballRadius: 0,
@@ -1243,7 +1243,7 @@
       launcherColor: '', nextColor: '', activePowerup: null,
       colorHistory: [], 
       currentLevel: 1, score: 0, shotsFired: 0, totalTarget: 0,
-      offsetY: 0, limitY: 0,
+      offsetY: 0, dropInterval: 5, limitY: 0,
       mouseX: null, mouseY: null, rand: null,
       containers: null
     };
@@ -1269,7 +1269,7 @@
     }
 
     function exitGame() {
-      window.gameEngine.isPlaying = false;
+      gameEngine.isPlaying = false;
       document.body.classList.remove('in-game');
       document.getElementById('game-play-container').classList.remove('fullscreen-mode');
       
@@ -1280,21 +1280,20 @@
     }
 
     function initGameEngine(level) {
-      const g = window.gameEngine;
-      g.currentLevel = level;
-      g.canvas = document.getElementById('balloon-canvas');
-      g.ctx = g.canvas.getContext('2d');
-      g.isPlaying = true;
-      g.score = 0;
-      g.shotsFired = 0;
-      g.offsetY = 0;
-      g.balloons = [];
-      g.projectiles = [];
-      g.particles = [];
-      g.fallingBalloons = [];
-      g.floatingTexts = [];
-      g.activePowerup = null;
-      g.colorHistory = [];
+      gameEngine.currentLevel = level;
+      gameEngine.canvas = document.getElementById('balloon-canvas');
+      gameEngine.ctx = gameEngine.canvas.getContext('2d');
+      gameEngine.isPlaying = true;
+      gameEngine.score = 0;
+      gameEngine.shotsFired = 0;
+      gameEngine.offsetY = 0;
+      gameEngine.balloons = [];
+      gameEngine.projectiles = [];
+      gameEngine.particles = [];
+      gameEngine.fallingBalloons = [];
+      gameEngine.floatingTexts = [];
+      gameEngine.activePowerup = null;
+      gameEngine.colorHistory = [];
 
       document.getElementById('ingame-level-display').innerText = level;
       document.getElementById('ingame-score').innerText = '0';
@@ -1302,248 +1301,242 @@
       updatePowerupUI();
 
       const seedStr = gameState.seedDate.replace(/-/g, '') + level.toString();
-      g.rand = getDailyRandom(parseInt(seedStr));
+      gameEngine.rand = getDailyRandom(parseInt(seedStr));
 
       resizeCanvas();
       generateLevel(level);
       
       let avail = getAvailableColors();
-      g.launcherColor = avail[Math.floor(g.rand() * avail.length)];
-      g.nextColor = avail[Math.floor(g.rand() * avail.length)];
-      updateLauncherColors(true);
+      gameEngine.launcherColor = avail[Math.floor(gameEngine.rand() * avail.length)];
+      updateColorHistory(gameEngine.launcherColor);
+      updateLauncherColors(true); 
 
-      g.canvas.addEventListener('touchstart', handleInput, {passive: false});
-      g.canvas.addEventListener('touchmove', handleMove, {passive: false});
-      g.canvas.addEventListener('touchend', handleFire, {passive: false});
-      g.canvas.addEventListener('mousedown', handleInput);
-      g.canvas.addEventListener('mousemove', handleMove);
-      g.canvas.addEventListener('mouseup', handleFire);
+      gameEngine.canvas.addEventListener('touchstart', handleInput, {passive: false});
+      gameEngine.canvas.addEventListener('touchmove', handleMove, {passive: false});
+      gameEngine.canvas.addEventListener('touchend', handleFire, {passive: false});
+      gameEngine.canvas.addEventListener('mousedown', handleInput);
+      gameEngine.canvas.addEventListener('mousemove', handleMove);
+      gameEngine.canvas.addEventListener('mouseup', handleFire);
       
       window.requestAnimationFrame(gameLoop);
     }
 
     function resizeCanvas() {
-      const g = window.gameEngine;
       const container = document.getElementById('game-canvas-container');
-      g.canvas.width = container.clientWidth;
-      g.canvas.height = container.clientHeight;
-      g.ballRadius = (g.canvas.width / (g.gridCols + 0.5)) / 2;
+      gameEngine.canvas.width = container.clientWidth;
+      gameEngine.canvas.height = container.clientHeight;
+      gameEngine.ballRadius = (gameEngine.canvas.width / (gameEngine.gridCols + 0.5)) / 2;
       
       let ch = 40;
-      let cy = g.canvas.height - ch;
-      let cw = g.canvas.width / 5;
-      g.containers = {
+      let cy = gameEngine.canvas.height - ch;
+      let cw = gameEngine.canvas.width / 5;
+      gameEngine.containers = {
         cy: cy, cw: cw, ch: ch,
         scores: [10, 50, 100, 50, 10],
         colors: ['#3b82f6', '#10b981', '#ffb800', '#10b981', '#3b82f6']
       };
 
-      g.limitY = cy - 80; 
+      gameEngine.limitY = cy - 80; 
     }
 
-    // FIXED BUG: İndi getAvailableColors bütün şarların əsas rəngini qaytarır.
-    // Əgər yalnız qıfıllı və ya buzlu şar qalıbsa, oyun sənə onların rəngini ammo kimi verəcək!
     function getAvailableColors() {
-      const g = window.gameEngine;
       let activeColors = new Set();
-      let hasBalloons = false;
-
-      for(let r=0; r < g.grid.length; r++) {
-         if(!g.grid[r]) continue;
-         for(let c=0; c < g.grid[r].length; c++) {
-            let b = g.grid[r][c];
-            if(b) {
-               hasBalloons = true;
-               // Armored istisna olmaqla bütün tiplərin daxili rəngini (color) çıxarırıq
-               if(b.type !== 'armored') {
-                  activeColors.add(b.color);
-               }
+      for(let r=0; r<gameEngine.grid.length; r++) {
+         if(!gameEngine.grid[r]) continue;
+         for(let c=0; c<gameEngine.grid[r].length; c++) {
+            let b = gameEngine.grid[r][c];
+            // Yalnız məhv edilə bilən şarların rənglərini qaytarırıq (normal, locked, ice)
+            if(b && b.type !== 'armored' && b.type !== 'virus') {
+               activeColors.add(b.color);
             }
          }
       }
-      
-      // Oyunun tamamilə bitdiyini burdan yoxlayıb tetikləyirik
-      if(!hasBalloons && g.projectiles.length === 0 && g.fallingBalloons.length === 0) {
-         checkWinLoss();
-      }
-
       let arr = Array.from(activeColors);
-      return arr.length > 0 ? arr : g.colors;
+      return arr.length > 0 ? arr : gameEngine.colors;
     }
 
     function updateColorHistory(color) {
-      const g = window.gameEngine;
-      g.colorHistory.unshift(color);
-      if(g.colorHistory.length > 2) {
-         g.colorHistory.pop();
+      gameEngine.colorHistory.unshift(color);
+      if(gameEngine.colorHistory.length > 2) {
+         gameEngine.colorHistory.pop();
       }
     }
 
-    // FIXED BUG: Ammo rəngləri düzgün limitlənir. Ardıcıl olaraq max 2 eyni rəng gələ bilər.
     function updateLauncherColors(forceNewNext = false) {
-       const g = window.gameEngine;
        let avail = getAvailableColors();
        if(avail.length === 0) return; 
        
        let isColorAllowed = (color) => {
-         if (g.colorHistory.length >= 2 && 
-             g.colorHistory[0] === color && 
-             g.colorHistory[1] === color) {
+         if (gameEngine.colorHistory.length >= 2 && 
+             gameEngine.colorHistory[0] === color && 
+             gameEngine.colorHistory[1] === color) {
             return false;
          }
          return true;
        };
 
-       if(!avail.includes(g.launcherColor)) {
+       if(!avail.includes(gameEngine.launcherColor)) {
            let safeColors = avail.filter(isColorAllowed);
            if(safeColors.length === 0) safeColors = avail; 
-           g.launcherColor = safeColors[Math.floor(Math.random() * safeColors.length)];
+           gameEngine.launcherColor = safeColors[Math.floor(Math.random() * safeColors.length)];
        }
 
-       if(forceNewNext || !avail.includes(g.nextColor)) {
-           let safeColors = avail.filter(c => c !== g.launcherColor && isColorAllowed(c));
-           if(safeColors.length === 0) safeColors = avail.filter(c => c !== g.launcherColor); 
+       if(forceNewNext || !avail.includes(gameEngine.nextColor)) {
+           let safeColors = avail.filter(c => c !== gameEngine.launcherColor && isColorAllowed(c));
+           if(safeColors.length === 0) safeColors = avail.filter(c => c !== gameEngine.launcherColor); 
            if(safeColors.length === 0) safeColors = avail; 
-           g.nextColor = safeColors[Math.floor(Math.random() * safeColors.length)];
+           gameEngine.nextColor = safeColors[Math.floor(Math.random() * safeColors.length)];
        }
     }
 
     function generateLevel(level) {
-      const g = window.gameEngine;
       let rows = 3 + Math.floor(level / 3);
       if (rows > 8) rows = 8;
       
-      g.grid = [];
-      g.totalTarget = 0;
+      gameEngine.grid = [];
+      gameEngine.totalTarget = 0;
       
-      let allowLocked = level >= 2; // Daha maraqlı olsun deyə erkən açıldı
-      let allowFrozen = level >= 4; // Yeni "Buz" mexanikası
-      let allowVirus = level >= 6;
-      let allowArmor = level >= 8;
+      let allowLocked = level >= 4;
+      let allowIce = level >= 5;
+      let allowVirus = level >= 7;
+      let allowArmor = level >= 9;
 
       for (let r = 0; r < rows; r++) {
-        g.grid[r] = [];
-        let colsInRow = (r % 2 === 0) ? g.gridCols : g.gridCols - 1;
+        gameEngine.grid[r] = [];
+        let colsInRow = (r % 2 === 0) ? gameEngine.gridCols : gameEngine.gridCols - 1;
         for (let c = 0; c < colsInRow; c++) {
           let type = 'normal';
           let hp = 1;
-          let rVal = g.rand();
+          let rVal = gameEngine.rand();
           
           if ((r + c) % 2 === 0 && rVal < 0.2) {
-             if (level >= 3 && rVal < 0.05) { g.grid[r][c] = null; continue; }
+             if (level >= 3 && rVal < 0.05) { gameEngine.grid[r][c] = null; continue; }
           }
 
           if (level === 10) {
-             if(rVal < 0.1) { type = 'locked'; hp = 1; }
-             else if(rVal < 0.2) type = 'frozen';
-             else if(rVal < 0.3) type = 'virus';
-             else if(rVal < 0.4) type = 'armored';
+             if(rVal < 0.1) { type = 'locked'; hp = 2; }
+             else if(rVal < 0.2) { type = 'ice'; hp = 2; }
+             else if(rVal < 0.25) type = 'virus';
+             else if(rVal < 0.35) type = 'armored';
           } else {
              if (allowArmor && rVal < 0.1) type = 'armored';
-             else if (allowVirus && rVal < 0.15) type = 'virus';
-             else if (allowFrozen && rVal < 0.2) type = 'frozen';
-             else if (allowLocked && rVal < 0.25) { type = 'locked'; hp = 1; }
+             else if (allowVirus && rVal < 0.1) type = 'virus';
+             else if (allowIce && rVal < 0.15) { type = 'ice'; hp = 2; }
+             else if (allowLocked && rVal < 0.15) { type = 'locked'; hp = 2; }
           }
           
-          g.grid[r][c] = {
-            color: type === 'armored' ? '#64748b' : g.colors[Math.floor(g.rand() * g.colors.length)],
+          gameEngine.grid[r][c] = {
+            color: type === 'armored' ? '#64748b' : gameEngine.colors[Math.floor(gameEngine.rand() * gameEngine.colors.length)],
             type: type, hp: hp, r: r, c: c
           };
-          g.totalTarget++;
+          gameEngine.totalTarget++;
         }
       }
     }
 
     function getGridPos(r, c) {
-      const g = window.gameEngine;
-      let x = c * g.ballRadius * 2 + g.ballRadius;
-      if (r % 2 !== 0) x += g.ballRadius;
-      let y = r * g.ballRadius * 1.732 + g.ballRadius + g.offsetY;
+      let x = c * gameEngine.ballRadius * 2 + gameEngine.ballRadius;
+      if (r % 2 !== 0) x += gameEngine.ballRadius;
+      let y = r * gameEngine.ballRadius * 1.732 + gameEngine.ballRadius + gameEngine.offsetY;
       return {x, y};
     }
 
     function drawGrid() {
-      const g = window.gameEngine;
-      const ctx = g.ctx;
-      for (let r = 0; r < g.grid.length; r++) {
-        if (!g.grid[r]) continue;
-        for (let c = 0; c < g.grid[r].length; c++) {
-          let b = g.grid[r][c];
+      const ctx = gameEngine.ctx;
+      for (let r = 0; r < gameEngine.grid.length; r++) {
+        if (!gameEngine.grid[r]) continue;
+        for (let c = 0; c < gameEngine.grid[r].length; c++) {
+          let b = gameEngine.grid[r][c];
           if (b) {
             let pos = getGridPos(r, c);
-            drawBalloon(ctx, pos.x, pos.y, g.ballRadius * 0.95, b.color, b.type, b.hp);
+            drawBalloon(ctx, pos.x, pos.y, gameEngine.ballRadius * 0.95, b.color, b.type, b.hp);
           }
         }
       }
     }
 
     function drawBalloon(ctx, x, y, r, color, type, hp, isGhost = false) {
-      ctx.globalAlpha = isGhost ? 0.3 : 1.0;
-      
-      // Əsas rəng və gradient
+      ctx.save();
+      ctx.globalAlpha = isGhost ? 0.4 : 1.0;
+
+      if (!isGhost) {
+        ctx.shadowColor = 'rgba(0,0,0,0.4)';
+        ctx.shadowBlur = 6;
+        ctx.shadowOffsetY = 3;
+      }
+
       ctx.beginPath();
       ctx.arc(x, y, r, 0, Math.PI * 2);
-      let grad = ctx.createRadialGradient(x - r/2, y - r/2, r/10, x, y, r * 1.2);
+
+      let grad = ctx.createRadialGradient(x - r*0.3, y - r*0.3, r*0.1, x, y, r * 1.2);
       grad.addColorStop(0, '#ffffff'); 
-      grad.addColorStop(0.2, shadeColor(color, 40));
-      grad.addColorStop(0.6, color);
+      grad.addColorStop(0.2, shadeColor(color, 25));
+      grad.addColorStop(0.7, color);
       grad.addColorStop(1, shadeColor(color, -60)); 
       ctx.fillStyle = grad;
       ctx.fill();
-      
-      // Parıltı effekti
+
+      ctx.shadowColor = 'transparent';
+
       ctx.beginPath();
-      ctx.ellipse(x - r*0.35, y - r*0.35, r*0.4, r*0.2, Math.PI / -4, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.arc(x, y, r*0.85, 0, Math.PI * 2);
+      let innerGrad = ctx.createLinearGradient(x, y + r, x, y - r);
+      innerGrad.addColorStop(0, 'rgba(255,255,255,0.4)');
+      innerGrad.addColorStop(0.4, 'rgba(255,255,255,0)');
+      ctx.fillStyle = innerGrad;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.ellipse(x - r*0.4, y - r*0.4, r*0.4, r*0.2, Math.PI / -4, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
       ctx.fill();
 
       ctx.beginPath();
       ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
       ctx.stroke();
 
-      // Mexanikalar üçün vizuallar
       if (type === 'locked') {
-        // Yeni qıfıl (Chain) vizualı
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fill();
+        ctx.fillStyle = '#f8fafc'; ctx.font = `900 ${r*1.1}px FontAwesome`; 
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 4;
+        ctx.fillText('\uf023', x, y); 
+        ctx.shadowBlur = 0;
+        ctx.beginPath(); ctx.arc(x, y, r*0.85, 0, Math.PI*2); 
+        ctx.strokeStyle='#cbd5e1'; ctx.lineWidth=3; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
+      } else if (type === 'ice') {
+        ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(224, 242, 254, 0.65)'; ctx.fill();
         ctx.beginPath();
-        ctx.moveTo(x - r*0.7, y);
-        ctx.lineTo(x + r*0.7, y);
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = '#334155';
-        ctx.stroke();
-        
-        ctx.fillStyle = '#1e293b'; 
-        ctx.fillRect(x - 8, y - 6, 16, 12);
-        ctx.beginPath();
-        ctx.arc(x, y - 6, 6, Math.PI, 0);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = '#94a3b8';
-        ctx.stroke();
-        
-      } else if (type === 'frozen') {
-        // Yeni Buz (Ice) vizualı
-        ctx.beginPath();
-        ctx.moveTo(x - r*0.8, y - r*0.5);
-        ctx.lineTo(x, y - r);
-        ctx.lineTo(x + r*0.8, y - r*0.5);
-        ctx.lineTo(x + r*0.9, y + r*0.4);
-        ctx.lineTo(x, y + r);
-        ctx.lineTo(x - r*0.9, y + r*0.4);
+        ctx.moveTo(x, y - r*0.8); ctx.lineTo(x + r*0.6, y);
+        ctx.lineTo(x, y + r*0.8); ctx.lineTo(x - r*0.6, y);
         ctx.closePath();
-        ctx.fillStyle = 'rgba(165, 243, 252, 0.6)'; // Açıq mavi buz effekti
-        ctx.fill();
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = '#cffafe';
-        ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 2; ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.fill();
       } else if (type === 'virus') {
-        ctx.fillStyle = '#bef264'; ctx.font = `900 ${r}px FontAwesome`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#bef264'; ctx.font = `900 ${r}px FontAwesome`; 
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.shadowColor = '#000'; ctx.shadowBlur = 5;
         ctx.fillText('\uf0e7', x, y); 
+        ctx.shadowBlur = 0;
       } else if (type === 'armored') {
-        ctx.beginPath(); ctx.arc(x, y, r*0.7, 0, Math.PI*2); ctx.fillStyle='#1e293b'; ctx.fill();
-        ctx.beginPath(); ctx.arc(x, y, r*0.3, 0, Math.PI*2); ctx.fillStyle='#94a3b8'; ctx.fill();
+        ctx.beginPath(); ctx.arc(x, y, r*0.8, 0, Math.PI*2); 
+        let armorGrad = ctx.createLinearGradient(x-r, y-r, x+r, y+r);
+        armorGrad.addColorStop(0, '#94a3b8'); armorGrad.addColorStop(1, '#334155');
+        ctx.fillStyle = armorGrad; ctx.fill();
+        ctx.beginPath(); ctx.arc(x, y, r*0.4, 0, Math.PI*2); 
+        ctx.fillStyle='#cbd5e1'; ctx.fill();
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath(); ctx.arc(x-r*0.5, y, r*0.1, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(x+r*0.5, y, r*0.1, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(x, y-r*0.5, r*0.1, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(x, y+r*0.5, r*0.1, 0, Math.PI*2); ctx.fill();
       }
-      ctx.globalAlpha = 1.0;
+
+      ctx.restore();
     }
 
     function shadeColor(color, percent) {
@@ -1560,56 +1553,59 @@
       return "#"+RR+GG+BB;
     }
 
-    // FIXED BUG: Aiming Line artıq düzgün məhdudlaşdırılır və yoxa çıxmır.
     function drawAimLine() {
-      const g = window.gameEngine;
-      if (g.mouseX === null || g.mouseY === null || g.projectiles.length > 0) return;
+      if (gameEngine.mouseX === null || gameEngine.mouseY === null || gameEngine.projectiles.length > 0) return;
       
-      const ctx = g.ctx;
-      const lx = g.canvas.width / 2;
-      const ly = g.canvas.height - 120; 
+      const ctx = gameEngine.ctx;
+      const lx = gameEngine.canvas.width / 2;
+      const ly = gameEngine.canvas.height - 120; 
       
-      let dy = g.mouseY - ly;
-      let dx = g.mouseX - lx;
-      let angle = Math.atan2(dy, dx);
-      
-      // Hədəf bucağını məhdudlaşdırırıq ki, xətt aşağı düşüb itməsin
-      if (angle > -0.1 || angle < -Math.PI + 0.1) {
-          if (dx >= 0) angle = -0.1;
-          else angle = -Math.PI + 0.1;
-      }
+      let dy = gameEngine.mouseY - ly;
+      if (dy > -20) return; // Aşağı dartdıqda ləğv olunur
 
-      let x = lx; 
-      let y = ly;
+      let dx = gameEngine.mouseX - lx;
+      let angle = Math.atan2(dy, dx);
+      // Xətanı düzəltmək üçün məhdudiyyət
+      angle = Math.max(-Math.PI + 0.15, Math.min(-0.15, angle));
+
+      let currentX = lx; 
+      let currentY = ly;
       let vx = Math.cos(angle) * 10;
       let vy = Math.sin(angle) * 10;
-      let radius = g.ballRadius;
+      let radius = gameEngine.ballRadius;
       
-      let path = [{x, y}];
+      let path = [{x: currentX, y: currentY}];
       let steps = 0;
+      let hit = false;
 
-      while (y > radius && steps < 200) {
-          x += vx;
-          y += vy;
+      while (!hit && steps < 300) {
+          currentX += vx;
+          currentY += vy;
+          steps++;
           
-          if (x <= radius) { x = radius; vx *= -1; path.push({x, y}); }
-          if (x >= g.canvas.width - radius) { x = g.canvas.width - radius; vx *= -1; path.push({x, y}); }
+          if (currentX <= radius) { currentX = radius; vx *= -1; path.push({x: currentX, y: currentY}); }
+          else if (currentX >= gameEngine.canvas.width - radius) { currentX = gameEngine.canvas.width - radius; vx *= -1; path.push({x: currentX, y: currentY}); }
           
-          let hit = false;
-          for (let r=0; r<g.grid.length; r++) {
-              if(!g.grid[r]) continue;
-              for (let c=0; c<g.grid[r].length; c++) {
-                  if(g.grid[r][c]) {
+          if (currentY <= radius + gameEngine.offsetY) {
+              currentY = radius + gameEngine.offsetY;
+              path.push({x: currentX, y: currentY});
+              hit = true;
+              break;
+          }
+
+          for (let r=0; r<gameEngine.grid.length; r++) {
+              if(!gameEngine.grid[r]) continue;
+              for (let c=0; c<gameEngine.grid[r].length; c++) {
+                  if(gameEngine.grid[r][c]) {
                       let pos = getGridPos(r, c);
-                      if (Math.hypot(x - pos.x, y - pos.y) <= radius * 1.8) {
+                      if (Math.hypot(currentX - pos.x, currentY - pos.y) <= radius * 1.8) {
+                          path.push({x: currentX, y: currentY});
                           hit = true; break;
                       }
                   }
               }
               if(hit) break;
           }
-          if(hit) { path.push({x, y}); break; }
-          steps++;
       }
 
       ctx.beginPath();
@@ -1621,51 +1617,28 @@
       let finalX = path[path.length - 1].x;
       let finalY = path[path.length - 1].y;
 
-      if (g.activePowerup === 'rocket') {
-          ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
-          ctx.lineWidth = radius * 2.5;
-          ctx.setLineDash([]);
-          ctx.lineCap = 'round';
-          ctx.stroke();
-          
-          ctx.beginPath();
-          ctx.moveTo(path[0].x, path[0].y);
-          for (let i = 1; i < path.length; i++) {
-              ctx.lineTo(path[i].x, path[i].y);
-          }
-          ctx.strokeStyle = '#ef4444';
-          ctx.lineWidth = 3;
-          ctx.stroke();
-
-      } else if (g.activePowerup === 'bomb') {
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
-          ctx.lineWidth = 2;
-          ctx.setLineDash([8, 8]);
-          ctx.stroke();
-          ctx.setLineDash([]);
-          
-          ctx.beginPath();
-          ctx.arc(finalX, finalY, radius * 5, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(249, 115, 22, 0.2)';
-          ctx.fill();
-          ctx.lineWidth = 2;
-          ctx.strokeStyle = 'rgba(249, 115, 22, 0.8)';
-          ctx.stroke();
+      if (gameEngine.activePowerup === 'rocket') {
+          ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)'; ctx.lineWidth = radius * 2.5;
+          ctx.setLineDash([]); ctx.lineCap = 'round'; ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(path[0].x, path[0].y);
+          for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, path[i].y);
+          ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.stroke();
+      } else if (gameEngine.activePowerup === 'bomb') {
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'; ctx.lineWidth = 2;
+          ctx.setLineDash([8, 8]); ctx.stroke(); ctx.setLineDash([]);
+          ctx.beginPath(); ctx.arc(finalX, finalY, radius * 5, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(249, 115, 22, 0.2)'; ctx.fill();
+          ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(249, 115, 22, 0.8)'; ctx.stroke();
       } else {
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
-          ctx.lineWidth = 2;
-          ctx.setLineDash([8, 8]);
-          ctx.stroke();
-          ctx.setLineDash([]);
-
-          drawBalloon(ctx, finalX, finalY, radius, g.launcherColor, 'normal', 1, true);
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'; ctx.lineWidth = 2;
+          ctx.setLineDash([8, 8]); ctx.stroke(); ctx.setLineDash([]);
+          drawBalloon(ctx, finalX, finalY, radius, gameEngine.launcherColor, 'normal', 1, true);
       }
     }
 
     function drawContainers() {
-      const g = window.gameEngine;
-      const ctx = g.ctx;
-      const c = g.containers;
+      const ctx = gameEngine.ctx;
+      const c = gameEngine.containers;
 
       ctx.save();
       for(let i=0; i<5; i++) {
@@ -1694,14 +1667,13 @@
     }
 
     function drawLauncher() {
-      const g = window.gameEngine;
-      const ctx = g.ctx;
-      const lx = g.canvas.width / 2;
-      const ly = g.canvas.height - 120;
+      const ctx = gameEngine.ctx;
+      const lx = gameEngine.canvas.width / 2;
+      const ly = gameEngine.canvas.height - 120;
       
       drawAimLine();
 
-      drawBalloon(ctx, lx - 70, ly + 10, g.ballRadius * 0.6, g.nextColor, 'normal', 1);
+      drawBalloon(ctx, lx - 70, ly + 10, gameEngine.ballRadius * 0.6, gameEngine.nextColor, 'normal', 1);
       ctx.fillStyle = '#94a3b8'; ctx.font = "bold 10px sans-serif"; ctx.fillText("NEXT", lx - 70, ly - 15);
       
       let grad = ctx.createRadialGradient(lx, ly, 10, lx, ly, 35);
@@ -1710,123 +1682,118 @@
       ctx.beginPath(); ctx.arc(lx, ly, 35, Math.PI, 0); ctx.fillStyle = grad; ctx.fill();
       ctx.strokeStyle = '#334155'; ctx.lineWidth = 2; ctx.stroke();
       
-      if (g.projectiles.length === 0) {
+      if (gameEngine.projectiles.length === 0) {
         let type = 'normal';
-        let color = g.activePowerup ? (g.activePowerup === 'rocket' ? '#ef4444' : (g.activePowerup === 'bomb' ? '#f97316' : '#ffffff')) : g.launcherColor;
+        let color = gameEngine.activePowerup ? (gameEngine.activePowerup === 'rocket' ? '#ef4444' : (gameEngine.activePowerup === 'bomb' ? '#f97316' : '#ffffff')) : gameEngine.launcherColor;
         
-        if (g.activePowerup === 'rocket') {
+        if (gameEngine.activePowerup === 'rocket') {
            ctx.font = '28px FontAwesome'; ctx.fillStyle='#ef4444'; ctx.fillText('\uf135', lx, ly);
-        } else if (g.activePowerup === 'bomb') {
+        } else if (gameEngine.activePowerup === 'bomb') {
            ctx.font = '28px FontAwesome'; ctx.fillStyle='#f97316'; ctx.fillText('\uf1e2', lx, ly);
         } else {
-           drawBalloon(ctx, lx, ly, g.ballRadius, color, type, 1);
+           drawBalloon(ctx, lx, ly, gameEngine.ballRadius, color, type, 1);
         }
       }
     }
 
     function handleInput(e) {
-      const g = window.gameEngine;
-      if (!g.isPlaying) return;
+      if (!gameEngine.isPlaying) return;
       e.preventDefault();
       updateMousePos(e);
       
-      const lx = g.canvas.width / 2;
-      const ly = g.canvas.height - 120;
-      const dist = Math.hypot(g.mouseX - (lx - 70), g.mouseY - (ly + 10));
-      const distMain = Math.hypot(g.mouseX - lx, g.mouseY - ly);
+      const lx = gameEngine.canvas.width / 2;
+      const ly = gameEngine.canvas.height - 120;
+      const dist = Math.hypot(gameEngine.mouseX - (lx - 70), gameEngine.mouseY - (ly + 10));
+      const distMain = Math.hypot(gameEngine.mouseX - lx, gameEngine.mouseY - ly);
       
       if (dist < 40 || distMain < 40) {
-        let temp = g.launcherColor;
-        g.launcherColor = g.nextColor;
-        g.nextColor = temp;
+        let temp = gameEngine.launcherColor;
+        gameEngine.launcherColor = gameEngine.nextColor;
+        gameEngine.nextColor = temp;
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-        g.mouseX = null; // Prevent firing
+        gameEngine.mouseX = null;
       }
     }
 
     function handleMove(e) {
-      const g = window.gameEngine;
-      if (!g.isPlaying) return;
+      if (!gameEngine.isPlaying) return;
       e.preventDefault();
       updateMousePos(e);
     }
 
     function handleFire(e) {
-      const g = window.gameEngine;
-      if (!g.isPlaying || g.projectiles.length > 0 || g.mouseX === null) return;
+      if (!gameEngine.isPlaying || gameEngine.projectiles.length > 0 || gameEngine.mouseX === null) return;
       e.preventDefault();
       
-      const lx = g.canvas.width / 2;
-      const ly = g.canvas.height - 120;
+      const lx = gameEngine.canvas.width / 2;
+      const ly = gameEngine.canvas.height - 120;
       
-      let dy = g.mouseY - ly;
-      let dx = g.mouseX - lx;
-      let angle = Math.atan2(dy, dx);
-      
-      // Hədəf aşağıdırsa, atəşi ləğv et
-      if (angle > -0.1 || angle < -Math.PI + 0.1) {
-          g.mouseX = null; 
+      let dy = gameEngine.mouseY - ly;
+      if (dy > -20) { 
+          gameEngine.mouseX = null; 
           return; 
       }
 
+      let dx = gameEngine.mouseX - lx;
+      let angle = Math.atan2(dy, dx);
+      angle = Math.max(-Math.PI + 0.15, Math.min(-0.15, angle));
+
       let speed = 22;
       let type = 'normal';
-      let color = g.launcherColor;
+      let color = gameEngine.launcherColor;
 
-      if (g.activePowerup) {
-         type = g.activePowerup;
+      if (gameEngine.activePowerup) {
+         type = gameEngine.activePowerup;
          if(type === 'rocket') { speed = 35; color = '#ef4444'; }
          if(type === 'bomb') { color = '#f97316'; }
       }
 
-      g.projectiles.push({ x: lx, y: ly, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, radius: g.ballRadius, color: color, type: type });
+      gameEngine.projectiles.push({ x: lx, y: ly, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, radius: gameEngine.ballRadius, color: color, type: type });
       
-      g.shotsFired++;
+      gameEngine.shotsFired++;
       updateStarsUI(calculateStars());
       
       if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
       
-      if (!g.activePowerup) {
-         updateColorHistory(g.launcherColor);
-         g.launcherColor = g.nextColor;
-         updateLauncherColors(true); // YENİ rəng generasiyası
+      if (!gameEngine.activePowerup) {
+         updateColorHistory(gameEngine.launcherColor);
+         gameEngine.launcherColor = gameEngine.nextColor;
+         updateLauncherColors(true); 
       } else {
-         consumePowerup(g.activePowerup);
+         consumePowerup(gameEngine.activePowerup);
       }
       
-      g.mouseX = null;
+      gameEngine.mouseX = null;
     }
 
     function updateMousePos(e) {
-      const g = window.gameEngine;
-      const rect = g.canvas.getBoundingClientRect();
+      const rect = gameEngine.canvas.getBoundingClientRect();
       if (e.touches && e.touches.length > 0) {
-        g.mouseX = e.touches[0].clientX - rect.left;
-        g.mouseY = e.touches[0].clientY - rect.top;
+        gameEngine.mouseX = e.touches[0].clientX - rect.left;
+        gameEngine.mouseY = e.touches[0].clientY - rect.top;
       } else {
-        g.mouseX = e.clientX - rect.left;
-        g.mouseY = e.clientY - rect.top;
+        gameEngine.mouseX = e.clientX - rect.left;
+        gameEngine.mouseY = e.clientY - rect.top;
       }
     }
 
     function updatePhysics() {
-      const g = window.gameEngine;
-      for (let i = g.projectiles.length - 1; i >= 0; i--) {
-        let p = g.projectiles[i];
+      for (let i = gameEngine.projectiles.length - 1; i >= 0; i--) {
+        let p = gameEngine.projectiles[i];
         p.x += p.vx;
         p.y += p.vy;
 
         if (p.x - p.radius < 0) { p.x = p.radius; p.vx *= -1; }
-        if (p.x + p.radius > g.canvas.width) { p.x = g.canvas.width - p.radius; p.vx *= -1; }
+        if (p.x + p.radius > gameEngine.canvas.width) { p.x = gameEngine.canvas.width - p.radius; p.vx *= -1; }
 
         let snapped = false;
 
         if (p.type === 'rocket') {
            let hitAny = false;
-           for(let r=0; r<g.grid.length; r++) {
-              if(!g.grid[r]) continue;
-              for(let c=0; c<g.grid[r].length; c++) {
-                 if(g.grid[r][c]) {
+           for(let r=0; r<gameEngine.grid.length; r++) {
+              if(!gameEngine.grid[r]) continue;
+              for(let c=0; c<gameEngine.grid[r].length; c++) {
+                 if(gameEngine.grid[r][c]) {
                     let pos = getGridPos(r, c);
                     if(Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius * 2.5) {
                        popBalloon(r, c, true);
@@ -1836,8 +1803,8 @@
               }
            }
            
-           if (p.y < -50 || p.x < -50 || p.x > g.canvas.width + 50) {
-               g.projectiles.splice(i, 1);
+           if (p.y < -50 || p.x < -50 || p.x > gameEngine.canvas.width + 50) {
+               gameEngine.projectiles.splice(i, 1);
                if(hitAny) dropFloaters();
                checkWinLoss();
                updateLauncherColors(); 
@@ -1845,14 +1812,14 @@
            continue;
         }
 
-        if (p.y - p.radius <= g.offsetY) {
+        if (p.y - p.radius <= gameEngine.offsetY) {
           snapProjectile(p, 0);
           snapped = true;
         } else {
-           for(let r=0; r<g.grid.length; r++) {
-              if(!g.grid[r] || snapped) continue;
-              for(let c=0; c<g.grid[r].length; c++) {
-                 if(g.grid[r][c]) {
+           for(let r=0; r<gameEngine.grid.length; r++) {
+              if(!gameEngine.grid[r] || snapped) continue;
+              for(let c=0; c<gameEngine.grid[r].length; c++) {
+                 if(gameEngine.grid[r][c]) {
                     let pos = getGridPos(r, c);
                     if(Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius * 1.8) {
                        snapProjectile(p);
@@ -1865,71 +1832,70 @@
         }
 
         if (snapped) {
-           g.projectiles.splice(i, 1);
+           gameEngine.projectiles.splice(i, 1);
         }
       }
 
-      for (let i = g.fallingBalloons.length - 1; i >= 0; i--) {
-          let fb = g.fallingBalloons[i];
+      for (let i = gameEngine.fallingBalloons.length - 1; i >= 0; i--) {
+          let fb = gameEngine.fallingBalloons[i];
           fb.vy += 0.4; 
           fb.x += fb.vx;
           fb.y += fb.vy;
 
           if (fb.x - fb.radius < 0) { fb.x = fb.radius; fb.vx *= -0.6; }
-          if (fb.x + fb.radius > g.canvas.width) { fb.x = g.canvas.width - fb.radius; fb.vx *= -0.6; }
+          if (fb.x + fb.radius > gameEngine.canvas.width) { fb.x = gameEngine.canvas.width - fb.radius; fb.vx *= -0.6; }
 
-          if (fb.y + fb.radius > g.containers.cy) {
-              let idx = Math.floor(fb.x / g.containers.cw);
+          if (fb.y + fb.radius > gameEngine.containers.cy) {
+              let idx = Math.floor(fb.x / gameEngine.containers.cw);
               if (idx >= 0 && idx < 5) {
-                  let pts = g.containers.scores[idx];
+                  let pts = gameEngine.containers.scores[idx];
                   addScore(pts);
-                  showFloatingText(`+${pts}`, fb.x, fb.y, g.containers.colors[idx]);
+                  showFloatingText(`+${pts}`, fb.x, fb.y, gameEngine.containers.colors[idx]);
                   if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
               }
-              g.fallingBalloons.splice(i, 1);
+              gameEngine.fallingBalloons.splice(i, 1);
           }
       }
 
-      for (let i = g.particles.length - 1; i >= 0; i--) {
-          let p = g.particles[i];
+      for (let i = gameEngine.particles.length - 1; i >= 0; i--) {
+          let p = gameEngine.particles[i];
           p.x += p.vx;
           p.y += p.vy;
           p.life -= 0.03;
-          if (p.life <= 0) g.particles.splice(i, 1);
+          if (p.life <= 0) gameEngine.particles.splice(i, 1);
       }
 
-      for (let i = g.floatingTexts.length - 1; i >= 0; i--) {
-          let ft = g.floatingTexts[i];
+      for (let i = gameEngine.floatingTexts.length - 1; i >= 0; i--) {
+          let ft = gameEngine.floatingTexts[i];
           ft.y -= 1;
           ft.life -= 0.02;
-          if (ft.life <= 0) g.floatingTexts.splice(i, 1);
+          if (ft.life <= 0) gameEngine.floatingTexts.splice(i, 1);
       }
     }
 
     function showFloatingText(text, x, y, color = '#fff') {
-        window.gameEngine.floatingTexts.push({text: text, x: x, y: y, life: 1, color: color});
+        gameEngine.floatingTexts.push({text: text, x: x, y: y, life: 1, color: color});
     }
 
     function drawPhysicsObjects() {
-      const g = window.gameEngine;
-      const ctx = g.ctx;
+      const ctx = gameEngine.ctx;
 
-      g.particles.forEach(p => {
+      gameEngine.particles.forEach(p => {
           ctx.globalAlpha = p.life;
           ctx.fillStyle = p.color;
           ctx.beginPath();
-          ctx.arc(p.x, p.y, g.ballRadius * 0.3, 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, gameEngine.ballRadius * 0.3, 0, Math.PI * 2);
           ctx.fill();
       });
       ctx.globalAlpha = 1.0;
 
-      g.fallingBalloons.forEach(fb => {
+      gameEngine.fallingBalloons.forEach(fb => {
           drawBalloon(ctx, fb.x, fb.y, fb.radius, fb.color, fb.type, 1);
       });
 
       ctx.textAlign = 'center';
       ctx.font = '900 16px "Outfit"';
-      g.floatingTexts.forEach(ft => {
+      gameEngine.floatingTexts.forEach(ft => {
           ctx.globalAlpha = ft.life;
           ctx.fillStyle = ft.color;
           ctx.shadowColor = '#000';
@@ -1941,26 +1907,25 @@
     }
 
     function snapProjectile(p, forceRow = -1) {
-       const g = window.gameEngine;
-       let rHeight = g.ballRadius * 1.732;
-       let targetR = Math.round((p.y - g.offsetY - g.ballRadius) / rHeight);
+       let rHeight = gameEngine.ballRadius * 1.732;
+       let targetR = Math.round((p.y - gameEngine.offsetY - gameEngine.ballRadius) / rHeight);
        if(forceRow !== -1) targetR = forceRow;
        if(targetR < 0) targetR = 0;
        
-       let targetC = Math.round((p.x - g.ballRadius - (targetR % 2 !== 0 ? g.ballRadius : 0)) / (g.ballRadius * 2));
+       let targetC = Math.round((p.x - gameEngine.ballRadius - (targetR % 2 !== 0 ? gameEngine.ballRadius : 0)) / (gameEngine.ballRadius * 2));
        if (targetC < 0) targetC = 0;
-       let maxC = (targetR % 2 === 0) ? g.gridCols - 1 : g.gridCols - 2;
+       let maxC = (targetR % 2 === 0) ? gameEngine.gridCols - 1 : gameEngine.gridCols - 2;
        if (targetC > maxC) targetC = maxC;
 
-       while(g.grid.length <= targetR) g.grid.push([]);
+       while(gameEngine.grid.length <= targetR) gameEngine.grid.push([]);
        
-       if (g.grid[targetR][targetC]) {
+       if (gameEngine.grid[targetR][targetC]) {
            let bestD = Infinity, bestR = targetR, bestC = targetC;
            const dirs = getNeighborsDirs(targetR);
            dirs.forEach(d => {
                let nr = targetR + d[0], nc = targetC + d[1];
-               if(nr >=0 && nc >=0 && nc <= ((nr%2===0)?g.gridCols-1:g.gridCols-2)) {
-                   if (!g.grid[nr] || !g.grid[nr][nc]) {
+               if(nr >=0 && nc >=0 && nc <= ((nr%2===0)?gameEngine.gridCols-1:gameEngine.gridCols-2)) {
+                   if (!gameEngine.grid[nr] || !gameEngine.grid[nr][nc]) {
                       let nPos = getGridPos(nr, nc);
                       let dist = Math.hypot(p.x - nPos.x, p.y - nPos.y);
                       if (dist < bestD) { bestD = dist; bestR = nr; bestC = nc; }
@@ -1970,12 +1935,12 @@
            targetR = bestR; targetC = bestC;
        }
 
-       while(g.grid.length <= targetR) g.grid.push([]);
+       while(gameEngine.grid.length <= targetR) gameEngine.grid.push([]);
 
        if (p.type === 'bomb') {
           triggerExplosion(targetR, targetC);
        } else {
-          g.grid[targetR][targetC] = { color: p.color, type: p.type, hp: 1, r: targetR, c: targetC };
+          gameEngine.grid[targetR][targetC] = { color: p.color, type: p.type, hp: 1, r: targetR, c: targetC };
           checkMatches(targetR, targetC);
        }
        
@@ -1990,22 +1955,20 @@
     }
 
     function getNeighbors(r, c) {
-       const g = window.gameEngine;
        let n = [];
        getNeighborsDirs(r).forEach(d => {
            let nr = r + d[0], nc = c + d[1];
-           if (g.grid[nr] && g.grid[nr][nc]) n.push({r: nr, c: nc});
+           if (gameEngine.grid[nr] && gameEngine.grid[nr][nc]) n.push({r: nr, c: nc});
        });
        return n;
     }
 
     function triggerExplosion(r, c) {
-        const g = window.gameEngine;
         let toPop = [];
         for(let ir = r-2; ir <= r+2; ir++) {
-            if(!g.grid[ir]) continue;
+            if(!gameEngine.grid[ir]) continue;
             for(let ic = c-2; ic <= c+2; ic++) {
-                if(g.grid[ir][ic]) toPop.push({r:ir, c:ic});
+                if(gameEngine.grid[ir][ic]) toPop.push({r:ir, c:ic});
             }
         }
         toPop.forEach(b => popBalloon(b.r, b.c, true));
@@ -2013,25 +1976,21 @@
         if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
     }
 
-    // FIXED BUG & NEW MECHANIC: Match məntiqi təkmilləşdirildi (Qıfıl və Buz qırılması)
     function checkMatches(r, c) {
-        const g = window.gameEngine;
-        let startColor = g.grid[r][c].color;
+        let startColor = gameEngine.grid[r][c].color;
         let matchGroup = [];
         let visited = new Set();
         let q = [{r, c}];
         visited.add(`${r},${c}`);
 
-        // BFS - Eyni rəngləri tapmaq (qıfıllılar da daxil)
         while(q.length > 0) {
             let cur = q.shift();
             matchGroup.push(cur);
             let neighbors = getNeighbors(cur.r, cur.c);
             
             neighbors.forEach(n => {
-                let cell = g.grid[n.r][n.c];
-                // Buzlu və zirehli şarlar daxil edilmir
-                if (!visited.has(`${n.r},${n.c}`) && cell.type !== 'armored' && cell.type !== 'frozen') {
+                let cell = gameEngine.grid[n.r][n.c];
+                if (!visited.has(`${n.r},${n.c}`) && cell.type !== 'armored') {
                     if (cell.color === startColor) {
                         visited.add(`${n.r},${n.c}`);
                         q.push({r: n.r, c: n.c});
@@ -2041,44 +2000,29 @@
         }
 
         if (matchGroup.length >= 3) { 
-            let toPop = [];
-            let toUnlock = [];
-            let toThaw = [];
-
-            // Uyğunlaşanların statuslarına görə ayrılması
+            // Qonşuluqda olan kilid və ya buzları qırmaq mexanikası
+            let neighborsToBreak = new Set();
             matchGroup.forEach(m => {
-                let cell = g.grid[m.r][m.c];
-                if (cell.type === 'locked') {
-                    toUnlock.push(m); // Qıfıllılar partlamır, sadəcə qıfılı qırılır
-                } else {
-                    toPop.push(m);    // Normallar partlayır
-                }
-            });
-
-            // Partlayanların ətrafındakı Buzlu (Frozen) şarları tapırıq
-            toPop.forEach(m => {
-                let neighbors = getNeighbors(m.r, m.c);
-                neighbors.forEach(n => {
-                    let cell = g.grid[n.r][n.c];
-                    if (cell && cell.type === 'frozen' && !toThaw.includes(n)) {
-                        toThaw.push(n);
+                getNeighbors(m.r, m.c).forEach(n => {
+                    let cell = gameEngine.grid[n.r][n.c];
+                    if (cell && (cell.type === 'locked' || cell.type === 'ice') && !matchGroup.some(mg => mg.r === n.r && mg.c === n.c)) {
+                        neighborsToBreak.add(`${n.r},${n.c}`);
                     }
                 });
             });
 
-            // Reaksiyaları tətbiq edirik
-            toPop.forEach(m => popBalloon(m.r, m.c));
-            
-            toUnlock.forEach(m => {
-                g.grid[m.r][m.c].type = 'normal';
-                createParticles(m.r, m.c, '#94a3b8'); 
-                showFloatingText("UNLOCKED", getGridPos(m.r, m.c).x, getGridPos(m.r, m.c).y, '#94a3b8');
-            });
-            
-            toThaw.forEach(m => {
-                g.grid[m.r][m.c].type = 'normal';
-                createParticles(m.r, m.c, '#a5f3fc'); 
-                showFloatingText("THAWED", getGridPos(m.r, m.c).x, getGridPos(m.r, m.c).y, '#a5f3fc');
+            matchGroup.forEach(m => popBalloon(m.r, m.c));
+
+            neighborsToBreak.forEach(key => {
+                let [nr, nc] = key.split(',').map(Number);
+                let cell = gameEngine.grid[nr][nc];
+                if (cell) {
+                    cell.type = 'normal';
+                    cell.hp = 1;
+                    createParticles(nr, nc, '#e2e8f0'); 
+                    addScore(15);
+                    if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+                }
             });
 
             addScore(matchGroup.length * 10);
@@ -2090,33 +2034,36 @@
     }
 
     function popBalloon(r, c, force = false) {
-       const g = window.gameEngine;
-       let b = g.grid[r][c];
+       let b = gameEngine.grid[r][c];
        if(!b) return;
        
        let pos = getGridPos(r, c);
        
-       if (b.type === 'normal' || b.type === 'locked' || b.type === 'frozen') {
-           g.fallingBalloons.push({
+       if (b.type === 'normal' || force) {
+           let dropColor = b.color;
+           if(b.type === 'armored') dropColor = '#64748b';
+           if(b.type === 'virus') dropColor = '#84cc16';
+           if(b.type === 'locked' || b.type === 'ice') dropColor = b.color;
+
+           gameEngine.fallingBalloons.push({
                x: pos.x, y: pos.y, 
-               vx: (Math.random() - 0.5) * 6, vy: 0, 
-               radius: g.ballRadius, color: b.color, type: 'normal'
+               vx: (Math.random() - 0.5) * 8, vy: -2, 
+               radius: gameEngine.ballRadius, color: dropColor, type: (b.type === 'normal' || b.type === 'locked' || b.type === 'ice') ? 'normal' : b.type
            });
        } else {
            createParticles(r, c, b.color);
        }
        
-       g.grid[r][c] = null;
+       gameEngine.grid[r][c] = null;
     }
 
-    function dropFloaters() {
-        const g = window.gameEngine;
+    function dropFloaters(forceAll = false) {
         let visited = new Set();
         let q = [];
         
-        if(g.grid[0]) {
-            for(let c=0; c<g.grid[0].length; c++) {
-                if(g.grid[0][c]) {
+        if(!forceAll && gameEngine.grid[0]) {
+            for(let c=0; c<gameEngine.grid[0].length; c++) {
+                if(gameEngine.grid[0][c]) {
                     q.push({r:0, c:c});
                     visited.add(`0,${c}`);
                 }
@@ -2135,10 +2082,10 @@
         }
 
         let dropped = 0;
-        for(let r=0; r<g.grid.length; r++) {
-            if(!g.grid[r]) continue;
-            for(let c=0; c<g.grid[r].length; c++) {
-                if(g.grid[r][c] && !visited.has(`${r},${c}`)) {
+        for(let r=0; r<gameEngine.grid.length; r++) {
+            if(!gameEngine.grid[r]) continue;
+            for(let c=0; c<gameEngine.grid[r].length; c++) {
+                if(gameEngine.grid[r][c] && !visited.has(`${r},${c}`)) {
                     popBalloon(r, c, true); 
                     dropped++;
                 }
@@ -2148,34 +2095,32 @@
     }
 
     function spreadVirus() {
-        const g = window.gameEngine;
         let viruses = [];
-        for(let r=0; r<g.grid.length; r++) {
-            if(!g.grid[r]) continue;
-            for(let c=0; c<g.grid[r].length; c++) {
-                if(g.grid[r][c] && g.grid[r][c].type === 'virus') {
+        for(let r=0; r<gameEngine.grid.length; r++) {
+            if(!gameEngine.grid[r]) continue;
+            for(let c=0; c<gameEngine.grid[r].length; c++) {
+                if(gameEngine.grid[r][c] && gameEngine.grid[r][c].type === 'virus') {
                     viruses.push({r,c});
                 }
             }
         }
         
-        if (viruses.length > 0 && g.shotsFired % 3 === 0) {
+        if (viruses.length > 0 && gameEngine.shotsFired % 3 === 0) {
            let v = viruses[Math.floor(Math.random() * viruses.length)];
            let neighbors = getNeighbors(v.r, v.c);
-           let normalN = neighbors.filter(n => g.grid[n.r][n.c].type === 'normal');
+           let normalN = neighbors.filter(n => gameEngine.grid[n.r][n.c].type === 'normal');
            if (normalN.length > 0) {
               let target = normalN[Math.floor(Math.random() * normalN.length)];
-              g.grid[target.r][target.c].type = 'virus';
+              gameEngine.grid[target.r][target.c].type = 'virus';
               createParticles(target.r, target.c, '#bef264');
            }
         }
     }
 
     function createParticles(r, c, color) {
-        const g = window.gameEngine;
         let pos = getGridPos(r, c);
         for(let i=0; i<8; i++) {
-            g.particles.push({
+            gameEngine.particles.push({
                 x: pos.x, y: pos.y,
                 vx: (Math.random() - 0.5) * 12,
                 vy: (Math.random() - 0.5) * 12,
@@ -2185,13 +2130,12 @@
     }
 
     function addScore(pts) {
-       window.gameEngine.score += pts;
-       document.getElementById('ingame-score').innerText = window.gameEngine.score;
+       gameEngine.score += pts;
+       document.getElementById('ingame-score').innerText = gameEngine.score;
     }
 
     function calculateStars() {
-        const g = window.gameEngine;
-        let ratio = g.shotsFired / (g.totalTarget || 1);
+        let ratio = gameEngine.shotsFired / (gameEngine.totalTarget || 1);
         if (ratio <= 1.3) return 3; 
         if (ratio <= 2.0) return 2; 
         return 1;
@@ -2206,31 +2150,33 @@
     }
 
     function checkWinLoss() {
-        const g = window.gameEngine;
-        let isEmpty = true;
+        let hasMatchable = false;
         let reachedBottom = false;
 
-        for(let r=0; r<g.grid.length; r++) {
-            if(!g.grid[r]) continue;
-            for(let c=0; c<g.grid[r].length; c++) {
-                if(g.grid[r][c]) {
-                    isEmpty = false;
+        for(let r=0; r<gameEngine.grid.length; r++) {
+            if(!gameEngine.grid[r]) continue;
+            for(let c=0; c<gameEngine.grid[r].length; c++) {
+                let b = gameEngine.grid[r][c];
+                if(b) {
                     let pos = getGridPos(r, c);
-                    if (pos.y + g.ballRadius > g.limitY) reachedBottom = true;
+                    if (pos.y + gameEngine.ballRadius > gameEngine.limitY) reachedBottom = true;
+                    if (b.type !== 'armored' && b.type !== 'virus') {
+                        hasMatchable = true;
+                    }
                 }
             }
         }
 
-        if (isEmpty && g.fallingBalloons.length === 0) {
-            endGame(true);
+        if (!hasMatchable && gameEngine.fallingBalloons.length === 0 && gameEngine.projectiles.length === 0) {
+            dropFloaters(true); 
+            setTimeout(() => endGame(true), 1500);
         } else if (reachedBottom) {
             endGame(false);
         }
     }
 
     function endGame(isWin) {
-        const g = window.gameEngine;
-        g.isPlaying = false;
+        gameEngine.isPlaying = false;
         
         const modal = document.getElementById('game-over-modal');
         const title = document.getElementById('end-title');
@@ -2242,7 +2188,7 @@
 
         if (isWin) {
             let stars = calculateStars();
-            let idx = g.currentLevel - 1;
+            let idx = gameEngine.currentLevel - 1;
             
             let alreadyCompleted = gameState.levelsCompleted[idx];
             let xpEarned = alreadyCompleted ? 0 : (LEVEL_REWARDS[idx] || 100);
@@ -2275,7 +2221,7 @@
             }
 
             nextBtn.innerText = idx < 9 ? "Next Level" : "Finish";
-            nextBtn.onclick = () => { idx < 9 ? startGame(g.currentLevel + 1) : exitGame(); };
+            nextBtn.onclick = () => { idx < 9 ? startGame(gameEngine.currentLevel + 1) : exitGame(); };
 
             saveState();
             updateUI();
@@ -2287,14 +2233,14 @@
             endStars.innerHTML = '<i class="fa-solid fa-skull-crossbones text-5xl text-slate-600 drop-shadow-lg"></i>';
             endReward.style.display = 'none';
             nextBtn.innerText = "Retry";
-            nextBtn.onclick = () => { startGame(g.currentLevel); };
+            nextBtn.onclick = () => { startGame(gameEngine.currentLevel); };
             if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
         }
     }
 
     function activatePowerup(type) {
        if (gameState.powerups[type] > 0) {
-           window.gameEngine.activePowerup = type;
+           gameEngine.activePowerup = type;
        } else {
            watchAdForPowerup(type);
        }
@@ -2302,13 +2248,12 @@
 
     function consumePowerup(type) {
         gameState.powerups[type]--;
-        window.gameEngine.activePowerup = null;
+        gameEngine.activePowerup = null;
         saveState();
         updatePowerupUI();
     }
 
     function updatePowerupUI() {
-        const g = window.gameEngine;
         ['rocket', 'bomb'].forEach(type => {
             let el = document.getElementById(`count-${type}`);
             let btn = document.getElementById(`btn-power-${type}`);
@@ -2319,7 +2264,7 @@
                   ? "absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] shadow-lg"
                   : "absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] animate-pulse shadow-[0_0_10px_#10b981]";
                
-               if(g.activePowerup === type) {
+               if(gameEngine.activePowerup === type) {
                   btn.classList.add('powerup-active-glow');
                } else {
                   btn.classList.remove('powerup-active-glow');
@@ -2366,40 +2311,41 @@
     }
 
     function gameLoop() {
-      const g = window.gameEngine;
-      if (!g.isPlaying) return;
+      if (!gameEngine.isPlaying) return;
       
-      const ctx = g.ctx;
-      ctx.clearRect(0, 0, g.canvas.width, g.canvas.height);
+      const ctx = gameEngine.ctx;
+      ctx.clearRect(0, 0, gameEngine.canvas.width, gameEngine.canvas.height);
 
       drawContainers();
       drawGrid();
       drawLauncher();
       
-      if(g.projectiles.length > 0 || g.fallingBalloons.length > 0 || g.particles.length > 0) {
+      if(gameEngine.projectiles.length > 0 || gameEngine.fallingBalloons.length > 0 || gameEngine.particles.length > 0) {
          updatePhysics();
          drawPhysicsObjects();
       }
 
-      g.projectiles.forEach(p => {
+      gameEngine.projectiles.forEach(p => {
          drawBalloon(ctx, p.x, p.y, p.radius, p.color, p.type, 1);
       });
 
       ctx.beginPath();
-      ctx.moveTo(0, g.limitY);
-      ctx.lineTo(g.canvas.width, g.limitY);
+      ctx.moveTo(0, gameEngine.limitY);
+      ctx.lineTo(gameEngine.canvas.width, gameEngine.limitY);
       ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)';
       ctx.lineWidth = 1;
       ctx.setLineDash([5, 5]);
       ctx.stroke();
       ctx.setLineDash([]);
       
-      if(g.projectiles.length === 0 && g.fallingBalloons.length === 0) {
+      if(gameEngine.projectiles.length === 0 && gameEngine.fallingBalloons.length === 0) {
          let empty = true;
-         for(let r=0; r<g.grid.length; r++) {
-             if(!g.grid[r]) continue;
-             for(let c=0; c<g.grid[r].length; c++) {
-                 if(g.grid[r][c]) { empty = false; break; }
+         for(let r=0; r<gameEngine.grid.length; r++) {
+             if(!gameEngine.grid[r]) continue;
+             for(let c=0; c<gameEngine.grid[r].length; c++) {
+                 if(gameEngine.grid[r][c] && gameEngine.grid[r][c].type !== 'armored' && gameEngine.grid[r][c].type !== 'virus') { 
+                     empty = false; break; 
+                 }
              }
          }
          if (empty) checkWinLoss();

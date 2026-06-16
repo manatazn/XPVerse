@@ -7,11 +7,12 @@
   
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-  
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
-
+  
+  <link rel="stylesheet" href="style.css">
+  
   <script>
     tailwind.config = {
       theme: {
@@ -19,32 +20,21 @@
           fontFamily: { sans: ['Outfit', 'sans-serif'] },
           colors: {
             crypto: {
-              dark: '#050511',     
-              card: '#0a0b1a',     
-              primary: '#3b82f6',  
-              glow: '#00f0ff',     
-              gold: '#ffb800',     
-              silver: '#e2e8f0',   
-              bronze: '#cd7f32'    
+              dark: '#050511', card: '#0a0b1a', primary: '#3b82f6',  
+              glow: '#00f0ff', gold: '#ffb800', silver: '#e2e8f0', bronze: '#cd7f32'    
             }
           },
           animation: {
             'blob': 'blob 7s infinite',
             'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'float-up': 'floatUp 2s ease-out forwards',
-            'pop': 'pop 0.3s ease-out forwards',
-            'shimmer': 'shimmer 2s infinite'
+            'shimmer': 'shimmer 2s infinite',
+            'pop': 'pop 0.3s ease-out forwards'
           },
           keyframes: {
             blob: {
-              '0%': { transform: 'translate(0px, 0px) scale(1)' },
+              '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
               '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-              '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-              '100%': { transform: 'translate(0px, 0px) scale(1)' },
-            },
-            floatUp: {
-              '0%': { transform: 'translateY(0) scale(1)', opacity: 1 },
-              '100%': { transform: 'translateY(-100px) scale(0.5)', opacity: 0 }
+              '66%': { transform: 'translate(-20px, 20px) scale(0.9)' }
             },
             pop: {
               '0%': { transform: 'scale(1)' },
@@ -60,164 +50,6 @@
       }
     }
   </script>
-
-  <style>
-    body {
-      background-color: #050511;
-      color: #f8fafc;
-      overflow-x: hidden;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      user-select: none;
-    }
-
-    body.in-game {
-      overflow: hidden !important;
-      touch-action: none !important;
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-    }
-    body.in-game #main-header,
-    body.in-game #bottom-nav {
-      display: none !important;
-    }
-    body.in-game #app-content {
-      padding: 0 !important;
-      margin: 0 !important;
-    }
-
-    .bg-orb-1 {
-      position: fixed; top: -10%; left: -10%; width: 50vw; height: 50vw;
-      background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
-      z-index: -1; filter: blur(40px);
-    }
-    .bg-orb-2 {
-      position: fixed; bottom: -10%; right: -10%; width: 60vw; height: 60vw;
-      background: radial-gradient(circle, rgba(0, 240, 255, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
-      z-index: -1; filter: blur(50px);
-    }
-
-    input { user-select: auto !important; }
-    img { pointer-events: none; }
-    ::-webkit-scrollbar { width: 0px; background: transparent; }
-
-    .glass-card {
-      background: linear-gradient(145deg, rgba(20, 22, 45, 0.6) 0%, rgba(10, 11, 26, 0.8) 100%);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-    }
-    
-    .glass-button {
-      background: linear-gradient(135deg, rgba(59,130,246,0.2) 0%, rgba(0,240,255,0.1) 100%);
-      border: 1px solid rgba(0,240,255,0.3);
-      box-shadow: 0 0 15px rgba(0,240,255,0.1) inset;
-    }
-
-    .fade-in { animation: fadeIn 0.3s ease-out forwards; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-    .nav-active { color: #00f0ff !important; transform: translateY(-2px); }
-    .nav-active i { filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.6)); }
-    .nav-active::before {
-      content: ''; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-      width: 20px; height: 4px; background: #00f0ff; border-radius: 4px;
-      box-shadow: 0 0 12px #00f0ff, 0 0 20px #3b82f6;
-    }
-
-    #bottom-nav {
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out;
-    }
-    .nav-hidden {
-      transition: none !important;
-      transform: translate(-50%, 150px) !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
-    }
-
-    .btn-3d {
-      background: linear-gradient(to bottom, #3b82f6, #2563eb);
-      border-bottom: 3px solid #1e3a8a;
-      transition: all 0.1s;
-    }
-    .btn-3d:active {
-      transform: translateY(3px);
-      border-bottom-width: 0px;
-      margin-bottom: 3px;
-    }
-
-    #toast-container {
-      position: fixed; top: 1.5rem; left: 50%; transform: translate(-50%, -150%) scale(0.9);
-      width: 90%; max-width: 380px; z-index: 999999;
-      transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-      opacity: 0; pointer-events: none;
-    }
-    .toast-show { transform: translate(-50%, 0) scale(1) !important; opacity: 1 !important; }
-
-    .box-bronze { background: linear-gradient(135deg, rgba(205,127,50,0.1), rgba(139,69,19,0.2)); border: 1px solid rgba(205,127,50,0.4); }
-    .box-silver { background: linear-gradient(135deg, rgba(226,232,240,0.1), rgba(148,163,184,0.2)); border: 1px solid rgba(226,232,240,0.4); }
-    .box-gold { background: linear-gradient(135deg, rgba(255,184,0,0.15), rgba(217,119,6,0.25)); border: 1px solid rgba(255,184,0,0.5); }
-
-    /* Game Specific Styles */
-    #game-play-container.fullscreen-mode {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      width: 100vw; height: 100vh;
-      z-index: 99999;
-      background: #050511;
-      padding: 10px;
-      padding-bottom: env(safe-area-inset-bottom, 20px);
-      display: flex;
-      flex-direction: column;
-      box-sizing: border-box;
-    }
-
-    #game-canvas-container {
-      flex: 1 1 auto;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at center, #0f172a 0%, #050511 100%);
-      border: 2px solid rgba(0, 240, 255, 0.2);
-      border-radius: 1.5rem;
-      overflow: hidden;
-      position: relative;
-      box-shadow: 0 0 30px rgba(0, 240, 255, 0.05) inset;
-    }
-    canvas { width: 100%; height: 100%; touch-action: none; display: block; }
-
-    .level-node {
-      width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-weight: 900; font-size: 1.25rem; position: relative; z-index: 10; transition: transform 0.2s;
-    }
-    .level-node.completed { background: linear-gradient(135deg, #3b82f6, #00f0ff); color: #050511; box-shadow: 0 0 20px rgba(0, 240, 255, 0.4); }
-    .level-node.current { background: #050511; border: 3px solid #00f0ff; color: #00f0ff; box-shadow: 0 0 20px rgba(0, 240, 255, 0.6); animation: pulse 2s infinite; }
-    .level-node.locked { background: #1e293b; border: 2px solid #334155; color: #475569; }
-    
-    .path-line { position: absolute; width: 6px; background: #334155; z-index: 5; }
-    .path-line.active { background: linear-gradient(to bottom, #3b82f6, #00f0ff); box-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
-
-    .star-icon { color: #334155; font-size: 0.7rem; transition: color 0.3s; }
-    .star-icon.filled { color: #ffb800; filter: drop-shadow(0 0 5px rgba(255, 184, 0, 0.8)); }
-
-    #splash-screen {
-      background: linear-gradient(180deg, #050511 0%, #0a0b1a 100%);
-      z-index: 100;
-    }
-    
-    .powerup-btn {
-      transition: all 0.2s ease-in-out;
-    }
-    .powerup-btn:active {
-      transform: scale(0.9) translateY(4px);
-    }
-    .powerup-active-glow {
-      box-shadow: 0 0 20px var(--glow-color);
-      border-color: var(--glow-color);
-    }
-  </style>
 </head>
 <body class="flex flex-col min-h-screen pb-32">
   
@@ -233,17 +65,10 @@
       </div>
     </div>
     <h2 class="text-white font-black tracking-[0.25em] text-2xl uppercase bg-clip-text text-transparent bg-gradient-to-r from-crypto-glow via-blue-400 to-indigo-500 mb-2 drop-shadow-lg">XPVerse</h2>
-    <div class="flex gap-1 mt-2">
-      <div class="w-1.5 h-1.5 bg-crypto-glow rounded-full animate-bounce"></div>
-      <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-      <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-    </div>
   </div>
 
   <div id="toast-container" class="glass-card rounded-2xl p-4 flex items-center gap-4">
-    <div id="toast-icon" class="w-12 h-12 rounded-full flex shrink-0 items-center justify-center text-xl shadow-inner">
-      <i class="fa-solid fa-bell"></i>
-    </div>
+    <div id="toast-icon" class="w-12 h-12 rounded-full flex shrink-0 items-center justify-center text-xl shadow-inner"></div>
     <div class="flex-1">
       <h4 id="toast-title" class="text-sm font-black text-white tracking-wide">Notification</h4>
       <p id="toast-message" class="text-xs text-slate-300 mt-0.5 leading-tight">Message goes here</p>
@@ -267,7 +92,7 @@
       <div class="flex flex-col items-end gap-1.5">
         <div class="glass-button px-3 py-1.5 rounded-xl flex items-center gap-2">
           <i class="fa-solid fa-bolt text-crypto-glow text-xs drop-shadow-[0_0_5px_#00f0ff]"></i>
-          <span id="user-xp" class="text-white font-black text-sm tracking-wider">0 <span class="text-[10px] text-crypto-glow">XP</span></span>
+          <span id="user-xp" class="text-white font-black text-sm tracking-wider">0</span>
         </div>
         <div class="bg-emerald-900/40 border border-emerald-500/30 px-3 py-1 rounded-xl flex items-center gap-2 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]">
           <i class="fa-solid fa-dollar-sign text-emerald-400 text-[10px]"></i>
@@ -307,7 +132,7 @@
         </div>
       </div>
 
-      <button onclick="watchAd()" id="watch-ad-btn" class="w-full py-4 rounded-2xl text-white font-black text-sm tracking-[0.15em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(59,130,246,0.3)] btn-3d relative overflow-hidden group">
+      <button id="watch-ad-btn" class="w-full py-4 rounded-2xl text-white font-black text-sm tracking-[0.15em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(59,130,246,0.3)] btn-3d relative overflow-hidden group">
         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
         <i class="fa-solid fa-play bg-white/20 p-2 rounded-full text-[10px]"></i> 
         <span>Watch Ad <span class="text-cyan-200">+10 XP</span></span>
@@ -327,7 +152,6 @@
           <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Games</h2>
           <p class="text-[10px] text-blue-400 mt-1 uppercase tracking-widest font-bold bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20">XPVerse Balloon Blast</p>
         </div>
-
         <div class="glass-card rounded-3xl p-6 relative overflow-hidden flex flex-col items-center min-h-[400px]">
           <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-6">Daily Levels Progress</p>
           <div class="relative w-full max-w-[250px] mx-auto py-4" id="level-map"></div>
@@ -336,22 +160,18 @@
 
       <div id="game-play-container" class="hidden flex flex-col gap-3">
         <div class="glass-card p-3 rounded-2xl flex justify-between items-center border border-blue-500/30 shrink-0 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
-          <button onclick="exitGame()" class="w-10 h-10 rounded-xl bg-slate-800/50 flex items-center justify-center text-slate-400 hover:text-white active:scale-95 transition-all">
+          <button id="btn-exit-game" class="w-10 h-10 rounded-xl bg-slate-800/50 flex items-center justify-center text-slate-400 hover:text-white active:scale-95 transition-all">
             <i class="fa-solid fa-arrow-left"></i>
           </button>
           <div class="text-center">
             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Level <span id="ingame-level-display">1</span></p>
             <p class="text-lg font-black text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]" id="ingame-score">0</p>
           </div>
-          <div class="flex gap-1 bg-slate-900/50 p-2 rounded-xl border border-slate-700/50" id="ingame-stars">
-            <i class="fa-solid fa-star text-slate-700 text-xs"></i>
-            <i class="fa-solid fa-star text-slate-700 text-xs"></i>
-            <i class="fa-solid fa-star text-slate-700 text-xs"></i>
-          </div>
+          <div class="flex gap-1 bg-slate-900/50 p-2 rounded-xl border border-slate-700/50" id="ingame-stars"></div>
         </div>
 
         <div id="game-canvas-container">
-          <div id="splash-screen" class="absolute inset-0 flex flex-col items-center justify-center text-center transition-opacity duration-500">
+          <div id="splash-screen" class="absolute inset-0 flex flex-col items-center justify-center text-center transition-opacity duration-500 hidden">
             <div class="w-20 h-20 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-4 border border-blue-400/50 shadow-[0_0_30px_rgba(59,130,246,0.5)]">
               <i class="fa-solid fa-gamepad text-4xl text-crypto-glow"></i>
             </div>
@@ -366,15 +186,15 @@
             <div class="flex gap-2 mb-4" id="end-stars"></div>
             <p id="end-reward" class="text-lg font-bold text-emerald-400 mb-8 bg-emerald-500/10 px-6 py-3 rounded-xl border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">+0 XP</p>
             <div class="flex gap-4 w-full max-w-[250px]">
-              <button onclick="exitGame()" class="flex-1 py-3.5 rounded-xl bg-slate-800 text-white font-black uppercase text-xs tracking-wider shadow-lg active:scale-95 transition-all border border-slate-600">Back</button>
-              <button id="end-next-btn" onclick="nextLevel()" class="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black uppercase text-xs tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.4)] active:scale-95 transition-all">Next</button>
+              <button id="end-back-btn" class="flex-1 py-3.5 rounded-xl bg-slate-800 text-white font-black uppercase text-xs tracking-wider shadow-lg active:scale-95 transition-all border border-slate-600">Back</button>
+              <button id="end-next-btn" class="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black uppercase text-xs tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.4)] active:scale-95 transition-all">Next</button>
             </div>
           </div>
         </div>
 
         <div class="glass-card p-3 rounded-2xl flex justify-center gap-10 items-center shrink-0 border border-slate-700/50">
           <div class="flex flex-col items-center gap-1.5 group relative">
-            <button onclick="activatePowerup('bomb')" class="powerup-btn w-12 h-12 rounded-2xl bg-slate-800/80 border-2 border-slate-600 flex items-center justify-center text-orange-400 relative shadow-[0_4px_15px_rgba(0,0,0,0.5)]" id="btn-power-bomb" style="--glow-color: rgba(249,115,22,0.6)">
+            <button id="btn-power-bomb" class="powerup-btn w-12 h-12 rounded-2xl bg-slate-800/80 border-2 border-slate-600 flex items-center justify-center text-orange-400 relative shadow-[0_4px_15px_rgba(0,0,0,0.5)]" style="--glow-color: rgba(249,115,22,0.6)">
               <i class="fa-solid fa-bomb text-xl drop-shadow-[0_0_5px_rgba(249,115,22,0.8)]"></i>
               <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] shadow-lg" id="count-bomb">1</span>
             </button>
@@ -382,31 +202,24 @@
           </div>
 
           <div class="flex flex-col items-center gap-1.5 group relative">
-            <button onclick="activatePowerup('rocket')" class="powerup-btn w-12 h-12 rounded-2xl bg-slate-800/80 border-2 border-slate-600 flex items-center justify-center text-red-400 relative shadow-[0_4px_15px_rgba(0,0,0,0.5)]" id="btn-power-rocket" style="--glow-color: rgba(239,68,68,0.6)">
+            <button id="btn-power-rocket" class="powerup-btn w-12 h-12 rounded-2xl bg-slate-800/80 border-2 border-slate-600 flex items-center justify-center text-red-400 relative shadow-[0_4px_15px_rgba(0,0,0,0.5)]" style="--glow-color: rgba(239,68,68,0.6)">
               <i class="fa-solid fa-rocket text-xl drop-shadow-[0_0_5px_rgba(239,68,68,0.8)]"></i>
               <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] shadow-lg" id="count-rocket">1</span>
             </button>
             <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Rocket</span>
           </div>
         </div>
-
       </div>
     </div>
 
     <div id="view-tasks" class="view-section hidden fade-in space-y-6 pb-4">
       <div class="text-center pt-2">
         <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Tasks</h2>
-        <p class="text-xs text-crypto-glow mt-1 uppercase tracking-widest font-bold">Complete to Earn XP</p>
       </div>
-      
       <div class="glass-card rounded-3xl p-5 relative overflow-hidden border-t-2 border-t-blue-500/30">
-        <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl"></div>
-        <h3 class="text-xs font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
-          <i class="fa-solid fa-calendar-check text-blue-400 text-lg"></i> 7-Day Streak
-        </h3>
+        <h3 class="text-xs font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2"><i class="fa-solid fa-calendar-check text-blue-400 text-lg"></i> 7-Day Streak</h3>
         <div class="relative flex justify-between items-center" id="streak-tracker-container"></div>
       </div>
-
       <div>
         <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">Daily Missions</h3>
         <div id="missions-container" class="space-y-3"></div>
@@ -414,1990 +227,109 @@
     </div>
 
     <div id="view-boxes" class="view-section hidden fade-in space-y-5 pb-4">
-      <div class="text-center pt-2 mb-6">
-        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Boxes</h2>
-        <p class="text-xs text-amber-400 mt-1 uppercase tracking-widest font-bold">Try Your Luck, Win Dollars</p>
-      </div>
-      
-      <div class="box-bronze glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
-        <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-crypto-bronze/10 rounded-full blur-2xl"></div>
+      <div class="text-center pt-2 mb-6"><h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Boxes</h2></div>
+      <div class="box-bronze glass-card rounded-[1.5rem] p-5 flex justify-between items-center transition-transform hover:scale-[1.02]">
         <div class="flex items-center gap-4 relative z-10">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-900 to-[#050511] border border-crypto-bronze flex items-center justify-center shadow-[0_0_15px_rgba(205,127,50,0.3)]">
-            <i class="fa-solid fa-box text-2xl text-crypto-bronze"></i>
-          </div>
-          <div>
-            <h3 class="text-lg font-black text-white tracking-wide">Bronze Box</h3>
-            <div class="flex flex-col mt-0.5">
-              <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 10,000 XP</span>
-              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $1.00</span>
-            </div>
-          </div>
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-900 to-[#050511] border border-crypto-bronze flex items-center justify-center shadow-[0_0_15px_rgba(205,127,50,0.3)]"><i class="fa-solid fa-box text-2xl text-crypto-bronze"></i></div>
+          <div><h3 class="text-lg font-black text-white">Bronze Box</h3><span class="text-[10px] text-slate-400 font-bold uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 10,000 XP</span></div>
         </div>
-        <button onclick="openBox('bronze')" class="relative z-10 bg-gradient-to-b from-orange-600 to-orange-800 text-white shadow-[0_4px_15px_rgba(205,127,50,0.4)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
+        <button class="btn-open-box relative z-10 bg-gradient-to-b from-orange-600 to-orange-800 text-white px-4 py-2 rounded-xl text-xs font-black uppercase" data-type="bronze">Open</button>
       </div>
-
-      <div class="box-silver glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
-        <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-crypto-silver/10 rounded-full blur-2xl"></div>
+      <div class="box-silver glass-card rounded-[1.5rem] p-5 flex justify-between items-center transition-transform hover:scale-[1.02]">
         <div class="flex items-center gap-4 relative z-10">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-600 to-[#050511] border border-crypto-silver flex items-center justify-center shadow-[0_0_15px_rgba(226,232,240,0.2)]">
-            <i class="fa-solid fa-box-open text-2xl text-crypto-silver"></i>
-          </div>
-          <div>
-            <h3 class="text-lg font-black text-white tracking-wide">Silver Box</h3>
-            <div class="flex flex-col mt-0.5">
-              <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 50,000 XP</span>
-              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $7.00</span>
-            </div>
-          </div>
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-600 to-[#050511] border border-crypto-silver flex items-center justify-center shadow-[0_0_15px_rgba(226,232,240,0.2)]"><i class="fa-solid fa-box-open text-2xl text-crypto-silver"></i></div>
+          <div><h3 class="text-lg font-black text-white">Silver Box</h3><span class="text-[10px] text-slate-400 font-bold uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 50,000 XP</span></div>
         </div>
-        <button onclick="openBox('silver')" class="relative z-10 bg-gradient-to-b from-slate-400 to-slate-600 text-crypto-dark shadow-[0_4px_15px_rgba(226,232,240,0.3)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
+        <button class="btn-open-box relative z-10 bg-gradient-to-b from-slate-400 to-slate-600 text-crypto-dark px-4 py-2 rounded-xl text-xs font-black uppercase" data-type="silver">Open</button>
       </div>
-
-      <div class="box-gold glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center border border-crypto-gold shadow-[0_0_20px_rgba(255,184,0,0.15)] transition-transform hover:scale-[1.02]">
-        <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 bg-crypto-gold/20 rounded-full blur-xl animate-pulse"></div>
+      <div class="box-gold glass-card rounded-[1.5rem] p-5 flex justify-between items-center transition-transform hover:scale-[1.02]">
         <div class="flex items-center gap-4 relative z-10">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-[#050511] border border-crypto-gold flex items-center justify-center shadow-[0_0_25px_rgba(255,184,0,0.5)]">
-            <i class="fa-solid fa-gem text-2xl text-crypto-gold drop-shadow-[0_0_10px_#ffb800]"></i>
-          </div>
-          <div>
-            <h3 class="text-lg font-black text-crypto-gold tracking-wide drop-shadow-[0_0_5px_rgba(255,184,0,0.5)]">Gold Box</h3>
-            <div class="flex flex-col mt-0.5">
-              <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 100,000 XP</span>
-              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $15.00</span>
-            </div>
-          </div>
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-[#050511] border border-crypto-gold flex items-center justify-center shadow-[0_0_25px_rgba(255,184,0,0.5)]"><i class="fa-solid fa-gem text-2xl text-crypto-gold"></i></div>
+          <div><h3 class="text-lg font-black text-crypto-gold">Gold Box</h3><span class="text-[10px] text-slate-400 font-bold uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 100,000 XP</span></div>
         </div>
-        <button onclick="openBox('gold')" class="relative z-10 bg-gradient-to-b from-yellow-400 to-amber-600 text-crypto-dark shadow-[0_4px_20px_rgba(255,184,0,0.6)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
+        <button class="btn-open-box relative z-10 bg-gradient-to-b from-yellow-400 to-amber-600 text-crypto-dark px-4 py-2 rounded-xl text-xs font-black uppercase" data-type="gold">Open</button>
       </div>
     </div>
 
     <div id="view-withdraw" class="view-section hidden fade-in space-y-6">
       <div class="glass-card rounded-[2rem] p-6 text-center border-t-2 border-emerald-500/40 bg-gradient-to-b from-emerald-900/30 to-[#050511]">
-        <div class="w-14 h-14 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-3 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-          <i class="fa-solid fa-wallet text-xl text-emerald-400"></i>
-        </div>
-        <p class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-1 opacity-80">Withdrawal Balance</p>
-        <h1 class="text-5xl font-black text-white tracking-tighter mb-3">$<span id="withdraw-balance-display">0.00</span></h1>
-        <div class="inline-block bg-[#050511]/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-700/50">
-          <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> Minimum: $5.00</p>
-        </div>
+        <p class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-1">Withdrawal Balance</p>
+        <h1 class="text-5xl font-black text-white mb-3">$<span id="withdraw-balance-display">0.00</span></h1>
       </div>
-
-      <div class="glass-card rounded-[1.5rem] p-5 space-y-4 border-slate-800">
+      <div class="glass-card rounded-[1.5rem] p-5 space-y-4">
         <div>
           <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">TON Wallet Address</label>
-          <div class="relative group">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="w-5 h-5 opacity-70 group-focus-within:opacity-100 transition-opacity" alt="TON">
-            </div>
-            <input type="text" id="wallet-address" placeholder="UQ..." class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-sm font-medium text-white focus:outline-none focus:border-blue-500 transition-colors placeholder-slate-600 shadow-inner">
-          </div>
+          <input type="text" id="wallet-address" placeholder="UQ..." class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-4 pr-4 text-sm font-medium text-white focus:outline-none focus:border-blue-500">
         </div>
-        
         <div>
           <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">Amount (USD)</label>
-          <div class="relative group">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <i class="fa-solid fa-dollar-sign text-slate-500 group-focus-within:text-emerald-400 transition-colors text-lg"></i>
-            </div>
-            <input type="number" id="withdraw-amount" placeholder="5.00" min="5" step="0.5" class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-sm font-bold text-emerald-400 focus:outline-none focus:border-emerald-500 transition-colors placeholder-slate-600 shadow-inner">
-          </div>
+          <input type="number" id="withdraw-amount" placeholder="5.00" min="5" step="0.5" class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-4 pr-4 text-sm font-bold text-emerald-400 focus:outline-none focus:border-emerald-500">
         </div>
-
-        <button onclick="requestWithdrawal()" id="withdraw-btn" class="w-full py-3.5 mt-2 bg-gradient-to-r from-emerald-600 to-teal-500 hover:brightness-110 active:scale-95 transition-all text-white font-black rounded-xl text-sm uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-[0_10px_20px_rgba(16,185,129,0.3)]">
-          <i class="fa-solid fa-money-bill-transfer"></i> Request Withdrawal
-        </button>
+        <button id="withdraw-btn" class="w-full py-3.5 mt-2 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-black rounded-xl text-sm uppercase tracking-[0.15em]">Request Withdrawal</button>
       </div>
-
-      <div>
-        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">History</h3>
-        <div id="withdraw-history-container" class="space-y-3"></div>
-      </div>
+      <div id="withdraw-history-container" class="space-y-3"></div>
     </div>
 
     <div id="view-profile" class="view-section hidden fade-in space-y-6">
       <div class="glass-card rounded-[2.5rem] p-1 text-center relative overflow-hidden border border-slate-700/50">
-        <div class="h-32 bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 rounded-t-[2.3rem] relative overflow-hidden">
-           <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20"></div>
-           <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 w-full h-20 bg-gradient-to-t from-[#0a0b1a] to-transparent"></div>
-        </div>
-        
+        <div class="h-32 bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 rounded-t-[2.3rem] relative"></div>
         <div class="px-6 pb-8 -mt-16 relative z-10">
-          <div class="relative w-24 h-24 mx-auto rounded-full bg-gradient-to-b from-crypto-glow to-blue-600 p-1 mb-3 shadow-[0_0_30px_rgba(0,240,255,0.4)]">
+          <div class="relative w-24 h-24 mx-auto rounded-full bg-gradient-to-b from-crypto-glow to-blue-600 p-1 mb-3">
              <img id="profile-photo-large" src="https://via.placeholder.com/150" class="w-full h-full rounded-full border-4 border-[#0a0b1a] object-cover">
-             <div class="absolute -bottom-2 -right-2 bg-gradient-to-br from-[#0a0b1a] to-blue-900 border-2 border-crypto-glow text-white w-8 h-8 rounded-full flex items-center justify-center font-black text-xs shadow-[0_0_15px_#00f0ff]" id="profile-badge-level">1</div>
+             <div class="absolute -bottom-2 -right-2 bg-gradient-to-br from-[#0a0b1a] to-blue-900 border-2 border-crypto-glow text-white w-8 h-8 rounded-full flex items-center justify-center font-black text-xs" id="profile-badge-level">1</div>
           </div>
-          
-          <h2 id="profile-name" class="text-2xl font-black text-white tracking-tight">User</h2>
+          <h2 id="profile-name" class="text-2xl font-black text-white">User</h2>
           <p id="profile-tgid" class="text-[10px] text-blue-400 font-mono mt-1 tracking-widest bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20">ID: 00000000</p>
-          
           <div class="mt-6">
-            <div class="flex justify-between items-end mb-1.5 px-1">
-               <span class="text-[10px] font-black text-crypto-glow uppercase tracking-wider">Level Progress</span>
-               <span class="text-[10px] font-bold text-slate-400" id="profile-current-xp-text">0 XP</span>
-            </div>
             <div class="w-full bg-[#050511] rounded-full h-3 border border-slate-700/50 overflow-hidden relative shadow-inner p-0.5">
-               <div id="profile-xp-progress" class="bg-gradient-to-r from-blue-600 via-crypto-glow to-indigo-400 h-full rounded-full transition-all duration-1000 w-[0%] relative">
-                 <div class="absolute inset-0 bg-white/20 w-full h-full animate-[shimmer_2s_infinite]"></div>
-               </div>
+               <div id="profile-xp-progress" class="bg-gradient-to-r from-blue-600 via-crypto-glow to-indigo-400 h-full rounded-full transition-all duration-1000 w-[0%]"></div>
             </div>
-            <div class="text-right mt-1 px-1">
-              <span class="text-[9px] font-bold text-slate-500 uppercase">Target: <span id="profile-next-xp-text" class="text-blue-400">250 XP</span></span>
+            <div class="flex justify-between mt-1 px-1">
+               <span id="profile-current-xp-text" class="text-[10px] font-bold text-slate-400">0 XP</span>
+               <span class="text-[9px] font-bold text-slate-500 uppercase">Target: <span id="profile-next-xp-text" class="text-blue-400">250 XP</span></span>
             </div>
           </div>
         </div>
       </div>
-
       <div class="grid grid-cols-2 gap-3">
-        <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-blue-500/30">
-          <div class="w-10 h-10 mx-auto bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center mb-2 text-lg shadow-[0_0_15px_rgba(59,130,246,0.2)inset]"><i class="fa-solid fa-chart-line"></i></div>
+        <div class="glass-card p-5 rounded-2xl text-center">
           <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Total Earned</p>
           <p id="profile-total-xp" class="text-xl font-black text-white">0</p>
         </div>
-        <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-amber-500/30">
-          <div class="w-10 h-10 mx-auto bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center mb-2 text-lg shadow-[0_0_15px_rgba(245,158,11,0.2)inset]"><i class="fa-solid fa-box-open"></i></div>
+        <div class="glass-card p-5 rounded-2xl text-center">
           <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Boxes Opened</p>
           <p id="profile-boxes" class="text-xl font-black text-white">0</p>
         </div>
       </div>
     </div>
-
   </main>
 
   <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] max-w-[420px] glass-card rounded-2xl pb-safe z-50 shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-slate-700/50 backdrop-blur-xl">
     <div class="flex justify-between items-center px-2 py-2.5 relative">
-      <button onclick="switchTab('home')" class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="home">
-        <i class="fa-solid fa-house text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[7.5px] font-black uppercase tracking-widest">Home</span>
+      <button class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="home">
+        <i class="fa-solid fa-house text-lg transition-transform group-active:scale-90"></i><span class="text-[7.5px] font-black uppercase tracking-widest">Home</span>
       </button>
-      <button onclick="switchTab('games')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="games">
-        <i class="fa-solid fa-gamepad text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[7.5px] font-black uppercase tracking-widest">Games</span>
+      <button class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="games">
+        <i class="fa-solid fa-gamepad text-lg transition-transform group-active:scale-90"></i><span class="text-[7.5px] font-black uppercase tracking-widest">Games</span>
       </button>
-      <button onclick="switchTab('tasks')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="tasks">
-        <i class="fa-solid fa-list-check text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[7.5px] font-black uppercase tracking-widest">Tasks</span>
+      <button class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="tasks">
+        <i class="fa-solid fa-list-check text-lg transition-transform group-active:scale-90"></i><span class="text-[7.5px] font-black uppercase tracking-widest">Tasks</span>
       </button>
-      <button onclick="switchTab('boxes')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="boxes">
-        <i class="fa-solid fa-box-open text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[7.5px] font-black uppercase tracking-widest">Box</span>
+      <button class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="boxes">
+        <i class="fa-solid fa-box-open text-lg transition-transform group-active:scale-90"></i><span class="text-[7.5px] font-black uppercase tracking-widest">Box</span>
       </button>
-      <button onclick="switchTab('withdraw')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="withdraw">
-        <i class="fa-solid fa-wallet text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[7.5px] font-black uppercase tracking-widest">Withdraw</span>
+      <button class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="withdraw">
+        <i class="fa-solid fa-wallet text-lg transition-transform group-active:scale-90"></i><span class="text-[7.5px] font-black uppercase tracking-widest">Withdraw</span>
       </button>
-      <button onclick="switchTab('profile')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="profile">
-        <i class="fa-solid fa-user-astronaut text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[7.5px] font-black uppercase tracking-widest">Profile</span>
+      <button class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="profile">
+        <i class="fa-solid fa-user-astronaut text-lg transition-transform group-active:scale-90"></i><span class="text-[7.5px] font-black uppercase tracking-widest">Profile</span>
       </button>
     </div>
   </nav>
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand(); 
-    tg.ready();
-
-    tg.setHeaderColor('#0a0b1a');
-    tg.setBackgroundColor('#050511');
-
-    const defaultUserState = {
-      tgId: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : 123456789,
-      firstName: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.first_name : "Crypto User",
-      username: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.username : "xpverse",
-      photoUrl: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.photo_url : "",
-      xp: 0,
-      totalXp: 0,
-      usdBalance: 0.00,
-      level: 1,
-      adsWatchedToday: 0,
-      boxesOpened: 0,
-      streak: 1,
-      lastResetDay: "",
-      withdrawHistory: []
-    };
-
-    const defaultGameState = {
-      seedDate: "",
-      levelsCompleted: [false,false,false,false,false,false,false,false,false,false],
-      stars: [0,0,0,0,0,0,0,0,0,0],
-      powerups: { rocket: 1, bomb: 1 },
-      adLimits: { rocket: 0, bomb: 0 }
-    };
-
-    const getDefaultMissions = () => ({
-      dailyReward: { completed: true, claimed: false, reward: 5, type: 'boolean' },
-      watch5: { target: 5, claimed: false, reward: 20, type: 'progress' },
-      watch30: { target: 30, claimed: false, reward: 50, type: 'progress' },
-      all: { claimed: false, reward: 100, type: 'meta' }
-    });
-
-    let userState = { ...defaultUserState };
-    let gameState = { ...defaultGameState };
-    let missionsState = getDefaultMissions();
-    const streakRewards = [5, 10, 15, 20, 25, 30, 50]; 
-
-    let accurateTimeOffset = null;
-    let headerTimeout; 
-
-    const bottomNavElement = document.getElementById('bottom-nav');
-    let maxViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-
-    function handleKeyboardState() {
-      if (document.body.classList.contains('in-game')) return; 
-      let currentHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      if (currentHeight > maxViewportHeight) maxViewportHeight = currentHeight;
-      if (maxViewportHeight - currentHeight > 100) {
-          bottomNavElement.classList.add('nav-hidden');
-      } else {
-          bottomNavElement.classList.remove('nav-hidden');
-      }
-    }
-
-    if (window.visualViewport) window.visualViewport.addEventListener('resize', handleKeyboardState);
-    window.addEventListener('resize', handleKeyboardState);
-    if (tg.onEvent) tg.onEvent('viewportChanged', handleKeyboardState);
-
-    async function fetchServerTime() {
-      const apis = [
-        async () => { let res = await fetch('https://api.binance.com/api/v3/time'); let data = await res.json(); return data.serverTime; },
-        async () => { let res = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC'); let data = await res.json(); return new Date(data.utc_datetime).getTime(); },
-        async () => { let res = await fetch('https://timeapi.io/api/Time/current/zone?timeZone=UTC'); let data = await res.json(); return new Date(data.dateTime + 'Z').getTime(); }
-      ];
-
-      for (let apiFunc of apis) {
-        try {
-          const serverTime = await apiFunc();
-          if (serverTime) {
-            accurateTimeOffset = serverTime - performance.now();
-            return true;
-          }
-        } catch (e) { }
-      }
-      return false;
-    }
-
-    function getNow() {
-      if (!accurateTimeOffset) return new Date(); 
-      return new Date(accurateTimeOffset + performance.now());
-    }
-
-    function showToast(title, message, type = 'info') {
-      const toast = document.getElementById('toast-container');
-      const icon = document.getElementById('toast-icon');
-      
-      document.getElementById('toast-title').innerText = title;
-      document.getElementById('toast-message').innerText = message;
-      
-      let iconClass, iconHtml, borderStyle;
-      if (type === 'success') {
-        iconHtml = '<i class="fa-solid fa-check"></i>';
-        iconClass = 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.3)]';
-        borderStyle = '1px solid rgba(16, 185, 129, 0.4)';
-      } else if (type === 'error') {
-        iconHtml = '<i class="fa-solid fa-xmark"></i>';
-        iconClass = 'bg-red-500/20 text-red-400 border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.3)]';
-        borderStyle = '1px solid rgba(239, 68, 68, 0.4)';
-      } else if (type === 'jackpot') {
-        iconHtml = '<i class="fa-solid fa-sack-dollar animate-bounce"></i>';
-        iconClass = 'bg-amber-500/20 text-amber-400 border border-amber-500/50 shadow-[0_0_20px_rgba(251,191,36,0.6)]';
-        borderStyle = '1px solid rgba(251, 191, 36, 0.8)';
-      } else {
-        iconHtml = '<i class="fa-solid fa-bell animate-pulse"></i>';
-        iconClass = 'bg-blue-500/20 text-crypto-glow border border-crypto-glow/50 shadow-[0_0_15px_rgba(0,240,255,0.3)]';
-        borderStyle = '1px solid rgba(0, 240, 255, 0.4)';
-      }
-
-      icon.innerHTML = iconHtml;
-      icon.className = `w-12 h-12 rounded-xl flex shrink-0 items-center justify-center text-xl ${iconClass}`;
-      toast.style.border = borderStyle;
-
-      toast.classList.add('toast-show');
-      
-      if (tg.HapticFeedback) {
-        if (type === 'success' || type === 'jackpot') tg.HapticFeedback.notificationOccurred('success');
-        else if (type === 'error') tg.HapticFeedback.notificationOccurred('error');
-        else tg.HapticFeedback.notificationOccurred('warning');
-      }
-
-      setTimeout(() => { toast.classList.remove('toast-show'); }, type === 'jackpot' ? 5000 : 3000); 
-    }
-
-    function saveState() {
-      localStorage.setItem(`xpverse_user_${userState.tgId}`, JSON.stringify(userState));
-      localStorage.setItem(`xpverse_missions_${userState.tgId}`, JSON.stringify(missionsState));
-      localStorage.setItem(`xpverse_game_${userState.tgId}`, JSON.stringify(gameState));
-    }
-
-    function loadState() {
-      const savedUser = localStorage.getItem(`xpverse_user_${userState.tgId}`);
-      const savedMissions = localStorage.getItem(`xpverse_missions_${userState.tgId}`);
-      const savedGame = localStorage.getItem(`xpverse_game_${userState.tgId}`);
-
-      if (savedUser) userState = { ...userState, ...JSON.parse(savedUser) };
-      if (savedMissions) missionsState = { ...getDefaultMissions(), ...JSON.parse(savedMissions) };
-      if (savedGame) {
-          let g = JSON.parse(savedGame);
-          delete g.powerups?.rainbow;
-          delete g.adLimits?.rainbow;
-          gameState = { ...defaultGameState, ...g };
-      }
-    }
-
-    function getResetDay(serverDate) { return serverDate.toISOString().split('T')[0]; }
-
-    function checkDailyReset() {
-      const now = getNow();
-      if (!now) return false;
-
-      const currentResetDay = getResetDay(now);
-      
-      if (userState.lastResetDay !== currentResetDay) {
-        if (userState.lastResetDay) {
-            let last = new Date(userState.lastResetDay);
-            let curr = new Date(currentResetDay);
-            let diff = Math.floor((curr - last) / (1000 * 3600 * 24));
-            
-            if (diff === 1) {
-                userState.streak += 1;
-                if (userState.streak > 7) userState.streak = 1;
-            } else if (diff > 1) {
-                userState.streak = 1;
-            }
-        } else {
-            userState.streak = 1;
-        }
-
-        userState.adsWatchedToday = 0;
-        userState.lastResetDay = currentResetDay;
-        missionsState = getDefaultMissions();
-        missionsState.dailyReward.reward = streakRewards[userState.streak - 1]; 
-        
-        gameState.seedDate = currentResetDay;
-        gameState.levelsCompleted = Array(10).fill(false);
-        gameState.stars = Array(10).fill(0);
-        gameState.adLimits = { rocket: 0, bomb: 0 };
-        
-        saveState();
-        return true; 
-      }
-      return false;
-    }
-
-    function checkLevelUp() {
-      const xp = userState.totalXp;
-      let newLevel = 1;
-      if (xp >= 20000) newLevel = 10;
-      else if (xp >= 3000) newLevel = 5;
-      else if (xp >= 1500) newLevel = 4;
-      else if (xp >= 750) newLevel = 3;
-      else if (xp >= 250) newLevel = 2;
-      
-      if (newLevel > userState.level) {
-        userState.level = newLevel;
-        showToast("Level Up!", `Congratulations! New Level: ${newLevel}!`, "success");
-        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-      }
-    }
-
-    function updateProfileProgress() {
-      const xp = userState.totalXp;
-      let nextLvlXp = 250;
-      let prevLvlXp = 0;
-      
-      if (xp >= 20000) { nextLvlXp = 20000; prevLvlXp = 20000; }
-      else if (xp >= 3000) { nextLvlXp = 20000; prevLvlXp = 3000; }
-      else if (xp >= 1500) { nextLvlXp = 3000; prevLvlXp = 1500; }
-      else if (xp >= 750) { nextLvlXp = 1500; prevLvlXp = 750; }
-      else if (xp >= 250) { nextLvlXp = 750; prevLvlXp = 250; }
-
-      let progress = 100;
-      if (nextLvlXp !== prevLvlXp) {
-        progress = ((xp - prevLvlXp) / (nextLvlXp - prevLvlXp)) * 100;
-      }
-
-      document.getElementById('profile-xp-progress').style.width = `${progress}%`;
-      document.getElementById('profile-current-xp-text').innerText = `${xp.toLocaleString()} XP`;
-      document.getElementById('profile-next-xp-text').innerText = (nextLvlXp === 20000 && xp >= 20000) ? 'MAX LVL' : `${nextLvlXp.toLocaleString()} XP`;
-      document.getElementById('profile-badge-level').innerText = userState.level;
-    }
-
-    function updateUI() {
-      document.getElementById('user-name').innerText = userState.firstName;
-      document.getElementById('user-xp').innerHTML = `${userState.xp.toLocaleString()} <span class="text-[10px] text-crypto-glow font-bold">XP</span>`;
-      document.getElementById('user-usd').innerText = userState.usdBalance.toFixed(2);
-      
-      if (userState.photoUrl) {
-        document.getElementById('user-photo').src = userState.photoUrl;
-        document.getElementById('profile-photo-large').src = userState.photoUrl;
-      }
-
-      document.getElementById('main-xp-display').innerText = `${userState.xp.toLocaleString()} XP`;
-      document.getElementById('ads-watched').innerText = userState.adsWatchedToday;
-      document.getElementById('streak-days').innerText = userState.streak;
-
-      document.getElementById('withdraw-balance-display').innerText = userState.usdBalance.toFixed(2);
-      renderWithdrawHistory();
-
-      document.getElementById('profile-name').innerText = userState.firstName;
-      document.getElementById('profile-tgid').innerText = `ID: ${userState.tgId}`;
-      document.getElementById('profile-total-xp').innerText = userState.totalXp.toLocaleString();
-      document.getElementById('profile-boxes').innerText = userState.boxesOpened;
-      
-      updateProfileProgress();
-      renderMissions();
-      renderStreakTracker();
-      renderGameMap();
-    }
-
-    function renderStreakTracker() {
-      const container = document.getElementById('streak-tracker-container');
-      container.innerHTML = '';
-      
-      for (let i = 1; i <= 7; i++) {
-        const isPast = i < userState.streak || (i === userState.streak && missionsState.dailyReward.claimed);
-        const isToday = i === userState.streak && !missionsState.dailyReward.claimed;
-        const reward = streakRewards[i-1];
-        
-        let styles = "bg-[#050511] border-slate-700 text-slate-600";
-        let icon = `<span class="text-[9px] font-black">${reward}</span>`;
-        let lineStyle = "bg-slate-800";
-        
-        if (isPast) {
-          styles = "bg-emerald-500/20 border-emerald-500/50 text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]";
-          icon = `<i class="fa-solid fa-check text-xs"></i>`;
-          lineStyle = "bg-emerald-500/50 shadow-[0_0_5px_#34d399]";
-        } else if (isToday) {
-          styles = "bg-blue-600/30 border-crypto-glow shadow-[0_0_20px_rgba(0,240,255,0.5)] text-white";
-        }
-
-        container.innerHTML += `
-          <div class="relative flex flex-col items-center gap-1.5 z-10 flex-1">
-            <div class="w-9 h-9 rounded-xl border-2 flex items-center justify-center transition-all duration-300 ${styles} z-10 relative bg-[#0a0b1a]">
-              ${icon}
-            </div>
-            <span class="text-[8px] font-black tracking-widest ${isToday ? 'text-crypto-glow drop-shadow-[0_0_5px_#00f0ff]' : 'text-slate-500'}">DAY ${i}</span>
-            ${i < 7 ? `<div class="absolute top-4 left-[50%] w-full h-1 -z-0 ${lineStyle} rounded-full"></div>` : ''}
-          </div>
-        `;
-      }
-    }
-
-    function renderMissions() {
-      const container = document.getElementById('missions-container');
-      container.innerHTML = '';
-      
-      const missionsList = [
-        { key: 'dailyReward', label: `Daily Login`, icon: 'fa-gift', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
-        { key: 'watch5', label: 'Watch 5 Ads', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
-        { key: 'watch30', label: 'Watch 30 Ads', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
-        { key: 'all', label: 'All Tasks', icon: 'fa-crown', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' }
-      ];
-
-      missionsList.forEach(m => {
-        const mission = missionsState[m.key];
-        let isComplete = false;
-        let progressText = '';
-        
-        if (mission.type === 'progress') {
-            isComplete = userState.adsWatchedToday >= mission.target;
-            progressText = `(${Math.min(userState.adsWatchedToday, mission.target)}/${mission.target})`;
-        } else if (mission.type === 'boolean') {
-            isComplete = mission.completed;
-        } else if (mission.type === 'meta') {
-            isComplete = ['dailyReward', 'watch5', 'watch30'].every(k => missionsState[k].claimed);
-        }
-
-        let btnHtml = '';
-        if (mission.claimed) {
-            btnHtml = `<span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/30 flex items-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]"><i class="fa-solid fa-check-double"></i> Claimed</span>`;
-        } else if (isComplete) {
-            btnHtml = `<button onclick="claimMission('${m.key}')" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-1.5 rounded-xl shadow-[0_0_15px_rgba(0,240,255,0.4)] active:scale-95 transition-all uppercase tracking-wider">Claim</button>`;
-        } else {
-            btnHtml = `<span class="text-[10px] font-black bg-slate-800/50 text-slate-200 px-3 py-1.5 rounded-xl border border-slate-600 shadow-inner">+${mission.reward} XP</span>`;
-        }
-
-        container.innerHTML += `
-          <div class="glass-card rounded-2xl p-3 flex justify-between items-center transition-transform hover:-translate-y-0.5 border border-slate-800">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl border ${m.bg} flex items-center justify-center">
-                 <i class="fa-solid ${m.icon} ${m.color} text-lg"></i>
-              </div>
-              <div class="flex flex-col">
-                <span class="text-xs font-black text-white tracking-wide">${m.label}</span>
-                <span class="text-crypto-glow text-[10px] font-bold tracking-widest uppercase opacity-80 mt-0.5">${progressText}</span>
-              </div>
-            </div>
-            ${btnHtml}
-          </div>
-        `;
-      });
-    }
-
-    function claimMission(key) {
-        const mission = missionsState[key];
-        if (mission.claimed) return;
-        
-        mission.claimed = true;
-        userState.xp += mission.reward;
-        userState.totalXp += mission.reward;
-        
-        checkLevelUp();
-        saveState();
-        updateUI();
-        
-        showToast("Task Completed!", `You earned ${mission.reward} XP!`, "success");
-    }
-
-    function watchAd() {
-      if (userState.adsWatchedToday >= 30) {
-        showToast("Limit", "You have reached the daily limit of 30 ads. Come back tomorrow!", "error");
-        return;
-      }
-
-      const btn = document.getElementById('watch-ad-btn');
-      const originalHTML = btn.innerHTML;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Loading Ad...</span>';
-      btn.classList.add('opacity-80', 'pointer-events-none');
-
-      if (window.Adsgram) {
-        const AdController = window.Adsgram.init({ blockId: "int-34999" });
-        
-        AdController.show().then((result) => {
-          userState.xp += 10;
-          userState.totalXp += 10;
-          userState.adsWatchedToday += 1;
-          
-          checkLevelUp();
-          saveState();
-          updateUI();
-          
-          showToast("Reward Granted!", "You successfully watched the ad and earned +10 XP.", "success");
-          
-          btn.innerHTML = originalHTML;
-          btn.classList.remove('opacity-80', 'pointer-events-none');
-        }).catch((error) => {
-          btn.innerHTML = originalHTML;
-          btn.classList.remove('opacity-80', 'pointer-events-none');
-        });
-      } else {
-        showToast("Error", "The ad system is currently not working.", "error");
-        btn.innerHTML = originalHTML;
-        btn.classList.remove('opacity-80', 'pointer-events-none');
-      }
-    }
-
-    const boxCosts = { bronze: 10000, silver: 50000, gold: 100000 };
-    
-    function openBox(type) {
-      const cost = boxCosts[type];
-      if (userState.xp < cost) {
-        showToast("Not enough XP", `You need ${cost.toLocaleString()} XP to open this box.`, "error");
-        return;
-      }
-
-      userState.xp -= cost;
-      userState.boxesOpened += 1;
-      
-      let reward = 0;
-      const isJackpot = Math.random() >= 0.9999; 
-
-      if (type === 'bronze') reward = isJackpot ? 1.00 : 0.10;
-      else if (type === 'silver') reward = isJackpot ? 7.00 : 0.50;
-      else if (type === 'gold') reward = isJackpot ? 15.00 : 1.00;
-
-      userState.usdBalance += reward;
-
-      saveState();
-      updateUI();
-
-      if (isJackpot) {
-         showToast("HUGE JACKPOT! 💸", `Incredible! You won $${reward.toFixed(2)}!`, "jackpot");
-      } else {
-         showToast("Box Opened!", `Congratulations! You won $${reward.toFixed(2)} from the box!`, "success");
-      }
-    }
-
-    function requestWithdrawal() {
-      const address = document.getElementById('wallet-address').value;
-      const amount = parseFloat(document.getElementById('withdraw-amount').value);
-
-      if (!address || address.length < 10) {
-        showToast("Invalid Address", "Please enter a valid TON wallet address.", "error");
-        return;
-      }
-
-      if (isNaN(amount) || amount < 5) {
-        showToast("Invalid Amount", "The minimum withdrawal amount is $5.00.", "error");
-        return;
-      }
-
-      if (amount > userState.usdBalance) {
-        showToast("Insufficient balance", "You do not have enough funds to withdraw this amount.", "error");
-        return;
-      }
-
-      userState.usdBalance -= amount;
-      
-      const now = getNow() || new Date(); 
-      const withdrawalRecord = {
-        id: '#' + Math.random().toString(36).substr(2, 6).toUpperCase(),
-        date: now.toLocaleDateString(),
-        amount: amount,
-        address: address.substring(0, 6) + '...' + address.substring(address.length - 4),
-        status: 'Pending'
-      };
-
-      userState.withdrawHistory.unshift(withdrawalRecord); 
-      
-      saveState();
-      updateUI();
-      
-      document.getElementById('wallet-address').value = '';
-      document.getElementById('withdraw-amount').value = '';
-
-      showToast("Withdrawal Requested", `Your request for $${amount.toFixed(2)} has been submitted.`, "success");
-    }
-
-    function renderWithdrawHistory() {
-      const container = document.getElementById('withdraw-history-container');
-      
-      if (userState.withdrawHistory.length === 0) {
-        container.innerHTML = `
-          <div class="glass-card rounded-2xl p-6 text-center border-dashed border-2 border-slate-700">
-            <i class="fa-solid fa-clock-rotate-left text-3xl text-slate-600 mb-2"></i>
-            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">History is Empty</p>
-          </div>`;
-        return;
-      }
-
-      container.innerHTML = '';
-      userState.withdrawHistory.forEach(record => {
-        container.innerHTML += `
-          <div class="glass-card rounded-2xl p-4 flex justify-between items-center transition-transform hover:-translate-y-0.5">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
-                 <i class="fa-solid fa-arrow-right-arrow-left text-slate-400"></i>
-              </div>
-              <div>
-                <p class="text-xs font-black text-white">${record.id} <span class="text-[9px] text-slate-400 ml-1 font-bold">${record.date}</span></p>
-                <p class="text-[10px] text-blue-400 mt-0.5 font-mono bg-blue-500/10 inline-block px-1.5 py-0.5 rounded">${record.address}</p>
-              </div>
-            </div>
-            <div class="text-right">
-              <p class="text-sm font-black text-emerald-400 drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">-$${record.amount.toFixed(2)}</p>
-              <p class="text-[9px] font-black text-amber-400 uppercase tracking-widest mt-0.5 bg-amber-500/10 inline-block px-2 py-0.5 rounded-full border border-amber-500/20">${record.status}</p>
-            </div>
-          </div>
-        `;
-      });
-    }
-
-    function switchTab(tabId) {
-      if(window.gameEngine && window.gameEngine.isPlaying && tabId !== 'games') {
-         exitGame(); 
-      }
-
-      document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('nav-active');
-      });
-
-      document.getElementById(`view-${tabId}`).classList.remove('hidden');
-      
-      const activeBtn = document.querySelector(`[data-target="${tabId}"]`);
-      activeBtn.classList.add('nav-active');
-      
-      const header = document.getElementById('main-header');
-      const mainContent = document.getElementById('app-content');
-
-      clearTimeout(headerTimeout);
-
-      if (tabId === 'withdraw' || tabId === 'profile' || tabId === 'games') {
-        header.style.transform = 'translateY(-100%)';
-        headerTimeout = setTimeout(() => header.style.display = 'none', 300);
-        mainContent.classList.remove('pt-24');
-        mainContent.classList.add('pt-4');
-      } else {
-        header.style.display = 'block'; 
-        setTimeout(() => header.style.transform = 'translateY(0)', 10);
-        mainContent.classList.remove('pt-4');
-        mainContent.classList.add('pt-24');
-      }
-      
-      if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function updateTimer() {
-        const now = getNow();
-        if (!now) return;
-
-        const tomorrow = new Date(now);
-        tomorrow.setUTCHours(24, 0, 0, 0); 
-        
-        const diff = tomorrow.getTime() - now.getTime();
-        const h = Math.floor(diff / 1000 / 60 / 60);
-        const m = Math.floor((diff / 1000 / 60) % 60);
-        const s = Math.floor((diff / 1000) % 60);
-        
-        const timerEl = document.getElementById('reset-timer');
-        if (timerEl) {
-            timerEl.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        }
-
-        if (checkDailyReset()) {
-            updateUI();
-            showToast("New Day Started!", "Daily limits and tasks have been reset.", "info");
-        }
-    }
-    
-    async function initApp() {
-      fetchServerTime(); 
-      
-      setTimeout(() => {
-        document.getElementById('loading-overlay').style.opacity = '0';
-        setTimeout(() => {
-          document.getElementById('loading-overlay').style.display = 'none';
-        }, 500); 
-      }, 2000);
-
-      loadState();
-      checkDailyReset();
-      updateUI();
-      
-      setInterval(updateTimer, 1000);
-      updateTimer();
-    }
-
-    // ==========================================
-    // GAME ENGINE: XPVerse Balloon Blast
-    // ==========================================
-
-    const LEVEL_REWARDS = [25, 35, 50, 60, 75, 80, 90, 100, 110, 125]; 
-
-    function getDailyRandom(seed) {
-      let t = seed += 0x6D2B79F5;
-      return function() {
-        t = Math.imul(t ^ t >>> 15, t | 1);
-        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-        return ((t ^ t >>> 14) >>> 0) / 4294967296;
-      }
-    }
-
-    function renderGameMap() {
-      const container = document.getElementById('level-map');
-      container.innerHTML = '';
-      
-      let html = '';
-      const positions = [
-        {left: '50%'}, {left: '70%'}, {left: '80%'}, {left: '60%'}, {left: '30%'},
-        {left: '20%'}, {left: '40%'}, {left: '60%'}, {left: '80%'}, {left: '50%'}
-      ];
-
-      for (let i = 0; i < 10; i++) {
-        let isCompleted = gameState.levelsCompleted[i];
-        let isCurrent = !isCompleted && (i === 0 || gameState.levelsCompleted[i-1]);
-        let isLocked = !isCompleted && !isCurrent;
-        
-        let stateClass = isCompleted ? 'completed' : (isCurrent ? 'current cursor-pointer' : 'locked');
-        let icon = isLocked ? '<i class="fa-solid fa-lock text-lg"></i>' : (i + 1);
-        let onClick = isCurrent || isCompleted ? `onclick="startGame(${i + 1})"` : `onclick="showToast('Locked', 'Complete previous levels to unlock!', 'error')"`;
-        
-        let starsHtml = '';
-        if (isCompleted) {
-            let sCount = gameState.stars[i];
-            starsHtml = `
-              <div class="absolute -bottom-4 w-full flex justify-center gap-0.5">
-                <i class="fa-solid fa-star star-icon ${sCount >= 1 ? 'filled' : ''}"></i>
-                <i class="fa-solid fa-star star-icon ${sCount >= 2 ? 'filled' : ''} -translate-y-1"></i>
-                <i class="fa-solid fa-star star-icon ${sCount >= 3 ? 'filled' : ''}"></i>
-              </div>`;
-        }
-
-        let lineHtml = '';
-        if (i < 9) {
-           let isLineActive = isCompleted;
-           lineHtml = `<div class="absolute left-1/2 -translate-x-1/2 top-full h-8 w-1.5 ${isLineActive ? 'bg-crypto-glow shadow-[0_0_10px_#00f0ff]' : 'bg-slate-700'} -z-10 rounded-full"></div>`;
-        }
-
-        html += `
-          <div class="relative w-full flex justify-center mb-10 group" style="transform: translateX(calc(${positions[i].left} - 50%))">
-             <div class="level-node ${stateClass} shadow-lg" ${onClick}>
-               ${icon}
-               ${starsHtml}
-             </div>
-             ${lineHtml}
-          </div>
-        `;
-      }
-      container.innerHTML = html;
-    }
-
-    let gameEngine = {
-      canvas: null, ctx: null, isPlaying: false,
-      balloons: [], projectiles: [], particles: [], fallingBalloons: [], floatingTexts: [],
-      gridCols: 8, ballRadius: 0,
-      grid: [], 
-      colors: ['#ef4444', '#3b82f6', '#10b981', '#eab308', '#a855f7', '#06b6d4'],
-      launcherColor: '', nextColor: '', activePowerup: null,
-      colorHistory: [], 
-      currentLevel: 1, score: 0, shotsFired: 0, totalTarget: 0,
-      offsetY: 0, dropInterval: 5, limitY: 0,
-      mouseX: null, mouseY: null, rand: null,
-      containers: null
-    };
-
-    function startGame(level) {
-      document.body.classList.add('in-game');
-      document.getElementById('game-play-container').classList.add('fullscreen-mode');
-      
-      document.getElementById('game-menu-container').classList.add('hidden');
-      document.getElementById('game-play-container').classList.remove('hidden');
-      document.getElementById('game-over-modal').classList.add('hidden');
-      
-      const splash = document.getElementById('splash-screen');
-      splash.style.display = 'flex';
-      splash.style.opacity = '1';
-      
-      setTimeout(() => {
-        splash.style.opacity = '0';
-        setTimeout(() => { splash.style.display = 'none'; }, 500);
-      }, 1500);
-
-      initGameEngine(level);
-    }
-
-    function exitGame() {
-      gameEngine.isPlaying = false;
-      document.body.classList.remove('in-game');
-      document.getElementById('game-play-container').classList.remove('fullscreen-mode');
-      
-      document.getElementById('game-play-container').classList.add('hidden');
-      document.getElementById('game-menu-container').classList.remove('hidden');
-      updatePowerupUI();
-      renderGameMap();
-    }
-
-    function initGameEngine(level) {
-      gameEngine.currentLevel = level;
-      gameEngine.canvas = document.getElementById('balloon-canvas');
-      gameEngine.ctx = gameEngine.canvas.getContext('2d');
-      gameEngine.isPlaying = true;
-      gameEngine.score = 0;
-      gameEngine.shotsFired = 0;
-      gameEngine.offsetY = 0;
-      gameEngine.balloons = [];
-      gameEngine.projectiles = [];
-      gameEngine.particles = [];
-      gameEngine.fallingBalloons = [];
-      gameEngine.floatingTexts = [];
-      gameEngine.activePowerup = null;
-      gameEngine.colorHistory = [];
-
-      document.getElementById('ingame-level-display').innerText = level;
-      document.getElementById('ingame-score').innerText = '0';
-      updateStarsUI(0);
-      updatePowerupUI();
-
-      const seedStr = gameState.seedDate.replace(/-/g, '') + level.toString();
-      gameEngine.rand = getDailyRandom(parseInt(seedStr));
-
-      resizeCanvas();
-      generateLevel(level);
-      
-      let avail = getAvailableColors();
-      gameEngine.launcherColor = avail[Math.floor(gameEngine.rand() * avail.length)];
-      updateColorHistory(gameEngine.launcherColor);
-      gameEngine.nextColor = gameEngine.launcherColor; 
-      updateLauncherColors(true); 
-
-      gameEngine.canvas.addEventListener('touchstart', handleInput, {passive: false});
-      gameEngine.canvas.addEventListener('touchmove', handleMove, {passive: false});
-      gameEngine.canvas.addEventListener('touchend', handleFire, {passive: false});
-      gameEngine.canvas.addEventListener('mousedown', handleInput);
-      gameEngine.canvas.addEventListener('mousemove', handleMove);
-      gameEngine.canvas.addEventListener('mouseup', handleFire);
-      
-      window.requestAnimationFrame(gameLoop);
-    }
-
-    function resizeCanvas() {
-      const container = document.getElementById('game-canvas-container');
-      gameEngine.canvas.width = container.clientWidth;
-      gameEngine.canvas.height = container.clientHeight;
-      gameEngine.ballRadius = (gameEngine.canvas.width / (gameEngine.gridCols + 0.5)) / 2;
-      
-      let ch = 40;
-      let cy = gameEngine.canvas.height - ch;
-      let cw = gameEngine.canvas.width / 5;
-      gameEngine.containers = {
-        cy: cy, cw: cw, ch: ch,
-        scores: [50, 100, 200, 100, 50],
-        colors: ['#3b82f6', '#10b981', '#ffb800', '#10b981', '#3b82f6']
-      };
-
-      gameEngine.limitY = cy - 80; 
-    }
-
-    function getAvailableColors() {
-      let activeColors = new Set();
-      for(let r=0; r<gameEngine.grid.length; r++) {
-         if(!gameEngine.grid[r]) continue;
-         for(let c=0; c<gameEngine.grid[r].length; c++) {
-            let b = gameEngine.grid[r][c];
-            if(b && (b.type === 'normal' || b.type === 'chained' || b.type === 'ice' || b.type === 'virus')) {
-               activeColors.add(b.color);
-            }
-         }
-      }
-      let arr = Array.from(activeColors);
-      return arr.length > 0 ? arr : gameEngine.colors;
-    }
-
-    function updateColorHistory(color) {
-      gameEngine.colorHistory.unshift(color);
-      if(gameEngine.colorHistory.length > 2) {
-         gameEngine.colorHistory.pop();
-      }
-    }
-
-    function updateLauncherColors(forceNewNext = false) {
-       let avail = getAvailableColors();
-       if(avail.length === 0) return; 
-       
-       let isColorAllowed = (color) => {
-         if (gameEngine.colorHistory.length >= 2 && 
-             gameEngine.colorHistory[0] === color && 
-             gameEngine.colorHistory[1] === color) {
-            return false;
-         }
-         return true;
-       };
-
-       if(!avail.includes(gameEngine.launcherColor)) {
-           let safeColors = avail.filter(isColorAllowed);
-           if(safeColors.length === 0) safeColors = avail; 
-           gameEngine.launcherColor = safeColors[Math.floor(Math.random() * safeColors.length)];
-       }
-
-       if(forceNewNext || !avail.includes(gameEngine.nextColor)) {
-           let safeColors = avail.filter(c => c !== gameEngine.launcherColor && isColorAllowed(c));
-           if(safeColors.length === 0) safeColors = avail.filter(c => c !== gameEngine.launcherColor); 
-           if(safeColors.length === 0) safeColors = avail; 
-           gameEngine.nextColor = safeColors[Math.floor(Math.random() * safeColors.length)];
-       }
-    }
-
-    function generateLevel(level) {
-      let rows = 3 + Math.floor(level / 3);
-      if (rows > 8) rows = 8;
-      
-      gameEngine.grid = [];
-      gameEngine.totalTarget = 0;
-      
-      let allowChained = level >= 4;
-      let allowIce = level >= 5;
-      let allowVirus = level >= 7;
-      let allowArmor = level >= 9;
-
-      for (let r = 0; r < rows; r++) {
-        gameEngine.grid[r] = [];
-        let colsInRow = (r % 2 === 0) ? gameEngine.gridCols : gameEngine.gridCols - 1;
-        for (let c = 0; c < colsInRow; c++) {
-          let type = 'normal';
-          let rVal = gameEngine.rand();
-          
-          if ((r + c) % 2 === 0 && rVal < 0.2) {
-             if (level >= 3 && rVal < 0.05) { gameEngine.grid[r][c] = null; continue; }
-          }
-
-          if (level === 10) {
-             if(rVal < 0.1) type = 'chained';
-             else if(rVal < 0.2) type = 'ice';
-             else if(rVal < 0.25) type = 'virus';
-             else if(rVal < 0.35) type = 'armored';
-          } else {
-             if (allowArmor && rVal < 0.1) type = 'armored';
-             else if (allowVirus && rVal < 0.1) type = 'virus';
-             else if (allowIce && rVal < 0.15) type = 'ice';
-             else if (allowChained && rVal < 0.2) type = 'chained';
-          }
-          
-          gameEngine.grid[r][c] = {
-            color: type === 'armored' ? '#64748b' : gameEngine.colors[Math.floor(gameEngine.rand() * gameEngine.colors.length)],
-            type: type, hp: 1, r: r, c: c
-          };
-          if (type !== 'armored') gameEngine.totalTarget++;
-        }
-      }
-    }
-
-    function getGridPos(r, c) {
-      let x = c * gameEngine.ballRadius * 2 + gameEngine.ballRadius;
-      if (r % 2 !== 0) x += gameEngine.ballRadius;
-      let y = r * gameEngine.ballRadius * 1.732 + gameEngine.ballRadius + gameEngine.offsetY;
-      return {x, y};
-    }
-
-    function drawGrid() {
-      const ctx = gameEngine.ctx;
-      for (let r = 0; r < gameEngine.grid.length; r++) {
-        if (!gameEngine.grid[r]) continue;
-        for (let c = 0; c < gameEngine.grid[r].length; c++) {
-          let b = gameEngine.grid[r][c];
-          if (b) {
-            let pos = getGridPos(r, c);
-            drawBalloon(ctx, pos.x, pos.y, gameEngine.ballRadius, b.color, b.type, b.hp);
-          }
-        }
-      }
-    }
-
-    function drawBalloon(ctx, x, y, r, color, type, hp, isGhost = false) {
-      ctx.globalAlpha = isGhost ? 0.4 : 1.0;
-      ctx.save();
-      
-      ctx.beginPath();
-      ctx.arc(x, y, r * 0.95, 0, Math.PI * 2);
-      
-      let grad = ctx.createRadialGradient(x - r*0.3, y - r*0.3, r*0.1, x, y, r);
-      grad.addColorStop(0, '#ffffff');
-      grad.addColorStop(0.15, shadeColor(color, 20));
-      grad.addColorStop(0.7, color);
-      grad.addColorStop(1, shadeColor(color, -50));
-      ctx.fillStyle = grad;
-      
-      if (!isGhost) {
-          ctx.shadowColor = 'rgba(0,0,0,0.4)';
-          ctx.shadowBlur = 6;
-          ctx.shadowOffsetY = 3;
-      }
-      ctx.fill();
-      ctx.shadowColor = 'transparent';
-
-      ctx.beginPath();
-      ctx.ellipse(x - r*0.35, y - r*0.35, r*0.4, r*0.15, Math.PI / -4, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-      ctx.fill();
-      
-      ctx.beginPath();
-      ctx.arc(x, y, r * 0.95, 0, Math.PI * 2);
-      let innerGrad = ctx.createLinearGradient(x, y + r, x, y - r);
-      innerGrad.addColorStop(0, 'rgba(255,255,255,0.2)');
-      innerGrad.addColorStop(0.5, 'transparent');
-      ctx.fillStyle = innerGrad;
-      ctx.fill();
-
-      if (type === 'chained') {
-          ctx.lineWidth = 4;
-          ctx.strokeStyle = '#334155';
-          ctx.beginPath(); ctx.ellipse(x, y, r * 0.95, r * 0.35, Math.PI / 4, 0, Math.PI * 2); ctx.stroke();
-          ctx.beginPath(); ctx.ellipse(x, y, r * 0.95, r * 0.35, -Math.PI / 4, 0, Math.PI * 2); ctx.stroke();
-
-          ctx.lineWidth = 1.5;
-          ctx.strokeStyle = '#94a3b8';
-          ctx.beginPath(); ctx.ellipse(x, y, r * 0.95, r * 0.35, Math.PI / 4, Math.PI * 0.8, Math.PI * 1.8); ctx.stroke();
-          ctx.beginPath(); ctx.ellipse(x, y, r * 0.95, r * 0.35, -Math.PI / 4, Math.PI * 0.8, Math.PI * 1.8); ctx.stroke();
-
-          let lockW = r * 0.55;
-          let lockH = r * 0.45;
-          let lockY = y + r * 0.1;
-          
-          ctx.lineWidth = 3.5;
-          ctx.strokeStyle = '#cbd5e1';
-          ctx.beginPath(); ctx.arc(x, lockY - lockH/2, lockW * 0.4, Math.PI, 0); ctx.stroke();
-
-          let lockGrad = ctx.createLinearGradient(x - lockW/2, lockY - lockH/2, x + lockW/2, lockY + lockH/2);
-          lockGrad.addColorStop(0, '#fcd34d');
-          lockGrad.addColorStop(0.5, '#d97706');
-          lockGrad.addColorStop(1, '#92400e');
-          
-          ctx.fillStyle = lockGrad;
-          ctx.shadowColor = 'rgba(0,0,0,0.6)';
-          ctx.shadowBlur = 5;
-          ctx.shadowOffsetY = 2;
-          ctx.beginPath(); ctx.roundRect(x - lockW/2, lockY - lockH/2, lockW, lockH, 4); ctx.fill();
-          ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
-
-          ctx.fillStyle = 'rgba(255,255,255,0.3)';
-          ctx.beginPath(); ctx.roundRect(x - lockW/2 + 2, lockY - lockH/2 + 2, lockW - 4, lockH/2.5, 2); ctx.fill();
-
-          ctx.fillStyle = '#451a03';
-          ctx.beginPath(); ctx.arc(x, lockY - 1, 2.5, 0, Math.PI * 2); ctx.fill();
-          ctx.beginPath(); ctx.moveTo(x - 2, lockY); ctx.lineTo(x + 2, lockY); ctx.lineTo(x + 3, lockY + 6); ctx.lineTo(x - 3, lockY + 6); ctx.fill();
-
-      } else if (type === 'ice') {
-          ctx.save();
-          ctx.beginPath();
-          const angles = [0, 0.7, 1.6, 2.4, 3.14, 4.0, 4.8, 5.5];
-          const radii = [1.05, 0.9, 1.15, 0.95, 1.1, 0.85, 1.15, 0.95];
-          for (let i = 0; i < angles.length; i++) {
-              let ix = x + Math.cos(angles[i]) * r * radii[i];
-              let iy = y + Math.sin(angles[i]) * r * radii[i];
-              if(i === 0) ctx.moveTo(ix, iy); else ctx.lineTo(ix, iy);
-          }
-          ctx.closePath();
-          
-          let iceGrad = ctx.createLinearGradient(x - r, y - r, x + r, y + r);
-          iceGrad.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
-          iceGrad.addColorStop(0.3, 'rgba(165, 243, 252, 0.5)');
-          iceGrad.addColorStop(0.7, 'rgba(6, 182, 212, 0.4)');
-          iceGrad.addColorStop(1, 'rgba(255, 255, 255, 0.8)');
-          ctx.fillStyle = iceGrad;
-          ctx.fill();
-          
-          ctx.beginPath();
-          ctx.moveTo(x - r*0.5, y - r*0.7);
-          ctx.lineTo(x + r*0.3, y - r*0.4);
-          ctx.lineTo(x - r*0.2, y + r*0.2);
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-          ctx.fill();
-
-          ctx.beginPath();
-          ctx.moveTo(x + r*0.4, y + r*0.7);
-          ctx.lineTo(x + r*0.8, y + r*0.1);
-          ctx.lineTo(x + r*0.1, y + r*0.5);
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-          ctx.fill();
-
-          ctx.lineWidth = 2.5;
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
-          ctx.stroke();
-          ctx.restore();
-
-      } else if (type === 'virus') {
-         ctx.fillStyle = '#bef264'; ctx.font = `900 ${r*1.1}px FontAwesome`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-         ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 4;
-         ctx.fillText('\uf0e7', x, y); 
-         ctx.shadowBlur = 0;
-      } else if (type === 'armored') {
-         ctx.beginPath(); ctx.arc(x, y, r*0.95, 0, Math.PI*2); ctx.fillStyle='rgba(30, 41, 59, 0.85)'; ctx.fill();
-         ctx.beginPath(); ctx.arc(x, y, r*0.5, 0, Math.PI*2); ctx.fillStyle='#94a3b8'; ctx.fill();
-         ctx.fillStyle = '#0f172a';
-         ctx.beginPath(); ctx.arc(x, y - r*0.7, 2, 0, Math.PI*2); ctx.fill();
-         ctx.beginPath(); ctx.arc(x, y + r*0.7, 2, 0, Math.PI*2); ctx.fill();
-         ctx.beginPath(); ctx.arc(x - r*0.7, y, 2, 0, Math.PI*2); ctx.fill();
-         ctx.beginPath(); ctx.arc(x + r*0.7, y, 2, 0, Math.PI*2); ctx.fill();
-      }
-
-      ctx.restore();
-    }
-
-    function shadeColor(color, percent) {
-      let R = parseInt(color.substring(1,3),16);
-      let G = parseInt(color.substring(3,5),16);
-      let B = parseInt(color.substring(5,7),16);
-      R = parseInt(R * (100 + percent) / 100);
-      G = parseInt(G * (100 + percent) / 100);
-      B = parseInt(B * (100 + percent) / 100);
-      R = (R<255)?R:255; G = (G<255)?G:255; B = (B<255)?B:255;
-      let RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
-      let GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
-      let BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
-      return "#"+RR+GG+BB;
-    }
-
-    function drawAimLine() {
-      if (gameEngine.mouseX === null || gameEngine.mouseY === null || gameEngine.projectiles.length > 0) return;
-      
-      const ctx = gameEngine.ctx;
-      const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 120; 
-      
-      let dy = gameEngine.mouseY - ly;
-      if (dy >= -10) return; 
-
-      let dx = gameEngine.mouseX - lx;
-      let angle = Math.atan2(dy, dx);
-      if (angle > -0.15) angle = -0.15; 
-      if (angle < -Math.PI + 0.15) angle = -Math.PI + 0.15;
-
-      let x = lx; 
-      let y = ly;
-      let vx = Math.cos(angle) * 15;
-      let vy = Math.sin(angle) * 15;
-      let radius = gameEngine.ballRadius;
-      
-      let path = [{x, y}];
-      let steps = 0;
-
-      while (y > gameEngine.offsetY + radius && steps < 150) {
-          x += vx;
-          y += vy;
-          
-          if (x <= radius) { x = radius + 0.1; vx *= -1; path.push({x, y}); }
-          if (x >= gameEngine.canvas.width - radius) { x = gameEngine.canvas.width - radius - 0.1; vx *= -1; path.push({x, y}); }
-          
-          let hit = false;
-          for (let r=0; r<gameEngine.grid.length; r++) {
-              if(!gameEngine.grid[r]) continue;
-              for (let c=0; c<gameEngine.grid[r].length; c++) {
-                  if(gameEngine.grid[r][c]) {
-                      let pos = getGridPos(r, c);
-                      if (Math.hypot(x - pos.x, y - pos.y) <= radius * 1.8) {
-                          hit = true; break;
-                      }
-                  }
-              }
-              if(hit) break;
-          }
-          if(hit) { path.push({x, y}); break; }
-          steps++;
-      }
-      
-      if (!path.find(p => p.y <= gameEngine.offsetY + radius + 1) && steps >= 150) {
-          
-      } else if (y <= gameEngine.offsetY + radius) {
-          path.push({x, y: gameEngine.offsetY + radius});
-      }
-
-      ctx.beginPath();
-      ctx.moveTo(path[0].x, path[0].y);
-      for (let i = 1; i < path.length; i++) {
-          ctx.lineTo(path[i].x, path[i].y);
-      }
-      
-      let finalX = path[path.length - 1].x;
-      let finalY = path[path.length - 1].y;
-
-      if (gameEngine.activePowerup === 'rocket') {
-          ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
-          ctx.lineWidth = radius * 2.5;
-          ctx.setLineDash([]);
-          ctx.lineCap = 'round';
-          ctx.stroke();
-          
-          ctx.beginPath();
-          ctx.moveTo(path[0].x, path[0].y);
-          for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, path[i].y);
-          ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 3; ctx.stroke();
-
-      } else if (gameEngine.activePowerup === 'bomb') {
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-          ctx.lineWidth = 2; ctx.setLineDash([8, 8]); ctx.stroke(); ctx.setLineDash([]);
-          
-          ctx.beginPath(); ctx.arc(finalX, finalY, radius * 5, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(249, 115, 22, 0.2)'; ctx.fill();
-          ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(249, 115, 22, 0.8)'; ctx.stroke();
-      } else {
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-          ctx.lineWidth = 2; ctx.setLineDash([8, 8]); ctx.stroke(); ctx.setLineDash([]);
-          drawBalloon(ctx, finalX, finalY, radius, gameEngine.launcherColor, 'normal', 1, true);
-      }
-    }
-
-    function drawContainers() {
-      const ctx = gameEngine.ctx;
-      const c = gameEngine.containers;
-
-      ctx.save();
-      for(let i=0; i<5; i++) {
-         let cx = i * c.cw;
-         
-         ctx.fillStyle = c.colors[i] + '30';
-         ctx.fillRect(cx, c.cy, c.cw, c.ch);
-         
-         ctx.strokeStyle = c.colors[i] + 'aa';
-         ctx.lineWidth = 2;
-         ctx.strokeRect(cx, c.cy, c.cw, c.ch);
-
-         ctx.fillStyle = 'rgba(255,255,255,0.2)';
-         ctx.fillRect(cx, c.cy, c.cw, 4);
-
-         ctx.fillStyle = '#ffffff';
-         ctx.font = '900 14px "Outfit"';
-         ctx.textAlign = 'center';
-         ctx.textBaseline = 'middle';
-         ctx.shadowColor = c.colors[i];
-         ctx.shadowBlur = 10;
-         ctx.fillText(c.scores[i], cx + c.cw/2, c.cy + c.ch/2);
-         ctx.shadowBlur = 0;
-      }
-      ctx.restore();
-    }
-
-    function drawLauncher() {
-      const ctx = gameEngine.ctx;
-      const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 120;
-      
-      drawAimLine();
-
-      drawBalloon(ctx, lx - 70, ly + 10, gameEngine.ballRadius * 0.6, gameEngine.nextColor, 'normal', 1);
-      ctx.fillStyle = '#94a3b8'; ctx.font = "bold 10px sans-serif"; ctx.fillText("NEXT", lx - 70, ly - 15);
-      
-      let grad = ctx.createRadialGradient(lx, ly, 10, lx, ly, 35);
-      grad.addColorStop(0, '#1e293b');
-      grad.addColorStop(1, '#0f172a');
-      ctx.beginPath(); ctx.arc(lx, ly, 35, Math.PI, 0); ctx.fillStyle = grad; ctx.fill();
-      ctx.strokeStyle = '#334155'; ctx.lineWidth = 2; ctx.stroke();
-      
-      if (gameEngine.projectiles.length === 0) {
-        let type = 'normal';
-        let color = gameEngine.activePowerup ? (gameEngine.activePowerup === 'rocket' ? '#ef4444' : (gameEngine.activePowerup === 'bomb' ? '#f97316' : '#ffffff')) : gameEngine.launcherColor;
-        
-        if (gameEngine.activePowerup === 'rocket') {
-           ctx.font = '28px FontAwesome'; ctx.fillStyle='#ef4444'; ctx.fillText('\uf135', lx, ly);
-        } else if (gameEngine.activePowerup === 'bomb') {
-           ctx.font = '28px FontAwesome'; ctx.fillStyle='#f97316'; ctx.fillText('\uf1e2', lx, ly);
-        } else {
-           drawBalloon(ctx, lx, ly, gameEngine.ballRadius, color, type, 1);
-        }
-      }
-    }
-
-    function handleInput(e) {
-      if (!gameEngine.isPlaying) return;
-      e.preventDefault();
-      updateMousePos(e);
-      
-      const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 120;
-      const dist = Math.hypot(gameEngine.mouseX - (lx - 70), gameEngine.mouseY - (ly + 10));
-      const distMain = Math.hypot(gameEngine.mouseX - lx, gameEngine.mouseY - ly);
-      
-      if (dist < 40 || distMain < 40) {
-        let temp = gameEngine.launcherColor;
-        gameEngine.launcherColor = gameEngine.nextColor;
-        gameEngine.nextColor = temp;
-        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-        gameEngine.mouseX = null;
-      }
-    }
-
-    function handleMove(e) {
-      if (!gameEngine.isPlaying) return;
-      e.preventDefault();
-      updateMousePos(e);
-    }
-
-    function handleFire(e) {
-      if (!gameEngine.isPlaying || gameEngine.projectiles.length > 0 || gameEngine.mouseX === null) return;
-      e.preventDefault();
-      
-      const lx = gameEngine.canvas.width / 2;
-      const ly = gameEngine.canvas.height - 120;
-      
-      let dy = gameEngine.mouseY - ly;
-      if (dy >= -10) { 
-          gameEngine.mouseX = null; 
-          return; 
-      }
-
-      let dx = gameEngine.mouseX - lx;
-      let angle = Math.atan2(dy, dx);
-      if (angle > -0.15) angle = -0.15; 
-      if (angle < -Math.PI + 0.15) angle = -Math.PI + 0.15;
-
-      let speed = 25;
-      let type = 'normal';
-      let color = gameEngine.launcherColor;
-
-      if (gameEngine.activePowerup) {
-         type = gameEngine.activePowerup;
-         if(type === 'rocket') { speed = 35; color = '#ef4444'; }
-         if(type === 'bomb') { color = '#f97316'; }
-      }
-
-      gameEngine.projectiles.push({ x: lx, y: ly, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, radius: gameEngine.ballRadius, color: color, type: type });
-      
-      gameEngine.shotsFired++;
-      updateStarsDynamic();
-      
-      if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-      
-      if (!gameEngine.activePowerup) {
-         updateColorHistory(gameEngine.launcherColor);
-         gameEngine.launcherColor = gameEngine.nextColor;
-         updateLauncherColors(true); 
-      } else {
-         consumePowerup(gameEngine.activePowerup);
-      }
-      
-      gameEngine.mouseX = null;
-    }
-
-    function updateMousePos(e) {
-      const rect = gameEngine.canvas.getBoundingClientRect();
-      if (e.touches && e.touches.length > 0) {
-        gameEngine.mouseX = e.touches[0].clientX - rect.left;
-        gameEngine.mouseY = e.touches[0].clientY - rect.top;
-      } else {
-        gameEngine.mouseX = e.clientX - rect.left;
-        gameEngine.mouseY = e.clientY - rect.top;
-      }
-    }
-
-    function updatePhysics() {
-      for (let i = gameEngine.projectiles.length - 1; i >= 0; i--) {
-        let p = gameEngine.projectiles[i];
-        p.x += p.vx;
-        p.y += p.vy;
-
-        if (p.x - p.radius < 0) { p.x = p.radius + 0.1; p.vx *= -1; }
-        if (p.x + p.radius > gameEngine.canvas.width) { p.x = gameEngine.canvas.width - p.radius - 0.1; p.vx *= -1; }
-
-        let snapped = false;
-
-        if (p.type === 'rocket') {
-           let hitAny = false;
-           for(let r=0; r<gameEngine.grid.length; r++) {
-              if(!gameEngine.grid[r]) continue;
-              for(let c=0; c<gameEngine.grid[r].length; c++) {
-                 if(gameEngine.grid[r][c]) {
-                    let pos = getGridPos(r, c);
-                    if(Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius * 2.5) {
-                       popBalloon(r, c, true);
-                       hitAny = true;
-                    }
-                 }
-              }
-           }
-           
-           if (p.y < -50 || p.x < -50 || p.x > gameEngine.canvas.width + 50) {
-               gameEngine.projectiles.splice(i, 1);
-               if(hitAny) dropFloaters();
-               checkWinLoss();
-               updateLauncherColors(); 
-           }
-           continue;
-        }
-
-        if (p.y - p.radius <= gameEngine.offsetY) {
-          snapProjectile(p, 0);
-          snapped = true;
-        } else {
-           for(let r=0; r<gameEngine.grid.length; r++) {
-              if(!gameEngine.grid[r] || snapped) continue;
-              for(let c=0; c<gameEngine.grid[r].length; c++) {
-                 if(gameEngine.grid[r][c]) {
-                    let pos = getGridPos(r, c);
-                    if(Math.hypot(p.x - pos.x, p.y - pos.y) < p.radius * 1.8) {
-                       snapProjectile(p);
-                       snapped = true;
-                       break;
-                    }
-                 }
-              }
-           }
-        }
-
-        if (snapped) {
-           gameEngine.projectiles.splice(i, 1);
-        } else if (p.y < -100) {
-           gameEngine.projectiles.splice(i, 1);
-        }
-      }
-
-      for (let i = gameEngine.fallingBalloons.length - 1; i >= 0; i--) {
-          let fb = gameEngine.fallingBalloons[i];
-          fb.vy += 0.5; 
-          fb.x += fb.vx;
-          fb.y += fb.vy;
-
-          if (fb.x - fb.radius < 0) { fb.x = fb.radius; fb.vx *= -0.6; }
-          if (fb.x + fb.radius > gameEngine.canvas.width) { fb.x = gameEngine.canvas.width - fb.radius; fb.vx *= -0.6; }
-
-          if (fb.y + fb.radius > gameEngine.containers.cy) {
-              let idx = Math.floor(fb.x / gameEngine.containers.cw);
-              if (idx >= 0 && idx < 5) {
-                  let pts = gameEngine.containers.scores[idx];
-                  addScore(pts);
-                  showFloatingText(`+${pts}`, fb.x, gameEngine.containers.cy - 10, gameEngine.containers.colors[idx]);
-                  if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-              }
-              gameEngine.fallingBalloons.splice(i, 1);
-          }
-      }
-
-      for (let i = gameEngine.particles.length - 1; i >= 0; i--) {
-          let p = gameEngine.particles[i];
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vy += 0.2; 
-          p.life -= 0.03;
-          if (p.life <= 0) {
-              gameEngine.particles.splice(i, 1); 
-          }
-      }
-
-      for (let i = gameEngine.floatingTexts.length - 1; i >= 0; i--) {
-          let ft = gameEngine.floatingTexts[i];
-          ft.y -= 1.5;
-          ft.life -= 0.025;
-          if (ft.life <= 0) gameEngine.floatingTexts.splice(i, 1);
-      }
-    }
-
-    function showFloatingText(text, x, y, color = '#fff') {
-        gameEngine.floatingTexts.push({text: text, x: x, y: y, life: 1, color: color});
-    }
-
-    function drawPhysicsObjects() {
-      const ctx = gameEngine.ctx;
-
-      gameEngine.particles.forEach(p => {
-          let alpha = Math.max(0, p.life);
-          ctx.globalAlpha = alpha;
-          ctx.fillStyle = p.color;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, gameEngine.ballRadius * 0.4 * alpha, 0, Math.PI * 2);
-          ctx.fill();
-          
-          ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.7})`;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, gameEngine.ballRadius * 0.2 * alpha, 0, Math.PI * 2);
-          ctx.fill();
-      });
-      ctx.globalAlpha = 1.0;
-
-      gameEngine.fallingBalloons.forEach(fb => {
-          drawBalloon(ctx, fb.x, fb.y, fb.radius, fb.color, fb.type, 1);
-      });
-
-      ctx.textAlign = 'center';
-      ctx.font = '900 18px "Outfit"';
-      gameEngine.floatingTexts.forEach(ft => {
-          ctx.globalAlpha = Math.max(0, ft.life);
-          ctx.fillStyle = ft.color;
-          ctx.shadowColor = '#000';
-          ctx.shadowBlur = 6;
-          ctx.fillText(ft.text, ft.x, ft.y);
-      });
-      ctx.globalAlpha = 1.0;
-      ctx.shadowBlur = 0;
-    }
-
-    function snapProjectile(p, forceRow = -1) {
-       let rHeight = gameEngine.ballRadius * 1.732;
-       let targetR = Math.round((p.y - gameEngine.offsetY - gameEngine.ballRadius) / rHeight);
-       if(forceRow !== -1) targetR = forceRow;
-       if(targetR < 0) targetR = 0;
-       
-       let targetC = Math.round((p.x - gameEngine.ballRadius - (targetR % 2 !== 0 ? gameEngine.ballRadius : 0)) / (gameEngine.ballRadius * 2));
-       if (targetC < 0) targetC = 0;
-       let maxC = (targetR % 2 === 0) ? gameEngine.gridCols - 1 : gameEngine.gridCols - 2;
-       if (targetC > maxC) targetC = maxC;
-
-       while(gameEngine.grid.length <= targetR) gameEngine.grid.push([]);
-       
-       if (gameEngine.grid[targetR][targetC]) {
-           let bestD = Infinity, bestR = targetR, bestC = targetC;
-           const dirs = getNeighborsDirs(targetR);
-           dirs.forEach(d => {
-               let nr = targetR + d[0], nc = targetC + d[1];
-               if(nr >=0 && nc >=0 && nc <= ((nr%2===0)?gameEngine.gridCols-1:gameEngine.gridCols-2)) {
-                   if (!gameEngine.grid[nr] || !gameEngine.grid[nr][nc]) {
-                      let nPos = getGridPos(nr, nc);
-                      let dist = Math.hypot(p.x - nPos.x, p.y - nPos.y);
-                      if (dist < bestD) { bestD = dist; bestR = nr; bestC = nc; }
-                   }
-               }
-           });
-           targetR = bestR; targetC = bestC;
-       }
-
-       while(gameEngine.grid.length <= targetR) gameEngine.grid.push([]);
-
-       if (p.type === 'bomb') {
-          triggerExplosion(targetR, targetC);
-       } else {
-          gameEngine.grid[targetR][targetC] = { color: p.color, type: p.type, hp: 1, r: targetR, c: targetC };
-          checkMatches(targetR, targetC);
-       }
-       
-       checkWinLoss();
-       updateLauncherColors(); 
-    }
-
-    function getNeighborsDirs(r) {
-       return r % 2 === 0 
-           ? [[-1,-1], [-1,0], [0,-1], [0,1], [1,-1], [1,0]]
-           : [[-1,0], [-1,1], [0,-1], [0,1], [1,0], [1,1]];
-    }
-
-    function getNeighbors(r, c) {
-       let n = [];
-       getNeighborsDirs(r).forEach(d => {
-           let nr = r + d[0], nc = c + d[1];
-           if (gameEngine.grid[nr] && gameEngine.grid[nr][nc]) n.push({r: nr, c: nc});
-       });
-       return n;
-    }
-
-    function triggerExplosion(r, c) {
-        let toPop = [];
-        for(let ir = r-2; ir <= r+2; ir++) {
-            if(!gameEngine.grid[ir]) continue;
-            for(let ic = c-2; ic <= c+2; ic++) {
-                if(gameEngine.grid[ir][ic]) toPop.push({r:ir, c:ic});
-            }
-        }
-        toPop.forEach(b => popBalloon(b.r, b.c, true));
-        dropFloaters();
-        if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-    }
-
-    function checkMatches(r, c) {
-        let startColor = gameEngine.grid[r][c].color;
-        let matchGroup = [];
-        let visited = new Set();
-        let q = [{r, c}];
-        visited.add(`${r},${c}`);
-
-        while(q.length > 0) {
-            let cur = q.shift();
-            matchGroup.push(cur);
-            let neighbors = getNeighbors(cur.r, cur.c);
-            
-            neighbors.forEach(n => {
-                let cell = gameEngine.grid[n.r][n.c];
-                if (!visited.has(`${n.r},${n.c}`) && cell.type !== 'armored') {
-                    if (cell.color === startColor) {
-                        visited.add(`${n.r},${n.c}`);
-                        q.push({r: n.r, c: n.c});
-                    }
-                }
-            });
-        }
-
-        if (matchGroup.length >= 3) { 
-            matchGroup.forEach(m => {
-                let cell = gameEngine.grid[m.r][m.c];
-                if (cell && cell.type === 'chained') {
-                    cell.type = 'normal'; 
-                    createParticles(m.r, m.c, '#fcd34d'); 
-                } else {
-                    popBalloon(m.r, m.c);
-                }
-            });
-            
-            matchGroup.forEach(m => {
-                let neighbors = getNeighbors(m.r, m.c);
-                neighbors.forEach(n => {
-                    let cell = gameEngine.grid[n.r][n.c];
-                    if (cell && cell.type === 'ice') {
-                        cell.type = 'normal'; 
-                        createParticles(n.r, n.c, '#a5f3fc');
-                    }
-                });
-            });
-
-            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            dropFloaters();
-        } else {
-            spreadVirus();
-        }
-    }
-
-    function popBalloon(r, c, force = false) {
-       let b = gameEngine.grid[r][c];
-       if(!b) return;
-       
-       let pos = getGridPos(r, c);
-       
-       if (b.type === 'normal') {
-           gameEngine.fallingBalloons.push({
-               x: pos.x, y: pos.y, 
-               vx: (Math.random() - 0.5) * 6, vy: -2, 
-               radius: gameEngine.ballRadius, color: b.color, type: 'normal'
-           });
-       } else {
-           createParticles(r, c, b.color);
-       }
-       
-       gameEngine.grid[r][c] = null;
-    }
-
-    function dropFloaters() {
-        let visited = new Set();
-        let q = [];
-        
-        if(gameEngine.grid[0]) {
-            for(let c=0; c<gameEngine.grid[0].length; c++) {
-                if(gameEngine.grid[0][c]) {
-                    q.push({r:0, c:c});
-                    visited.add(`0,${c}`);
-                }
-            }
-        }
-
-        while(q.length > 0) {
-            let cur = q.shift();
-            let neighbors = getNeighbors(cur.r, cur.c);
-            neighbors.forEach(n => {
-                if(!visited.has(`${n.r},${n.c}`)) {
-                    visited.add(`${n.r},${n.c}`);
-                    q.push({r: n.r, c: n.c});
-                }
-            });
-        }
-
-        for(let r=0; r<gameEngine.grid.length; r++) {
-            if(!gameEngine.grid[r]) continue;
-            for(let c=0; c<gameEngine.grid[r].length; c++) {
-                if(gameEngine.grid[r][c] && !visited.has(`${r},${c}`)) {
-                    popBalloon(r, c, true); 
-                }
-            }
-        }
-    }
-
-    function spreadVirus() {
-        let viruses = [];
-        for(let r=0; r<gameEngine.grid.length; r++) {
-            if(!gameEngine.grid[r]) continue;
-            for(let c=0; c<gameEngine.grid[r].length; c++) {
-                if(gameEngine.grid[r][c] && gameEngine.grid[r][c].type === 'virus') {
-                    viruses.push({r,c});
-                }
-            }
-        }
-        
-        if (viruses.length > 0 && gameEngine.shotsFired % 3 === 0) {
-           let v = viruses[Math.floor(Math.random() * viruses.length)];
-           let neighbors = getNeighbors(v.r, v.c);
-           let normalN = neighbors.filter(n => gameEngine.grid[n.r][n.c].type === 'normal');
-           if (normalN.length > 0) {
-              let target = normalN[Math.floor(Math.random() * normalN.length)];
-              gameEngine.grid[target.r][target.c].type = 'virus';
-              createParticles(target.r, target.c, '#bef264');
-           }
-        }
-    }
-
-    function createParticles(r, c, color) {
-        let pos = getGridPos(r, c);
-        for(let i=0; i<15; i++) {
-            gameEngine.particles.push({
-                x: pos.x, y: pos.y,
-                vx: (Math.random() - 0.5) * 16,
-                vy: (Math.random() - 0.5) * 16,
-                life: 1, color: color
-            });
-        }
-    }
-
-    function addScore(pts) {
-       gameEngine.score += pts;
-       document.getElementById('ingame-score').innerText = gameEngine.score;
-       updateStarsDynamic();
-    }
-    
-    function countRemainingPopables() {
-        let count = 0;
-        for(let r=0; r<gameEngine.grid.length; r++) {
-            if(!gameEngine.grid[r]) continue;
-            for(let c=0; c<gameEngine.grid[r].length; c++) {
-                if(gameEngine.grid[r][c] && gameEngine.grid[r][c].type !== 'armored') count++;
-            }
-        }
-        return count;
-    }
-
-    function calculateStars() {
-        if (gameEngine.shotsFired === 0) return 0;
-        let accuracy = gameEngine.totalTarget / gameEngine.shotsFired;
-        if (accuracy >= 0.8) return 3; 
-        if (accuracy >= 0.5) return 2; 
-        if (accuracy > 0) return 1;
-        return 0;
-    }
-
-    function updateStarsDynamic() {
-        updateStarsUI(calculateStars());
-    }
-
-    function updateStarsUI(count) {
-        let html = '';
-        for(let i=1; i<=3; i++) {
-            html += `<i class="fa-solid fa-star ${i<=count ? 'text-crypto-gold drop-shadow-[0_0_5px_#ffb800] scale-110' : 'text-slate-700'} text-xs transition-all duration-300"></i>`;
-        }
-        document.getElementById('ingame-stars').innerHTML = html;
-    }
-
-    function checkWinLoss() {
-        let popable = countRemainingPopables();
-        let reachedBottom = false;
-
-        for(let r=0; r<gameEngine.grid.length; r++) {
-            if(!gameEngine.grid[r]) continue;
-            for(let c=0; c<gameEngine.grid[r].length; c++) {
-                if(gameEngine.grid[r][c]) {
-                    let pos = getGridPos(r, c);
-                    if (pos.y + gameEngine.ballRadius > gameEngine.limitY) reachedBottom = true;
-                }
-            }
-        }
-
-        if (popable === 0 && gameEngine.fallingBalloons.length === 0) {
-            endGame(true);
-        } else if (reachedBottom) {
-            endGame(false);
-        }
-    }
-
-    function endGame(isWin) {
-        gameEngine.isPlaying = false;
-        
-        const modal = document.getElementById('game-over-modal');
-        const title = document.getElementById('end-title');
-        const endStars = document.getElementById('end-stars');
-        const endReward = document.getElementById('end-reward');
-        const nextBtn = document.getElementById('end-next-btn');
-
-        modal.classList.remove('hidden');
-
-        if (isWin) {
-            let stars = calculateStars();
-            let idx = gameEngine.currentLevel - 1;
-            
-            let alreadyCompleted = gameState.levelsCompleted[idx];
-            let xpEarned = alreadyCompleted ? 0 : (LEVEL_REWARDS[idx] || 100);
-            
-            title.innerText = "Level Clear!";
-            title.className = "text-4xl font-black text-white mb-2 drop-shadow-[0_0_15px_#00f0ff]";
-            
-            if (!alreadyCompleted) {
-                endReward.innerText = `+${xpEarned} XP`;
-                endReward.className = "text-lg font-bold text-emerald-400 mb-8 bg-emerald-500/10 px-6 py-3 rounded-xl border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]";
-                userState.xp += xpEarned;
-                userState.totalXp += xpEarned;
-                gameState.levelsCompleted[idx] = true;
-                checkLevelUp();
-            } else {
-                endReward.innerText = `+0 XP (Replay)`;
-                endReward.className = "text-sm font-bold text-slate-400 mb-8 bg-slate-800 px-4 py-2 rounded-xl border border-slate-700";
-            }
-            
-            endReward.style.display = 'block';
-            
-            let starsHtml = '';
-            for(let i=1; i<=3; i++) {
-                starsHtml += `<i class="fa-solid fa-star text-4xl ${i<=stars ? 'text-crypto-gold drop-shadow-[0_0_15px_#ffb800] animate-[pop_0.5s_ease-out]' : 'text-slate-800'} mx-1" style="animation-delay: ${i*0.2}s"></i>`;
-            }
-            endStars.innerHTML = starsHtml;
-
-            if (stars > gameState.stars[idx]) {
-               gameState.stars[idx] = stars;
-            }
-
-            nextBtn.innerText = idx < 9 ? "Next Level" : "Finish";
-            nextBtn.onclick = () => { idx < 9 ? startGame(gameEngine.currentLevel + 1) : exitGame(); };
-
-            saveState();
-            updateUI();
-            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            
-        } else {
-            title.innerText = "Level Failed";
-            title.className = "text-4xl font-black text-red-400 mb-2 drop-shadow-[0_0_15px_#ef4444]";
-            endStars.innerHTML = '<i class="fa-solid fa-skull-crossbones text-5xl text-slate-600 drop-shadow-lg"></i>';
-            endReward.style.display = 'none';
-            nextBtn.innerText = "Retry";
-            nextBtn.onclick = () => { startGame(gameEngine.currentLevel); };
-            if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-        }
-    }
-
-    function activatePowerup(type) {
-       if (gameState.powerups[type] > 0) {
-           gameEngine.activePowerup = type;
-       } else {
-           watchAdForPowerup(type);
-       }
-    }
-
-    function consumePowerup(type) {
-        gameState.powerups[type]--;
-        gameEngine.activePowerup = null;
-        saveState();
-        updatePowerupUI();
-    }
-
-    function updatePowerupUI() {
-        ['rocket', 'bomb'].forEach(type => {
-            let el = document.getElementById(`count-${type}`);
-            let btn = document.getElementById(`btn-power-${type}`);
-            if(el && btn) {
-               let count = gameState.powerups[type];
-               el.innerText = count > 0 ? count : '+';
-               el.className = count > 0 
-                  ? "absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] shadow-lg"
-                  : "absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] animate-pulse shadow-[0_0_10px_#10b981]";
-               
-               if(gameEngine.activePowerup === type) {
-                  btn.classList.add('powerup-active-glow');
-               } else {
-                  btn.classList.remove('powerup-active-glow');
-               }
-            }
-        });
-    }
-
-    function watchAdForPowerup(type) {
-       if (gameState.adLimits[type] >= 5) {
-          showToast("Limit Reached", "Max 5 powerup ads per day.", "error");
-          return;
-       }
-
-       if (window.Adsgram) {
-          const AdController = window.Adsgram.init({ blockId: "int-34999" });
-          AdController.show().then(() => {
-             gameState.powerups[type]++;
-             gameState.adLimits[type]++;
-             saveState();
-             updatePowerupUI();
-             showToast("Powerup Received!", `You got 1 ${type.toUpperCase()}!`, "success");
-          }).catch(e => {
-             showToast("Error", "Ads unavailable at the moment.", "error");
-          });
-       } else {
-           showToast("Error", "Ad system is currently offline.", "error");
-       }
-    }
-
-    function gameLoop() {
-      if (!gameEngine.isPlaying) return;
-      
-      const ctx = gameEngine.ctx;
-      ctx.clearRect(0, 0, gameEngine.canvas.width, gameEngine.canvas.height);
-
-      drawContainers();
-      drawGrid();
-      drawLauncher();
-      
-      if(gameEngine.projectiles.length > 0 || gameEngine.fallingBalloons.length > 0 || gameEngine.particles.length > 0 || gameEngine.floatingTexts.length > 0) {
-         updatePhysics();
-         drawPhysicsObjects();
-      }
-
-      gameEngine.projectiles.forEach(p => {
-         drawBalloon(ctx, p.x, p.y, p.radius, p.color, p.type, 1);
-      });
-
-      ctx.beginPath();
-      ctx.moveTo(0, gameEngine.limitY);
-      ctx.lineTo(gameEngine.canvas.width, gameEngine.limitY);
-      ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)';
-      ctx.lineWidth = 1;
-      ctx.setLineDash([5, 5]);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      
-      if(gameEngine.projectiles.length === 0 && gameEngine.fallingBalloons.length === 0) {
-         if (countRemainingPopables() === 0) checkWinLoss();
-      }
-
-      updatePowerupUI(); 
-      window.requestAnimationFrame(gameLoop);
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      initApp();
-    });
-
-  </script>
+  <script src="config.js"></script>
+  <script src="effects.js"></script>
+  <script src="game.js"></script>
+  <script src="ui.js"></script>
 </body>
 </html>

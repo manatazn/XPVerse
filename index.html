@@ -10,46 +10,10 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+
+  <script src="tailwind.config.js"></script>
   
-  <link rel="stylesheet" href="style.css">
-  
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Outfit', 'sans-serif'] },
-          colors: {
-            crypto: {
-              dark: '#050511', card: '#0a0b1a', primary: '#3b82f6',  
-              glow: '#00f0ff', gold: '#ffb800', silver: '#e2e8f0', bronze: '#cd7f32'    
-            }
-          },
-          animation: {
-            'blob': 'blob 7s infinite',
-            'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'shimmer': 'shimmer 2s infinite',
-            'pop': 'pop 0.3s ease-out forwards'
-          },
-          keyframes: {
-            blob: {
-              '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
-              '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-              '66%': { transform: 'translate(-20px, 20px) scale(0.9)' }
-            },
-            pop: {
-              '0%': { transform: 'scale(1)' },
-              '50%': { transform: 'scale(1.3)' },
-              '100%': { transform: 'scale(0)', opacity: 0 }
-            },
-            shimmer: {
-              '0%': { transform: 'translateX(-100%)' },
-              '100%': { transform: 'translateX(100%)' }
-            }
-          }
-        }
-      }
-    }
-  </script>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body class="flex flex-col min-h-screen pb-32">
   
@@ -71,7 +35,7 @@
     <div id="toast-icon" class="w-12 h-12 rounded-full flex shrink-0 items-center justify-center text-xl shadow-inner"></div>
     <div class="flex-1">
       <h4 id="toast-title" class="text-sm font-black text-white tracking-wide">Notification</h4>
-      <p id="toast-message" class="text-xs text-slate-300 mt-0.5 leading-tight">Message goes here</p>
+      <p id="toast-message" class="text-xs text-slate-300 mt-0.5 leading-tight">Message</p>
     </div>
   </div>
 
@@ -92,7 +56,7 @@
       <div class="flex flex-col items-end gap-1.5">
         <div class="glass-button px-3 py-1.5 rounded-xl flex items-center gap-2">
           <i class="fa-solid fa-bolt text-crypto-glow text-xs drop-shadow-[0_0_5px_#00f0ff]"></i>
-          <span id="user-xp" class="text-white font-black text-sm tracking-wider">0</span>
+          <span id="user-xp" class="text-white font-black text-sm tracking-wider">0 <span class="text-[10px] text-crypto-glow">XP</span></span>
         </div>
         <div class="bg-emerald-900/40 border border-emerald-500/30 px-3 py-1 rounded-xl flex items-center gap-2 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]">
           <i class="fa-solid fa-dollar-sign text-emerald-400 text-[10px]"></i>
@@ -103,7 +67,6 @@
   </header>
 
   <main class="flex-1 max-w-md w-full mx-auto p-4 pt-24 relative" id="app-content">
-    
     <div id="view-home" class="view-section fade-in space-y-6">
       <div class="relative glass-card rounded-[2rem] p-6 text-center border-t border-t-blue-400/20 overflow-hidden flex flex-col items-center justify-center min-h-[240px]">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/20 rounded-full filter blur-[40px] pointer-events-none animate-pulse-fast"></div>
@@ -132,7 +95,7 @@
         </div>
       </div>
 
-      <button id="watch-ad-btn" class="w-full py-4 rounded-2xl text-white font-black text-sm tracking-[0.15em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(59,130,246,0.3)] btn-3d relative overflow-hidden group">
+      <button onclick="watchAd()" id="watch-ad-btn" class="w-full py-4 rounded-2xl text-white font-black text-sm tracking-[0.15em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(59,130,246,0.3)] btn-3d relative overflow-hidden group">
         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
         <i class="fa-solid fa-play bg-white/20 p-2 rounded-full text-[10px]"></i> 
         <span>Watch Ad <span class="text-cyan-200">+10 XP</span></span>
@@ -152,6 +115,7 @@
           <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Games</h2>
           <p class="text-[10px] text-blue-400 mt-1 uppercase tracking-widest font-bold bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20">XPVerse Balloon Blast</p>
         </div>
+
         <div class="glass-card rounded-3xl p-6 relative overflow-hidden flex flex-col items-center min-h-[400px]">
           <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-6">Daily Levels Progress</p>
           <div class="relative w-full max-w-[250px] mx-auto py-4" id="level-map"></div>
@@ -160,18 +124,19 @@
 
       <div id="game-play-container" class="hidden flex flex-col gap-3">
         <div class="glass-card p-3 rounded-2xl flex justify-between items-center border border-blue-500/30 shrink-0 shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
-          <button id="btn-exit-game" class="w-10 h-10 rounded-xl bg-slate-800/50 flex items-center justify-center text-slate-400 hover:text-white active:scale-95 transition-all">
+          <button onclick="exitGame()" class="w-10 h-10 rounded-xl bg-slate-800/50 flex items-center justify-center text-slate-400 hover:text-white active:scale-95 transition-all">
             <i class="fa-solid fa-arrow-left"></i>
           </button>
           <div class="text-center">
             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Level <span id="ingame-level-display">1</span></p>
             <p class="text-lg font-black text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]" id="ingame-score">0</p>
           </div>
-          <div class="flex gap-1 bg-slate-900/50 p-2 rounded-xl border border-slate-700/50" id="ingame-stars"></div>
+          <div class="flex gap-1 bg-slate-900/50 p-2 rounded-xl border border-slate-700/50" id="ingame-stars">
+            </div>
         </div>
 
         <div id="game-canvas-container">
-          <div id="splash-screen" class="absolute inset-0 flex flex-col items-center justify-center text-center transition-opacity duration-500 hidden">
+          <div id="splash-screen" class="absolute inset-0 flex flex-col items-center justify-center text-center transition-opacity duration-500">
             <div class="w-20 h-20 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-4 border border-blue-400/50 shadow-[0_0_30px_rgba(59,130,246,0.5)]">
               <i class="fa-solid fa-gamepad text-4xl text-crypto-glow"></i>
             </div>
@@ -186,15 +151,15 @@
             <div class="flex gap-2 mb-4" id="end-stars"></div>
             <p id="end-reward" class="text-lg font-bold text-emerald-400 mb-8 bg-emerald-500/10 px-6 py-3 rounded-xl border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">+0 XP</p>
             <div class="flex gap-4 w-full max-w-[250px]">
-              <button id="end-back-btn" class="flex-1 py-3.5 rounded-xl bg-slate-800 text-white font-black uppercase text-xs tracking-wider shadow-lg active:scale-95 transition-all border border-slate-600">Back</button>
-              <button id="end-next-btn" class="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black uppercase text-xs tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.4)] active:scale-95 transition-all">Next</button>
+              <button onclick="exitGame()" class="flex-1 py-3.5 rounded-xl bg-slate-800 text-white font-black uppercase text-xs tracking-wider shadow-lg active:scale-95 transition-all border border-slate-600">Back</button>
+              <button id="end-next-btn" onclick="nextLevel()" class="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black uppercase text-xs tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.4)] active:scale-95 transition-all">Next</button>
             </div>
           </div>
         </div>
 
         <div class="glass-card p-3 rounded-2xl flex justify-center gap-10 items-center shrink-0 border border-slate-700/50">
           <div class="flex flex-col items-center gap-1.5 group relative">
-            <button id="btn-power-bomb" class="powerup-btn w-12 h-12 rounded-2xl bg-slate-800/80 border-2 border-slate-600 flex items-center justify-center text-orange-400 relative shadow-[0_4px_15px_rgba(0,0,0,0.5)]" style="--glow-color: rgba(249,115,22,0.6)">
+            <button onclick="activatePowerup('bomb')" class="powerup-btn w-12 h-12 rounded-2xl bg-slate-800/80 border-2 border-slate-600 flex items-center justify-center text-orange-400 relative shadow-[0_4px_15px_rgba(0,0,0,0.5)]" id="btn-power-bomb" style="--glow-color: rgba(249,115,22,0.6)">
               <i class="fa-solid fa-bomb text-xl drop-shadow-[0_0_5px_rgba(249,115,22,0.8)]"></i>
               <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] shadow-lg" id="count-bomb">1</span>
             </button>
@@ -202,7 +167,7 @@
           </div>
 
           <div class="flex flex-col items-center gap-1.5 group relative">
-            <button id="btn-power-rocket" class="powerup-btn w-12 h-12 rounded-2xl bg-slate-800/80 border-2 border-slate-600 flex items-center justify-center text-red-400 relative shadow-[0_4px_15px_rgba(0,0,0,0.5)]" style="--glow-color: rgba(239,68,68,0.6)">
+            <button onclick="activatePowerup('rocket')" class="powerup-btn w-12 h-12 rounded-2xl bg-slate-800/80 border-2 border-slate-600 flex items-center justify-center text-red-400 relative shadow-[0_4px_15px_rgba(0,0,0,0.5)]" id="btn-power-rocket" style="--glow-color: rgba(239,68,68,0.6)">
               <i class="fa-solid fa-rocket text-xl drop-shadow-[0_0_5px_rgba(239,68,68,0.8)]"></i>
               <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] shadow-lg" id="count-rocket">1</span>
             </button>
@@ -215,9 +180,13 @@
     <div id="view-tasks" class="view-section hidden fade-in space-y-6 pb-4">
       <div class="text-center pt-2">
         <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Tasks</h2>
+        <p class="text-xs text-crypto-glow mt-1 uppercase tracking-widest font-bold">Complete to Earn XP</p>
       </div>
       <div class="glass-card rounded-3xl p-5 relative overflow-hidden border-t-2 border-t-blue-500/30">
-        <h3 class="text-xs font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2"><i class="fa-solid fa-calendar-check text-blue-400 text-lg"></i> 7-Day Streak</h3>
+        <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl"></div>
+        <h3 class="text-xs font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
+          <i class="fa-solid fa-calendar-check text-blue-400 text-lg"></i> 7-Day Streak
+        </h3>
         <div class="relative flex justify-between items-center" id="streak-tracker-container"></div>
       </div>
       <div>
@@ -227,78 +196,59 @@
     </div>
 
     <div id="view-boxes" class="view-section hidden fade-in space-y-5 pb-4">
-      <div class="text-center pt-2 mb-6"><h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Boxes</h2></div>
-      <div class="box-bronze glass-card rounded-[1.5rem] p-5 flex justify-between items-center transition-transform hover:scale-[1.02]">
-        <div class="flex items-center gap-4 relative z-10">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-900 to-[#050511] border border-crypto-bronze flex items-center justify-center shadow-[0_0_15px_rgba(205,127,50,0.3)]"><i class="fa-solid fa-box text-2xl text-crypto-bronze"></i></div>
-          <div><h3 class="text-lg font-black text-white">Bronze Box</h3><span class="text-[10px] text-slate-400 font-bold uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 10,000 XP</span></div>
-        </div>
-        <button class="btn-open-box relative z-10 bg-gradient-to-b from-orange-600 to-orange-800 text-white px-4 py-2 rounded-xl text-xs font-black uppercase" data-type="bronze">Open</button>
+      <div class="text-center pt-2 mb-6">
+        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Boxes</h2>
+        <p class="text-xs text-amber-400 mt-1 uppercase tracking-widest font-bold">Try Your Luck, Win Dollars</p>
       </div>
-      <div class="box-silver glass-card rounded-[1.5rem] p-5 flex justify-between items-center transition-transform hover:scale-[1.02]">
+      
+      <div class="box-bronze glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
         <div class="flex items-center gap-4 relative z-10">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-600 to-[#050511] border border-crypto-silver flex items-center justify-center shadow-[0_0_15px_rgba(226,232,240,0.2)]"><i class="fa-solid fa-box-open text-2xl text-crypto-silver"></i></div>
-          <div><h3 class="text-lg font-black text-white">Silver Box</h3><span class="text-[10px] text-slate-400 font-bold uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 50,000 XP</span></div>
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-900 to-[#050511] border border-crypto-bronze flex items-center justify-center">
+            <i class="fa-solid fa-box text-2xl text-crypto-bronze"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-white tracking-wide">Bronze Box</h3>
+            <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase">10,000 XP</span>
+          </div>
         </div>
-        <button class="btn-open-box relative z-10 bg-gradient-to-b from-slate-400 to-slate-600 text-crypto-dark px-4 py-2 rounded-xl text-xs font-black uppercase" data-type="silver">Open</button>
+        <button onclick="openBox('bronze')" class="relative z-10 bg-gradient-to-b from-orange-600 to-orange-800 text-white px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
       </div>
-      <div class="box-gold glass-card rounded-[1.5rem] p-5 flex justify-between items-center transition-transform hover:scale-[1.02]">
-        <div class="flex items-center gap-4 relative z-10">
-          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-[#050511] border border-crypto-gold flex items-center justify-center shadow-[0_0_25px_rgba(255,184,0,0.5)]"><i class="fa-solid fa-gem text-2xl text-crypto-gold"></i></div>
-          <div><h3 class="text-lg font-black text-crypto-gold">Gold Box</h3><span class="text-[10px] text-slate-400 font-bold uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 100,000 XP</span></div>
-        </div>
-        <button class="btn-open-box relative z-10 bg-gradient-to-b from-yellow-400 to-amber-600 text-crypto-dark px-4 py-2 rounded-xl text-xs font-black uppercase" data-type="gold">Open</button>
+
       </div>
-    </div>
 
     <div id="view-withdraw" class="view-section hidden fade-in space-y-6">
       <div class="glass-card rounded-[2rem] p-6 text-center border-t-2 border-emerald-500/40 bg-gradient-to-b from-emerald-900/30 to-[#050511]">
         <p class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-1">Withdrawal Balance</p>
-        <h1 class="text-5xl font-black text-white mb-3">$<span id="withdraw-balance-display">0.00</span></h1>
+        <h1 class="text-5xl font-black text-white tracking-tighter mb-3">$<span id="withdraw-balance-display">0.00</span></h1>
       </div>
-      <div class="glass-card rounded-[1.5rem] p-5 space-y-4">
+
+      <div class="glass-card rounded-[1.5rem] p-5 space-y-4 border-slate-800">
         <div>
           <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">TON Wallet Address</label>
-          <input type="text" id="wallet-address" placeholder="UQ..." class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-4 pr-4 text-sm font-medium text-white focus:outline-none focus:border-blue-500">
+          <input type="text" id="wallet-address" placeholder="UQ..." class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 px-4 text-sm font-medium text-white focus:outline-none focus:border-blue-500">
         </div>
         <div>
           <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">Amount (USD)</label>
-          <input type="number" id="withdraw-amount" placeholder="5.00" min="5" step="0.5" class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-4 pr-4 text-sm font-bold text-emerald-400 focus:outline-none focus:border-emerald-500">
+          <input type="number" id="withdraw-amount" placeholder="5.00" min="5" step="0.5" class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 px-4 text-sm font-bold text-emerald-400 focus:outline-none focus:border-emerald-500">
         </div>
-        <button id="withdraw-btn" class="w-full py-3.5 mt-2 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-black rounded-xl text-sm uppercase tracking-[0.15em]">Request Withdrawal</button>
+        <button onclick="requestWithdrawal()" class="w-full py-3.5 mt-2 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-black rounded-xl text-sm uppercase tracking-[0.15em]">Request</button>
       </div>
-      <div id="withdraw-history-container" class="space-y-3"></div>
+      <div>
+        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">History</h3>
+        <div id="withdraw-history-container" class="space-y-3"></div>
+      </div>
     </div>
 
     <div id="view-profile" class="view-section hidden fade-in space-y-6">
       <div class="glass-card rounded-[2.5rem] p-1 text-center relative overflow-hidden border border-slate-700/50">
-        <div class="h-32 bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 rounded-t-[2.3rem] relative"></div>
+        <div class="h-32 bg-gradient-to-r from-blue-900 via-indigo-900 to-purple-900 rounded-t-[2.3rem] relative overflow-hidden"></div>
         <div class="px-6 pb-8 -mt-16 relative z-10">
           <div class="relative w-24 h-24 mx-auto rounded-full bg-gradient-to-b from-crypto-glow to-blue-600 p-1 mb-3">
              <img id="profile-photo-large" src="https://via.placeholder.com/150" class="w-full h-full rounded-full border-4 border-[#0a0b1a] object-cover">
-             <div class="absolute -bottom-2 -right-2 bg-gradient-to-br from-[#0a0b1a] to-blue-900 border-2 border-crypto-glow text-white w-8 h-8 rounded-full flex items-center justify-center font-black text-xs" id="profile-badge-level">1</div>
+             <div class="absolute -bottom-2 -right-2 bg-gradient-to-br from-[#0a0b1a] to-blue-900 text-white w-8 h-8 rounded-full flex items-center justify-center font-black text-xs" id="profile-badge-level">1</div>
           </div>
-          <h2 id="profile-name" class="text-2xl font-black text-white">User</h2>
-          <p id="profile-tgid" class="text-[10px] text-blue-400 font-mono mt-1 tracking-widest bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20">ID: 00000000</p>
-          <div class="mt-6">
-            <div class="w-full bg-[#050511] rounded-full h-3 border border-slate-700/50 overflow-hidden relative shadow-inner p-0.5">
-               <div id="profile-xp-progress" class="bg-gradient-to-r from-blue-600 via-crypto-glow to-indigo-400 h-full rounded-full transition-all duration-1000 w-[0%]"></div>
-            </div>
-            <div class="flex justify-between mt-1 px-1">
-               <span id="profile-current-xp-text" class="text-[10px] font-bold text-slate-400">0 XP</span>
-               <span class="text-[9px] font-bold text-slate-500 uppercase">Target: <span id="profile-next-xp-text" class="text-blue-400">250 XP</span></span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div class="glass-card p-5 rounded-2xl text-center">
-          <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Total Earned</p>
-          <p id="profile-total-xp" class="text-xl font-black text-white">0</p>
-        </div>
-        <div class="glass-card p-5 rounded-2xl text-center">
-          <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Boxes Opened</p>
-          <p id="profile-boxes" class="text-xl font-black text-white">0</p>
+          <h2 id="profile-name" class="text-2xl font-black text-white tracking-tight">User</h2>
+          <p id="profile-tgid" class="text-[10px] text-blue-400 font-mono mt-1 bg-blue-500/10 px-3 py-1 rounded-full">ID: 00000000</p>
         </div>
       </div>
     </div>
@@ -306,30 +256,28 @@
 
   <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] max-w-[420px] glass-card rounded-2xl pb-safe z-50 shadow-[0_20px_40px_rgba(0,0,0,0.8)] border border-slate-700/50 backdrop-blur-xl">
     <div class="flex justify-between items-center px-2 py-2.5 relative">
-      <button class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="home">
-        <i class="fa-solid fa-house text-lg transition-transform group-active:scale-90"></i><span class="text-[7.5px] font-black uppercase tracking-widest">Home</span>
+      <button onclick="switchTab('home')" class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="home">
+        <i class="fa-solid fa-house text-lg"></i><span class="text-[7.5px] font-black uppercase tracking-widest">Home</span>
       </button>
-      <button class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="games">
-        <i class="fa-solid fa-gamepad text-lg transition-transform group-active:scale-90"></i><span class="text-[7.5px] font-black uppercase tracking-widest">Games</span>
+      <button onclick="switchTab('games')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="games">
+        <i class="fa-solid fa-gamepad text-lg"></i><span class="text-[7.5px] font-black uppercase tracking-widest">Games</span>
       </button>
-      <button class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="tasks">
-        <i class="fa-solid fa-list-check text-lg transition-transform group-active:scale-90"></i><span class="text-[7.5px] font-black uppercase tracking-widest">Tasks</span>
+      <button onclick="switchTab('tasks')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="tasks">
+        <i class="fa-solid fa-list-check text-lg"></i><span class="text-[7.5px] font-black uppercase tracking-widest">Tasks</span>
       </button>
-      <button class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="boxes">
-        <i class="fa-solid fa-box-open text-lg transition-transform group-active:scale-90"></i><span class="text-[7.5px] font-black uppercase tracking-widest">Box</span>
+      <button onclick="switchTab('boxes')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="boxes">
+        <i class="fa-solid fa-box-open text-lg"></i><span class="text-[7.5px] font-black uppercase tracking-widest">Box</span>
       </button>
-      <button class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="withdraw">
-        <i class="fa-solid fa-wallet text-lg transition-transform group-active:scale-90"></i><span class="text-[7.5px] font-black uppercase tracking-widest">Withdraw</span>
+      <button onclick="switchTab('withdraw')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="withdraw">
+        <i class="fa-solid fa-wallet text-lg"></i><span class="text-[7.5px] font-black uppercase tracking-widest">Withdraw</span>
       </button>
-      <button class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="profile">
-        <i class="fa-solid fa-user-astronaut text-lg transition-transform group-active:scale-90"></i><span class="text-[7.5px] font-black uppercase tracking-widest">Profile</span>
+      <button onclick="switchTab('profile')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="profile">
+        <i class="fa-solid fa-user-astronaut text-lg"></i><span class="text-[7.5px] font-black uppercase tracking-widest">Profile</span>
       </button>
     </div>
   </nav>
 
-  <script src="config.js"></script>
-  <script src="effects.js"></script>
+  <script src="app.js"></script>
   <script src="game.js"></script>
-  <script src="ui.js"></script>
 </body>
 </html>

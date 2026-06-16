@@ -1346,7 +1346,6 @@
          if(!gameEngine.grid[r]) continue;
          for(let c=0; c<gameEngine.grid[r].length; c++) {
             let b = gameEngine.grid[r][c];
-            // Provide underlying colors even if chained/iced
             if(b && (b.type === 'normal' || b.type === 'chained' || b.type === 'ice' || b.type === 'virus')) {
                activeColors.add(b.color);
             }
@@ -1459,11 +1458,9 @@
       ctx.globalAlpha = isGhost ? 0.4 : 1.0;
       ctx.save();
       
-      // Base shape
       ctx.beginPath();
       ctx.arc(x, y, r * 0.95, 0, Math.PI * 2);
       
-      // Premium Gradients
       let grad = ctx.createRadialGradient(x - r*0.3, y - r*0.3, r*0.1, x, y, r);
       grad.addColorStop(0, '#ffffff');
       grad.addColorStop(0.15, shadeColor(color, 20));
@@ -1479,13 +1476,11 @@
       ctx.fill();
       ctx.shadowColor = 'transparent';
 
-      // Glossy Reflection
       ctx.beginPath();
       ctx.ellipse(x - r*0.35, y - r*0.35, r*0.4, r*0.15, Math.PI / -4, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
       ctx.fill();
       
-      // Secondary highlight
       ctx.beginPath();
       ctx.arc(x, y, r * 0.95, 0, Math.PI * 2);
       let innerGrad = ctx.createLinearGradient(x, y + r, x, y - r);
@@ -1494,35 +1489,29 @@
       ctx.fillStyle = innerGrad;
       ctx.fill();
 
-      // Yüksək keyfiyyətli qıfıl (Chained) və Buz (Ice) vizualları
       if (type === 'chained') {
-          // Çarpaz metal zolaqlar
           ctx.lineWidth = 4;
-          ctx.strokeStyle = '#334155'; // Tünd metal
+          ctx.strokeStyle = '#334155';
           ctx.beginPath(); ctx.ellipse(x, y, r * 0.95, r * 0.35, Math.PI / 4, 0, Math.PI * 2); ctx.stroke();
           ctx.beginPath(); ctx.ellipse(x, y, r * 0.95, r * 0.35, -Math.PI / 4, 0, Math.PI * 2); ctx.stroke();
 
-          // Metal zolaqların parıltısı
           ctx.lineWidth = 1.5;
-          ctx.strokeStyle = '#94a3b8'; // Açıq metal parıltısı
+          ctx.strokeStyle = '#94a3b8';
           ctx.beginPath(); ctx.ellipse(x, y, r * 0.95, r * 0.35, Math.PI / 4, Math.PI * 0.8, Math.PI * 1.8); ctx.stroke();
           ctx.beginPath(); ctx.ellipse(x, y, r * 0.95, r * 0.35, -Math.PI / 4, Math.PI * 0.8, Math.PI * 1.8); ctx.stroke();
 
-          // Mərkəzi asma qıfıl
           let lockW = r * 0.55;
           let lockH = r * 0.45;
           let lockY = y + r * 0.1;
           
-          // Qıfıl halqası (shackle)
           ctx.lineWidth = 3.5;
           ctx.strokeStyle = '#cbd5e1';
           ctx.beginPath(); ctx.arc(x, lockY - lockH/2, lockW * 0.4, Math.PI, 0); ctx.stroke();
 
-          // Qıfıl gövdəsi qızılı/bürünc qradient
           let lockGrad = ctx.createLinearGradient(x - lockW/2, lockY - lockH/2, x + lockW/2, lockY + lockH/2);
-          lockGrad.addColorStop(0, '#fcd34d'); // Açıq qızılı
-          lockGrad.addColorStop(0.5, '#d97706'); // Qızılı
-          lockGrad.addColorStop(1, '#92400e'); // Tünd mis
+          lockGrad.addColorStop(0, '#fcd34d');
+          lockGrad.addColorStop(0.5, '#d97706');
+          lockGrad.addColorStop(1, '#92400e');
           
           ctx.fillStyle = lockGrad;
           ctx.shadowColor = 'rgba(0,0,0,0.6)';
@@ -1531,17 +1520,14 @@
           ctx.beginPath(); ctx.roundRect(x - lockW/2, lockY - lockH/2, lockW, lockH, 4); ctx.fill();
           ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
 
-          // Qıfıl üzərində parıltı effekti
           ctx.fillStyle = 'rgba(255,255,255,0.3)';
           ctx.beginPath(); ctx.roundRect(x - lockW/2 + 2, lockY - lockH/2 + 2, lockW - 4, lockH/2.5, 2); ctx.fill();
 
-          // Açar dəliyi
           ctx.fillStyle = '#451a03';
           ctx.beginPath(); ctx.arc(x, lockY - 1, 2.5, 0, Math.PI * 2); ctx.fill();
           ctx.beginPath(); ctx.moveTo(x - 2, lockY); ctx.lineTo(x + 2, lockY); ctx.lineTo(x + 3, lockY + 6); ctx.lineTo(x - 3, lockY + 6); ctx.fill();
 
       } else if (type === 'ice') {
-          // Kristal/Buz quruluşu üçün poliqon
           ctx.save();
           ctx.beginPath();
           const angles = [0, 0.7, 1.6, 2.4, 3.14, 4.0, 4.8, 5.5];
@@ -1553,16 +1539,14 @@
           }
           ctx.closePath();
           
-          // Şüşəvi / buzlu qradient
           let iceGrad = ctx.createLinearGradient(x - r, y - r, x + r, y + r);
           iceGrad.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
-          iceGrad.addColorStop(0.3, 'rgba(165, 243, 252, 0.5)'); // Açıq cyan
-          iceGrad.addColorStop(0.7, 'rgba(6, 182, 212, 0.4)');  // Normal cyan
+          iceGrad.addColorStop(0.3, 'rgba(165, 243, 252, 0.5)');
+          iceGrad.addColorStop(0.7, 'rgba(6, 182, 212, 0.4)');
           iceGrad.addColorStop(1, 'rgba(255, 255, 255, 0.8)');
           ctx.fillStyle = iceGrad;
           ctx.fill();
           
-          // Daxili şüşə qırıqları/parıltıları (Specular shards)
           ctx.beginPath();
           ctx.moveTo(x - r*0.5, y - r*0.7);
           ctx.lineTo(x + r*0.3, y - r*0.4);
@@ -1577,7 +1561,6 @@
           ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
           ctx.fill();
 
-          // Qalın ağ kontur
           ctx.lineWidth = 2.5;
           ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
           ctx.stroke();
@@ -1903,7 +1886,6 @@
         if (snapped) {
            gameEngine.projectiles.splice(i, 1);
         } else if (p.y < -100) {
-           // Təhlükəsizlik şəbəkəsi: Ekrandan çox çıxan mərmiləri sil
            gameEngine.projectiles.splice(i, 1);
         }
       }
@@ -1929,7 +1911,6 @@
           }
       }
 
-      // Hissəciklərin (enerjinin) mütləq silinməsi və sıfırlanması
       for (let i = gameEngine.particles.length - 1; i >= 0; i--) {
           let p = gameEngine.particles[i];
           p.x += p.vx;
@@ -1937,7 +1918,7 @@
           p.vy += 0.2; 
           p.life -= 0.03;
           if (p.life <= 0) {
-              gameEngine.particles.splice(i, 1); // Tamamilə yoxa çıxma
+              gameEngine.particles.splice(i, 1); 
           }
       }
 
@@ -1956,7 +1937,6 @@
     function drawPhysicsObjects() {
       const ctx = gameEngine.ctx;
 
-      // Partlayış enerjilərinin renderi (Mənfiyə düşmənin qarşısı alınır)
       gameEngine.particles.forEach(p => {
           let alpha = Math.max(0, p.life);
           ctx.globalAlpha = alpha;
@@ -1965,7 +1945,6 @@
           ctx.arc(p.x, p.y, gameEngine.ballRadius * 0.4 * alpha, 0, Math.PI * 2);
           ctx.fill();
           
-          // Daxili parıltı effekti (Enerji nüvəsi)
           ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.7})`;
           ctx.beginPath();
           ctx.arc(p.x, p.y, gameEngine.ballRadius * 0.2 * alpha, 0, Math.PI * 2);
@@ -2088,7 +2067,7 @@
                 let cell = gameEngine.grid[m.r][m.c];
                 if (cell && cell.type === 'chained') {
                     cell.type = 'normal'; 
-                    createParticles(m.r, m.c, '#fcd34d'); // Qızılı hissəciklər
+                    createParticles(m.r, m.c, '#fcd34d'); 
                 } else {
                     popBalloon(m.r, m.c);
                 }
@@ -2190,7 +2169,6 @@
 
     function createParticles(r, c, color) {
         let pos = getGridPos(r, c);
-        // Daha təsirli partlayış üçün hissəciklərin sayı və sürəti artırıldı
         for(let i=0; i<15; i++) {
             gameEngine.particles.push({
                 x: pos.x, y: pos.y,
@@ -2373,25 +2351,10 @@
              updatePowerupUI();
              showToast("Powerup Received!", `You got 1 ${type.toUpperCase()}!`, "success");
           }).catch(e => {
-             if(userState.xp >= 500) {
-                userState.xp -= 500;
-                userState.totalXp -= 500;
-                gameState.powerups[type]++;
-                saveState(); updateUI(); updatePowerupUI();
-                showToast("Purchased", `Bought 1 ${type.toUpperCase()} for 500 XP.`, "info");
-             } else {
-                showToast("Error", "Not enough XP or Ads unavailable.", "error");
-             }
+             showToast("Error", "Ads unavailable at the moment.", "error");
           });
        } else {
-           if(userState.xp >= 500) {
-                userState.xp -= 500;
-                gameState.powerups[type]++;
-                saveState(); updateUI(); updatePowerupUI();
-                showToast("Purchased", `Bought 1 ${type.toUpperCase()} for 500 XP.`, "info");
-             } else {
-                showToast("Error", "Need 500 XP to buy. Ads offline.", "error");
-             }
+           showToast("Error", "Ad system is currently offline.", "error");
        }
     }
 

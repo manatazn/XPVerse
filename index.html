@@ -411,6 +411,11 @@
         <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">Daily Missions</h3>
         <div id="missions-container" class="space-y-3"></div>
       </div>
+
+      <div>
+        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3 mt-6">Special Offers</h3>
+        <div id="special-missions-container" class="space-y-3"></div>
+      </div>
     </div>
 
     <div id="view-boxes" class="view-section hidden fade-in space-y-5 pb-4">
@@ -614,7 +619,8 @@
       boxesOpened: 0,
       streak: 1,
       lastResetDay: "",
-      withdrawHistory: []
+      withdrawHistory: [],
+      mexcTask: { completed: false, claimed: false }
     };
 
     const defaultGameState = {
@@ -734,7 +740,11 @@
       const savedMissions = localStorage.getItem(`xpverse_missions_${userState.tgId}`);
       const savedGame = localStorage.getItem(`xpverse_game_${userState.tgId}`);
 
-      if (savedUser) userState = { ...userState, ...JSON.parse(savedUser) };
+      if (savedUser) {
+        let u = JSON.parse(savedUser);
+        userState = { ...defaultUserState, ...u };
+        if(!userState.mexcTask) userState.mexcTask = { completed: false, claimed: false };
+      }
       if (savedMissions) missionsState = { ...getDefaultMissions(), ...JSON.parse(savedMissions) };
       if (savedGame) {
           let g = JSON.parse(savedGame);
@@ -846,6 +856,7 @@
       
       updateProfileProgress();
       renderMissions();
+      renderSpecialMissions();
       renderStreakTracker();
       renderGameMap();
     }
@@ -932,6 +943,75 @@
           </div>
         `;
       });
+    }
+
+    function renderSpecialMissions() {
+      const container = document.getElementById('special-missions-container');
+      if(!container) return;
+      container.innerHTML = '';
+
+      const mTask = userState.mexcTask || { completed: false, claimed: false };
+      let btnHtml = '';
+      if (mTask.claimed) {
+          btnHtml = `<span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/30 flex items-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]"><i class="fa-solid fa-check-double"></i> Claimed</span>`;
+      } else if (mTask.completed) {
+          btnHtml = `<button onclick="claimMexcTask()" class="text-[10px] font-black bg-gradient-to-r from-emerald-500 to-teal-400 text-white px-4 py-1.5 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.4)] active:scale-95 transition-all uppercase tracking-wider whitespace-nowrap">Claim</button>`;
+      } else {
+          btnHtml = `<button onclick="startMexcTask()" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-indigo-500 text-white px-4 py-1.5 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.4)] active:scale-95 transition-all uppercase tracking-wider whitespace-nowrap">Start</button>`;
+      }
+
+      container.innerHTML += `
+        <div class="glass-card rounded-2xl p-4 flex flex-col gap-3 transition-transform hover:-translate-y-0.5 border border-blue-500/30 relative overflow-hidden">
+          <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue-600/10 rounded-full blur-2xl pointer-events-none"></div>
+          <div class="flex justify-between items-start gap-2 relative z-10">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl border bg-blue-900/40 border-blue-500/50 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+                 <i class="fa-solid fa-rocket text-crypto-glow text-xl drop-shadow-[0_0_5px_#00f0ff]"></i>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-sm font-black text-white tracking-wide">MEXC $50k Giveaway</span>
+                <span class="text-emerald-400 text-[10px] font-bold tracking-widest uppercase mt-0.5">+400 XP</span>
+              </div>
+            </div>
+            ${btnHtml}
+          </div>
+          <div class="text-[10px] text-slate-400 font-medium leading-relaxed bg-[#050511]/50 p-2.5 rounded-xl border border-slate-800 relative z-10">
+            Register a new MEXC account, join the campaign & deposit at least 100 USDT to win a $50,000 Futures Position!
+          </div>
+        </div>
+      `;
+    }
+
+    function startMexcTask() {
+       const link = "https://www.mexc.com/campaigns/Win-A-Tesla?utm_source=region_kol&utm_medium=az&utm_campaign=win-a-tesla&utm_language=az-AZ&inviteCode=mexc-2epzv";
+       if (tg && tg.openLink) {
+          tg.openLink(link);
+       } else {
+          window.open(link, '_blank');
+       }
+       
+       if(!userState.mexcTask) userState.mexcTask = { completed: false, claimed: false };
+       
+       setTimeout(() => {
+           userState.mexcTask.completed = true;
+           saveState();
+           updateUI();
+           showToast("Task Started", "Return after completing the requirements to claim your XP!", "info");
+       }, 2000);
+    }
+
+    function claimMexcTask() {
+       if (!userState.mexcTask || !userState.mexcTask.completed || userState.mexcTask.claimed) return;
+       
+       userState.mexcTask.claimed = true;
+       userState.xp += 400;
+       userState.totalXp += 400;
+       
+       checkLevelUp();
+       saveState();
+       updateUI();
+       
+       showToast("Task Completed!", "You earned 400 XP!", "success");
     }
 
     function claimMission(key) {

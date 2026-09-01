@@ -260,7 +260,7 @@
           <span id="user-name" class="font-bold text-white text-sm tracking-wide">Loading...</span>
           <div class="flex items-center gap-1">
             <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399] animate-pulse"></span>
-            <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Online</span>
+            <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider" data-i18n="online">Online</span>
           </div>
         </div>
       </div>
@@ -286,22 +286,22 @@
           <div class="w-14 h-14 rounded-full bg-blue-900/40 border border-blue-400/30 flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
              <i class="fa-solid fa-gem text-2xl text-crypto-glow drop-shadow-[0_0_10px_rgba(0,240,255,0.8)]"></i>
           </div>
-          <p class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-1 opacity-80">Balance</p>
+          <p class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-1 opacity-80" data-i18n="balance">Balance</p>
           <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-blue-400 tracking-tighter drop-shadow-2xl" id="main-xp-display">0 XP</h1>
         </div>
         <div class="w-full mt-6 grid grid-cols-2 gap-3">
           <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md">
             <div class="bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/20"><i class="fa-solid fa-clapperboard text-blue-400"></i></div>
             <div class="text-left">
-              <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Daily Limit</p>
+              <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider" data-i18n="dailyLimit">Daily Limit</p>
               <p class="text-sm font-black text-white"><span id="ads-watched" class="text-blue-400">0</span> / 30</p>
             </div>
           </div>
           <div class="bg-[#050511]/50 border border-slate-700/50 p-3 rounded-2xl flex items-center gap-3 backdrop-blur-md">
             <div class="bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/20"><i class="fa-solid fa-fire-flame-curved text-amber-400"></i></div>
             <div class="text-left">
-              <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider">Streak</p>
-              <p class="text-sm font-black text-white"><span id="streak-days" class="text-amber-400">1</span> Days</p>
+              <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider" data-i18n="streak">Streak</p>
+              <p class="text-sm font-black text-white"><span id="streak-days" class="text-amber-400">1</span> <span data-i18n="days">Days</span></p>
             </div>
           </div>
         </div>
@@ -310,12 +310,12 @@
       <button onclick="watchAd()" id="watch-ad-btn" class="w-full py-4 rounded-2xl text-white font-black text-sm tracking-[0.15em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(59,130,246,0.3)] btn-3d relative overflow-hidden group">
         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
         <i class="fa-solid fa-play bg-white/20 p-2 rounded-full text-[10px]"></i> 
-        <span>Watch Ad <span class="text-cyan-200">+10 XP</span></span>
+        <span><span data-i18n="watchAdBtn">Watch Ad</span> <span class="text-cyan-200">+10 XP</span></span>
       </button>
 
       <div class="glass-card rounded-xl p-3 flex justify-between items-center">
         <div class="flex items-center gap-2 text-slate-400 text-xs">
-          <i class="fa-solid fa-rotate text-blue-400"></i> Resets in:
+          <i class="fa-solid fa-rotate text-blue-400"></i> <span data-i18n="resetsIn">Resets in:</span>
         </div>
         <span class="text-white font-mono font-bold tracking-widest" id="reset-timer">--:--:--</span>
       </div>
@@ -324,12 +324,12 @@
     <div id="view-games" class="view-section hidden fade-in space-y-4 pb-4">
       <div id="game-menu-container">
         <div class="text-center pt-2 mb-4">
-          <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Games</h2>
-          <p class="text-[10px] text-blue-400 mt-1 uppercase tracking-widest font-bold bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20">XPVerse Balloon Blast</p>
+          <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg" data-i18n="games">Games</h2>
+          <p class="text-[10px] text-blue-400 mt-1 uppercase tracking-widest font-bold bg-blue-500/10 inline-block px-3 py-1 rounded-full border border-blue-500/20" data-i18n="gameTitle">XPVerse Balloon Blast</p>
         </div>
 
         <div class="glass-card rounded-3xl p-6 relative overflow-hidden flex flex-col items-center min-h-[400px]">
-          <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-6">Daily Levels Progress</p>
+          <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-6" data-i18n="dailyLevels">Daily Levels Progress</p>
           <div class="relative w-full max-w-[250px] mx-auto py-4" id="level-map"></div>
         </div>
       </div>
@@ -340,7 +340,7 @@
             <i class="fa-solid fa-arrow-left"></i>
           </button>
           <div class="text-center">
-            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Level <span id="ingame-level-display">1</span></p>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest"><span data-i18n="levelText">Level</span> <span id="ingame-level-display">1</span></p>
             <p class="text-lg font-black text-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]" id="ingame-score">0</p>
           </div>
           <div class="flex gap-1 bg-slate-900/50 p-2 rounded-xl border border-slate-700/50" id="ingame-stars">
@@ -366,7 +366,7 @@
             <div class="flex gap-2 mb-4" id="end-stars"></div>
             <p id="end-reward" class="text-lg font-bold text-emerald-400 mb-8 bg-emerald-500/10 px-6 py-3 rounded-xl border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">+0 XP</p>
             <div class="flex gap-4 w-full max-w-[250px]">
-              <button onclick="exitGame()" class="flex-1 py-3.5 rounded-xl bg-slate-800 text-white font-black uppercase text-xs tracking-wider shadow-lg active:scale-95 transition-all border border-slate-600">Back</button>
+              <button onclick="exitGame()" class="flex-1 py-3.5 rounded-xl bg-slate-800 text-white font-black uppercase text-xs tracking-wider shadow-lg active:scale-95 transition-all border border-slate-600" id="btn-back" data-i18n="backBtn">Back</button>
               <button id="end-next-btn" onclick="nextLevel()" class="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-black uppercase text-xs tracking-wider shadow-[0_0_20px_rgba(0,240,255,0.4)] active:scale-95 transition-all">Next</button>
             </div>
           </div>
@@ -378,7 +378,7 @@
               <i class="fa-solid fa-bomb text-xl drop-shadow-[0_0_5px_rgba(249,115,22,0.8)]"></i>
               <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] shadow-lg" id="count-bomb">1</span>
             </button>
-            <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Bomb</span>
+            <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider" data-i18n="bomb">Bomb</span>
           </div>
 
           <div class="flex flex-col items-center gap-1.5 group relative">
@@ -386,7 +386,7 @@
               <i class="fa-solid fa-rocket text-xl drop-shadow-[0_0_5px_rgba(239,68,68,0.8)]"></i>
               <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center border-2 border-[#050511] shadow-lg" id="count-rocket">1</span>
             </button>
-            <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Rocket</span>
+            <span class="text-[9px] uppercase font-bold text-slate-400 tracking-wider" data-i18n="rocket">Rocket</span>
           </div>
         </div>
 
@@ -395,33 +395,28 @@
 
     <div id="view-tasks" class="view-section hidden fade-in space-y-6 pb-4">
       <div class="text-center pt-2">
-        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Tasks</h2>
-        <p class="text-xs text-crypto-glow mt-1 uppercase tracking-widest font-bold">Complete to Earn XP</p>
+        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg" data-i18n="tasks">Tasks</h2>
+        <p class="text-xs text-crypto-glow mt-1 uppercase tracking-widest font-bold" data-i18n="completeToEarn">Complete to Earn XP</p>
       </div>
       
       <div class="glass-card rounded-3xl p-5 relative overflow-hidden border-t-2 border-t-blue-500/30">
         <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue-600/20 rounded-full blur-2xl"></div>
         <h3 class="text-xs font-black text-white uppercase tracking-widest mb-5 flex items-center gap-2">
-          <i class="fa-solid fa-calendar-check text-blue-400 text-lg"></i> 7-Day Streak
+          <i class="fa-solid fa-calendar-check text-blue-400 text-lg"></i> <span data-i18n="sevenDayStreak">7-Day Streak</span>
         </h3>
         <div class="relative flex justify-between items-center" id="streak-tracker-container"></div>
       </div>
 
       <div>
-        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">Daily Missions</h3>
+        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3" data-i18n="dailyMissions">Daily Missions</h3>
         <div id="missions-container" class="space-y-3"></div>
-      </div>
-
-      <div>
-        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3 mt-6">Special Offers</h3>
-        <div id="special-missions-container" class="space-y-3"></div>
       </div>
     </div>
 
     <div id="view-boxes" class="view-section hidden fade-in space-y-5 pb-4">
       <div class="text-center pt-2 mb-6">
-        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg">Boxes</h2>
-        <p class="text-xs text-amber-400 mt-1 uppercase tracking-widest font-bold">Try Your Luck, Win Dollars</p>
+        <h2 class="text-3xl font-black text-white tracking-tight drop-shadow-lg" data-i18n="boxes">Boxes</h2>
+        <p class="text-xs text-amber-400 mt-1 uppercase tracking-widest font-bold" data-i18n="tryLuck">Try Your Luck, Win Dollars</p>
       </div>
       
       <div class="box-bronze glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
@@ -431,14 +426,14 @@
             <i class="fa-solid fa-box text-2xl text-crypto-bronze"></i>
           </div>
           <div>
-            <h3 class="text-lg font-black text-white tracking-wide">Bronze Box</h3>
+            <h3 class="text-lg font-black text-white tracking-wide" data-i18n="bronzeBox">Bronze Box</h3>
             <div class="flex flex-col mt-0.5">
               <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 10,000 XP</span>
-              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $1.00</span>
+              <span class="text-[11px] text-emerald-400 font-bold mt-0.5"><span data-i18n="maxAmount">Maximum:</span> $1.00</span>
             </div>
           </div>
         </div>
-        <button onclick="openBox('bronze')" class="relative z-10 bg-gradient-to-b from-orange-600 to-orange-800 text-white shadow-[0_4px_15px_rgba(205,127,50,0.4)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
+        <button onclick="openBox('bronze')" class="relative z-10 bg-gradient-to-b from-orange-600 to-orange-800 text-white shadow-[0_4px_15px_rgba(205,127,50,0.4)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider" data-i18n="openBox">Open</button>
       </div>
 
       <div class="box-silver glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02]">
@@ -448,14 +443,14 @@
             <i class="fa-solid fa-box-open text-2xl text-crypto-silver"></i>
           </div>
           <div>
-            <h3 class="text-lg font-black text-white tracking-wide">Silver Box</h3>
+            <h3 class="text-lg font-black text-white tracking-wide" data-i18n="silverBox">Silver Box</h3>
             <div class="flex flex-col mt-0.5">
               <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 50,000 XP</span>
-              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $7.00</span>
+              <span class="text-[11px] text-emerald-400 font-bold mt-0.5"><span data-i18n="maxAmount">Maximum:</span> $7.00</span>
             </div>
           </div>
         </div>
-        <button onclick="openBox('silver')" class="relative z-10 bg-gradient-to-b from-slate-400 to-slate-600 text-crypto-dark shadow-[0_4px_15px_rgba(226,232,240,0.3)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
+        <button onclick="openBox('silver')" class="relative z-10 bg-gradient-to-b from-slate-400 to-slate-600 text-crypto-dark shadow-[0_4px_15px_rgba(226,232,240,0.3)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider" data-i18n="openBox">Open</button>
       </div>
 
       <div class="box-gold glass-card rounded-[1.5rem] p-5 relative overflow-hidden flex justify-between items-center border border-crypto-gold shadow-[0_0_20px_rgba(255,184,0,0.15)] transition-transform hover:scale-[1.02]">
@@ -465,14 +460,14 @@
             <i class="fa-solid fa-gem text-2xl text-crypto-gold drop-shadow-[0_0_10px_#ffb800]"></i>
           </div>
           <div>
-            <h3 class="text-lg font-black text-crypto-gold tracking-wide drop-shadow-[0_0_5px_rgba(255,184,0,0.5)]">Gold Box</h3>
+            <h3 class="text-lg font-black text-crypto-gold tracking-wide drop-shadow-[0_0_5px_rgba(255,184,0,0.5)]" data-i18n="goldBox">Gold Box</h3>
             <div class="flex flex-col mt-0.5">
               <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase"><i class="fa-solid fa-bolt text-crypto-glow mr-1"></i> 100,000 XP</span>
-              <span class="text-[11px] text-emerald-400 font-bold mt-0.5">Maximum: $15.00</span>
+              <span class="text-[11px] text-emerald-400 font-bold mt-0.5"><span data-i18n="maxAmount">Maximum:</span> $15.00</span>
             </div>
           </div>
         </div>
-        <button onclick="openBox('gold')" class="relative z-10 bg-gradient-to-b from-yellow-400 to-amber-600 text-crypto-dark shadow-[0_4px_20px_rgba(255,184,0,0.6)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider">Open</button>
+        <button onclick="openBox('gold')" class="relative z-10 bg-gradient-to-b from-yellow-400 to-amber-600 text-crypto-dark shadow-[0_4px_20px_rgba(255,184,0,0.6)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider" data-i18n="openBox">Open</button>
       </div>
     </div>
 
@@ -481,26 +476,26 @@
         <div class="w-14 h-14 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center mb-3 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
           <i class="fa-solid fa-wallet text-xl text-emerald-400"></i>
         </div>
-        <p class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-1 opacity-80">Withdrawal Balance</p>
+        <p class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-1 opacity-80" data-i18n="withdrawBalance">Withdrawal Balance</p>
         <h1 class="text-5xl font-black text-white tracking-tighter mb-3">$<span id="withdraw-balance-display">0.00</span></h1>
         <div class="inline-block bg-[#050511]/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-700/50">
-          <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> Minimum: $5.00</p>
+          <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> <span data-i18n="minimum">Minimum:</span> $5.00</p>
         </div>
       </div>
 
       <div class="glass-card rounded-[1.5rem] p-5 space-y-4 border-slate-800">
         <div>
-          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">TON Wallet Address</label>
+          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1" data-i18n="walletAddr">TON Wallet Address</label>
           <div class="relative group">
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <img src="https://cryptologos.cc/logos/toncoin-ton-logo.png" class="w-5 h-5 opacity-70 group-focus-within:opacity-100 transition-opacity" alt="TON">
             </div>
-            <input type="text" id="wallet-address" placeholder="UQ..." class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-sm font-medium text-white focus:outline-none focus:border-blue-500 transition-colors placeholder-slate-600 shadow-inner">
+            <input type="text" id="wallet-address" data-i18n-placeholder="walletPlaceholder" placeholder="UQ..." class="w-full bg-[#050511]/50 border-2 border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-sm font-medium text-white focus:outline-none focus:border-blue-500 transition-colors placeholder-slate-600 shadow-inner">
           </div>
         </div>
         
         <div>
-          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1">Amount (USD)</label>
+          <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2 ml-1" data-i18n="amountUsd">Amount (USD)</label>
           <div class="relative group">
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <i class="fa-solid fa-dollar-sign text-slate-500 group-focus-within:text-emerald-400 transition-colors text-lg"></i>
@@ -510,12 +505,12 @@
         </div>
 
         <button onclick="requestWithdrawal()" id="withdraw-btn" class="w-full py-3.5 mt-2 bg-gradient-to-r from-emerald-600 to-teal-500 hover:brightness-110 active:scale-95 transition-all text-white font-black rounded-xl text-sm uppercase tracking-[0.15em] flex items-center justify-center gap-2 shadow-[0_10px_20px_rgba(16,185,129,0.3)]">
-          <i class="fa-solid fa-money-bill-transfer"></i> Request Withdrawal
+          <i class="fa-solid fa-money-bill-transfer"></i> <span data-i18n="reqWithdraw">Request Withdrawal</span>
         </button>
       </div>
 
       <div>
-        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3">History</h3>
+        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-4 mb-3" data-i18n="history">History</h3>
         <div id="withdraw-history-container" class="space-y-3"></div>
       </div>
     </div>
@@ -538,7 +533,7 @@
           
           <div class="mt-6">
             <div class="flex justify-between items-end mb-1.5 px-1">
-               <span class="text-[10px] font-black text-crypto-glow uppercase tracking-wider">Level Progress</span>
+               <span class="text-[10px] font-black text-crypto-glow uppercase tracking-wider" data-i18n="levelProgress">Level Progress</span>
                <span class="text-[10px] font-bold text-slate-400" id="profile-current-xp-text">0 XP</span>
             </div>
             <div class="w-full bg-[#050511] rounded-full h-3 border border-slate-700/50 overflow-hidden relative shadow-inner p-0.5">
@@ -547,7 +542,7 @@
                </div>
             </div>
             <div class="text-right mt-1 px-1">
-              <span class="text-[9px] font-bold text-slate-500 uppercase">Target: <span id="profile-next-xp-text" class="text-blue-400">250 XP</span></span>
+              <span class="text-[9px] font-bold text-slate-500 uppercase"><span data-i18n="target">Target:</span> <span id="profile-next-xp-text" class="text-blue-400">250 XP</span></span>
             </div>
           </div>
         </div>
@@ -556,15 +551,26 @@
       <div class="grid grid-cols-2 gap-3">
         <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-blue-500/30">
           <div class="w-10 h-10 mx-auto bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center mb-2 text-lg shadow-[0_0_15px_rgba(59,130,246,0.2)inset]"><i class="fa-solid fa-chart-line"></i></div>
-          <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Total Earned</p>
+          <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1" data-i18n="totalEarned">Total Earned</p>
           <p id="profile-total-xp" class="text-xl font-black text-white">0</p>
         </div>
         <div class="glass-card p-5 rounded-2xl text-center border-t-2 border-t-amber-500/30">
           <div class="w-10 h-10 mx-auto bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center mb-2 text-lg shadow-[0_0_15px_rgba(245,158,11,0.2)inset]"><i class="fa-solid fa-box-open"></i></div>
-          <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1">Boxes Opened</p>
+          <p class="text-[9px] text-slate-400 uppercase font-black tracking-[0.15em] mb-1" data-i18n="boxesOpened">Boxes Opened</p>
           <p id="profile-boxes" class="text-xl font-black text-white">0</p>
         </div>
       </div>
+
+      <div class="glass-card rounded-[1.5rem] p-4 border border-slate-700/50 shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
+        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-3 text-center flex items-center justify-center gap-2">
+            <i class="fa-solid fa-earth-americas text-crypto-glow"></i> <span data-i18n="language">Language / Dil</span>
+        </h3>
+        <div class="flex bg-[#050511] rounded-xl p-1 border border-slate-800 relative">
+          <button onclick="setLang('az')" id="lang-az" class="flex-1 py-2.5 rounded-lg text-sm font-black transition-all duration-300 text-slate-500 hover:text-white">AZ</button>
+          <button onclick="setLang('en')" id="lang-en" class="flex-1 py-2.5 rounded-lg text-sm font-black transition-all duration-300 bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-[0_0_15px_rgba(0,240,255,0.3)]">EN</button>
+        </div>
+      </div>
+
     </div>
 
   </main>
@@ -573,27 +579,27 @@
     <div class="flex justify-between items-center px-2 py-2.5 relative">
       <button onclick="switchTab('home')" class="nav-btn nav-active text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="home">
         <i class="fa-solid fa-house text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[7.5px] font-black uppercase tracking-widest">Home</span>
+        <span class="text-[7.5px] font-black uppercase tracking-widest" data-i18n="navHome">Home</span>
       </button>
       <button onclick="switchTab('games')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="games">
         <i class="fa-solid fa-gamepad text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[7.5px] font-black uppercase tracking-widest">Games</span>
+        <span class="text-[7.5px] font-black uppercase tracking-widest" data-i18n="navGames">Games</span>
       </button>
       <button onclick="switchTab('tasks')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="tasks">
         <i class="fa-solid fa-list-check text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[7.5px] font-black uppercase tracking-widest">Tasks</span>
+        <span class="text-[7.5px] font-black uppercase tracking-widest" data-i18n="navTasks">Tasks</span>
       </button>
       <button onclick="switchTab('boxes')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="boxes">
         <i class="fa-solid fa-box-open text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[7.5px] font-black uppercase tracking-widest">Box</span>
+        <span class="text-[7.5px] font-black uppercase tracking-widest" data-i18n="navBox">Box</span>
       </button>
       <button onclick="switchTab('withdraw')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="withdraw">
         <i class="fa-solid fa-wallet text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[7.5px] font-black uppercase tracking-widest">Withdraw</span>
+        <span class="text-[7.5px] font-black uppercase tracking-widest" data-i18n="navWithdraw">Withdraw</span>
       </button>
       <button onclick="switchTab('profile')" class="nav-btn text-slate-500 flex flex-col items-center gap-1 flex-1 transition-all duration-300 relative group" data-target="profile">
         <i class="fa-solid fa-user-astronaut text-lg transition-transform group-active:scale-90"></i>
-        <span class="text-[7.5px] font-black uppercase tracking-widest">Profile</span>
+        <span class="text-[7.5px] font-black uppercase tracking-widest" data-i18n="navProfile">Profile</span>
       </button>
     </div>
   </nav>
@@ -605,6 +611,130 @@
 
     tg.setHeaderColor('#0a0b1a');
     tg.setBackgroundColor('#050511');
+
+    // Mətnlərin tərcümə lüğəti / Translation Dictionary
+    const translations = {
+      en: {
+        online: "Online", balance: "Balance", dailyLimit: "Daily Limit", streak: "Streak",
+        days: "Days", watchAdBtn: "Watch Ad", resetsIn: "Resets in:", games: "Games", gameTitle: "XPVerse Balloon Blast",
+        dailyLevels: "Daily Levels Progress", levelText: "Level", bomb: "Bomb", rocket: "Rocket", backBtn: "Back",
+        tasks: "Tasks", completeToEarn: "Complete to Earn XP", sevenDayStreak: "7-Day Streak",
+        dailyMissions: "Daily Missions", dayText: "DAY", boxes: "Boxes", tryLuck: "Try Your Luck, Win Dollars",
+        bronzeBox: "Bronze Box", silverBox: "Silver Box", goldBox: "Gold Box", maxAmount: "Maximum:", openBox: "Open",
+        withdrawBalance: "Withdrawal Balance", minimum: "Minimum:", walletAddr: "TON Wallet Address",
+        walletPlaceholder: "UQ...", amountUsd: "Amount (USD)", reqWithdraw: "Request Withdrawal",
+        history: "History", historyEmpty: "History is Empty", pendingText: "Pending",
+        levelProgress: "Level Progress", target: "Target:", totalEarned: "Total Earned", boxesOpened: "Boxes Opened",
+        language: "Language / Dil", navHome: "Home", navGames: "Games", navTasks: "Tasks", navBox: "Box",
+        navWithdraw: "Withdraw", navProfile: "Profile", nextText: "NEXT",
+        toastNotification: "Notification",
+        msgLevelUpTitle: "Level Up!", msgLevelUpDesc: "Congratulations! New Level: {level}!",
+        msgTaskCompTitle: "Task Completed!", msgTaskCompDesc: "You earned {reward} XP!",
+        msgLimitTitle: "Limit", msgLimitDesc: "You have reached the daily limit of 30 ads. Come back tomorrow!",
+        msgAdLoading: "Loading Ad...", msgAdRewardTitle: "Reward Granted!", msgAdRewardDesc: "You successfully watched the ad and earned +10 XP.",
+        msgErrorTitle: "Error", msgErrorAdSys: "The ad system is currently not working.", msgErrorAdUnavail: "Ads unavailable at the moment.", msgErrorAdOff: "Ad system is currently offline.",
+        msgNoXpTitle: "Not enough XP", msgNoXpDesc: "You need {cost} XP to open this box.",
+        msgJackpotTitle: "HUGE JACKPOT! 💸", msgJackpotDesc: "Incredible! You won ${reward}!",
+        msgBoxOpenTitle: "Box Opened!", msgBoxOpenDesc: "Congratulations! You won ${reward} from the box!",
+        msgInvAddrTitle: "Invalid Address", msgInvAddrDesc: "Please enter a valid TON wallet address.",
+        msgInvAmtTitle: "Invalid Amount", msgInvAmtDesc: "The minimum withdrawal amount is $5.00.",
+        msgNoBalTitle: "Insufficient balance", msgNoBalDesc: "You do not have enough funds to withdraw this amount.",
+        msgWithReqTitle: "Withdrawal Requested", msgWithReqDesc: "Your request for ${amount} has been submitted.",
+        msgNewDayTitle: "New Day Started!", msgNewDayDesc: "Daily limits and tasks have been reset.",
+        msgLockedTitle: "Locked", msgLockedDesc: "Complete previous levels to unlock!",
+        endLevelClear: "Level Clear!", endLevelFail: "Level Failed", endNextLevel: "Next Level", endFinish: "Finish", endRetry: "Retry",
+        msgLimReaTitle: "Limit Reached", msgLimReaDesc: "Max 5 powerup ads per day.",
+        msgPowRecTitle: "Powerup Received!", msgPowRecDesc: "You got 1 {type}!",
+        missionDailyLogin: "Daily Login", missionWatch5: "Watch 5 Ads", missionWatch30: "Watch 30 Ads", missionAll: "All Tasks",
+        btnClaimed: "Claimed", btnClaim: "Claim", replayText: "+0 XP (Replay)", maxLvlText: "MAX LVL"
+      },
+      az: {
+        online: "Onlayn", balance: "Balans", dailyLimit: "Günlük Limit", streak: "Seriya",
+        days: "Gün", watchAdBtn: "Reklam İzlə", resetsIn: "Yenilənir:", games: "Oyunlar", gameTitle: "XPVerse Şar Partlatma",
+        dailyLevels: "Günlük Səviyyə İrəliləyişi", levelText: "Səviyyə", bomb: "Bomba", rocket: "Raket", backBtn: "Geri",
+        tasks: "Tapşırıqlar", completeToEarn: "XP Qazanmaq üçün Tamamla", sevenDayStreak: "7 Günlük Seriya",
+        dailyMissions: "Günlük Tapşırıqlar", dayText: "GÜN", boxes: "Qutular", tryLuck: "Şansını Sına, Dollar Qazan",
+        bronzeBox: "Bürünc Qutu", silverBox: "Gümüş Qutu", goldBox: "Qızıl Qutu", maxAmount: "Maksimum:", openBox: "Aç",
+        withdrawBalance: "Çıxarış Balansı", minimum: "Minimum:", walletAddr: "TON Cüzdan Ünvanı",
+        walletPlaceholder: "UQ...", amountUsd: "Məbləğ (USD)", reqWithdraw: "Çıxarış Tələb Et",
+        history: "Tarixçə", historyEmpty: "Tarixçə Boşdur", pendingText: "Gözləyir",
+        levelProgress: "Səviyyə İrəliləyişi", target: "Hədəf:", totalEarned: "Cəmi Qazanılan", boxesOpened: "Açılan Qutular",
+        language: "Language / Dil", navHome: "Əsas", navGames: "Oyunlar", navTasks: "Tapşırıqlar", navBox: "Qutu",
+        navWithdraw: "Çıxarış", navProfile: "Profil", nextText: "NÖVBƏTİ",
+        toastNotification: "Bildiriş",
+        msgLevelUpTitle: "Yeni Səviyyə!", msgLevelUpDesc: "Təbrik edirik! Yeni Səviyyə: {level}!",
+        msgTaskCompTitle: "Tapşırıq Tamamlandı!", msgTaskCompDesc: "Siz {reward} XP qazandınız!",
+        msgLimitTitle: "Limit", msgLimitDesc: "Gündəlik 30 reklam limitinə çatdınız. Sabah yenidən cəhd edin!",
+        msgAdLoading: "Reklam Yüklənir...", msgAdRewardTitle: "Mükafat Verildi!", msgAdRewardDesc: "Reklamı uğurla izlədiniz və +10 XP qazandınız.",
+        msgErrorTitle: "Xəta", msgErrorAdSys: "Reklam sistemi hazırda işləmir.", msgErrorAdUnavail: "Hazırda reklam mövcud deyil.", msgErrorAdOff: "Reklam sistemi hazırda oflayndır.",
+        msgNoXpTitle: "Kifayət qədər XP yoxdur", msgNoXpDesc: "Bu qutunu açmaq üçün {cost} XP lazımdır.",
+        msgJackpotTitle: "BÖYÜK CEKPOT! 💸", msgJackpotDesc: "İnanılmaz! Siz ${reward} qazandınız!",
+        msgBoxOpenTitle: "Qutu Açıldı!", msgBoxOpenDesc: "Təbriklər! Qutudan ${reward} qazandınız!",
+        msgInvAddrTitle: "Yanlış Ünvan", msgInvAddrDesc: "Zəhmət olmasa düzgün TON cüzdan ünvanı daxil edin.",
+        msgInvAmtTitle: "Yanlış Məbləğ", msgInvAmtDesc: "Minimum çıxarış məbləği $5.00 təşkil edir.",
+        msgNoBalTitle: "Kifayət qədər balans yoxdur", msgNoBalDesc: "Bu məbləği çıxarmaq üçün kifayət qədər vəsaitiniz yoxdur.",
+        msgWithReqTitle: "Çıxarış Tələb Edildi", msgWithReqDesc: "${amount} üçün tələbiniz qəbul edildi.",
+        msgNewDayTitle: "Yeni Gün Başladı!", msgNewDayDesc: "Günlük limitlər və tapşırıqlar sıfırlandı.",
+        msgLockedTitle: "Bağlıdır", msgLockedDesc: "Kilidi açmaq üçün əvvəlki səviyyələri tamamlayın!",
+        endLevelClear: "Səviyyə Keçildi!", endLevelFail: "Səviyyə Uğursuz", endNextLevel: "Növbəti Səviyyə", endFinish: "Bitir", endRetry: "Yenidən Sına",
+        msgLimReaTitle: "Limitə Çatıldı", msgLimReaDesc: "Gündəlik maksimum 5 gücləndirici reklamı.",
+        msgPowRecTitle: "Gücləndirici Alındı!", msgPowRecDesc: "1 {type} əldə etdiniz!",
+        missionDailyLogin: "Günlük Giriş", missionWatch5: "5 Reklam İzlə", missionWatch30: "30 Reklam İzlə", missionAll: "Bütün Tapşırıqlar",
+        btnClaimed: "Alındı", btnClaim: "Al", replayText: "+0 XP (Təkrar)", maxLvlText: "MAKS SƏV"
+      }
+    };
+
+    let currentLang = localStorage.getItem('xpverse_lang') || 'en';
+
+    function t(key, params = {}) {
+        let text = translations[currentLang][key] || key;
+        for (let k in params) {
+            text = text.replace(`{${k}}`, params[k]);
+        }
+        return text;
+    }
+
+    function applyTranslations() {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[currentLang][key]) {
+                el.innerText = translations[currentLang][key];
+            }
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (translations[currentLang][key]) {
+                el.placeholder = translations[currentLang][key];
+            }
+        });
+        document.getElementById('toast-title').innerText = t('toastNotification');
+    }
+
+    function setLang(lang) {
+        currentLang = lang;
+        localStorage.setItem('xpverse_lang', lang);
+
+        const activeClasses = ['bg-gradient-to-r', 'from-blue-600', 'to-cyan-500', 'text-white', 'shadow-[0_0_15px_rgba(0,240,255,0.3)]'];
+        const inactiveClasses = ['text-slate-500', 'hover:text-white'];
+
+        const azBtn = document.getElementById('lang-az');
+        const enBtn = document.getElementById('lang-en');
+
+        if(lang === 'az') {
+            azBtn.classList.remove(...inactiveClasses);
+            azBtn.classList.add(...activeClasses);
+            enBtn.classList.remove(...activeClasses);
+            enBtn.classList.add(...inactiveClasses);
+        } else {
+            enBtn.classList.remove(...inactiveClasses);
+            enBtn.classList.add(...activeClasses);
+            azBtn.classList.remove(...activeClasses);
+            azBtn.classList.add(...inactiveClasses);
+        }
+
+        applyTranslations();
+        updateUI(); 
+    }
 
     const defaultUserState = {
       tgId: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : 123456789,
@@ -619,8 +749,7 @@
       boxesOpened: 0,
       streak: 1,
       lastResetDay: "",
-      withdrawHistory: [],
-      mexcTask: { completed: false, claimed: false }
+      withdrawHistory: []
     };
 
     const defaultGameState = {
@@ -740,11 +869,7 @@
       const savedMissions = localStorage.getItem(`xpverse_missions_${userState.tgId}`);
       const savedGame = localStorage.getItem(`xpverse_game_${userState.tgId}`);
 
-      if (savedUser) {
-        let u = JSON.parse(savedUser);
-        userState = { ...defaultUserState, ...u };
-        if(!userState.mexcTask) userState.mexcTask = { completed: false, claimed: false };
-      }
+      if (savedUser) userState = { ...userState, ...JSON.parse(savedUser) };
       if (savedMissions) missionsState = { ...getDefaultMissions(), ...JSON.parse(savedMissions) };
       if (savedGame) {
           let g = JSON.parse(savedGame);
@@ -805,7 +930,7 @@
       
       if (newLevel > userState.level) {
         userState.level = newLevel;
-        showToast("Level Up!", `Congratulations! New Level: ${newLevel}!`, "success");
+        showToast(t('msgLevelUpTitle'), t('msgLevelUpDesc', {level: newLevel}), "success");
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       }
     }
@@ -828,7 +953,7 @@
 
       document.getElementById('profile-xp-progress').style.width = `${progress}%`;
       document.getElementById('profile-current-xp-text').innerText = `${xp.toLocaleString()} XP`;
-      document.getElementById('profile-next-xp-text').innerText = (nextLvlXp === 20000 && xp >= 20000) ? 'MAX LVL' : `${nextLvlXp.toLocaleString()} XP`;
+      document.getElementById('profile-next-xp-text').innerText = (nextLvlXp === 20000 && xp >= 20000) ? t('maxLvlText') : `${nextLvlXp.toLocaleString()} XP`;
       document.getElementById('profile-badge-level').innerText = userState.level;
     }
 
@@ -856,7 +981,6 @@
       
       updateProfileProgress();
       renderMissions();
-      renderSpecialMissions();
       renderStreakTracker();
       renderGameMap();
     }
@@ -887,7 +1011,7 @@
             <div class="w-9 h-9 rounded-xl border-2 flex items-center justify-center transition-all duration-300 ${styles} z-10 relative bg-[#0a0b1a]">
               ${icon}
             </div>
-            <span class="text-[8px] font-black tracking-widest ${isToday ? 'text-crypto-glow drop-shadow-[0_0_5px_#00f0ff]' : 'text-slate-500'}">DAY ${i}</span>
+            <span class="text-[8px] font-black tracking-widest ${isToday ? 'text-crypto-glow drop-shadow-[0_0_5px_#00f0ff]' : 'text-slate-500'}">${t('dayText')} ${i}</span>
             ${i < 7 ? `<div class="absolute top-4 left-[50%] w-full h-1 -z-0 ${lineStyle} rounded-full"></div>` : ''}
           </div>
         `;
@@ -899,10 +1023,10 @@
       container.innerHTML = '';
       
       const missionsList = [
-        { key: 'dailyReward', label: `Daily Login`, icon: 'fa-gift', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
-        { key: 'watch5', label: 'Watch 5 Ads', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
-        { key: 'watch30', label: 'Watch 30 Ads', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
-        { key: 'all', label: 'All Tasks', icon: 'fa-crown', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' }
+        { key: 'dailyReward', labelKey: `missionDailyLogin`, icon: 'fa-gift', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
+        { key: 'watch5', labelKey: 'missionWatch5', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
+        { key: 'watch30', labelKey: 'missionWatch30', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
+        { key: 'all', labelKey: 'missionAll', icon: 'fa-crown', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' }
       ];
 
       missionsList.forEach(m => {
@@ -921,9 +1045,9 @@
 
         let btnHtml = '';
         if (mission.claimed) {
-            btnHtml = `<span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/30 flex items-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]"><i class="fa-solid fa-check-double"></i> Claimed</span>`;
+            btnHtml = `<span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/30 flex items-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]"><i class="fa-solid fa-check-double"></i> ${t('btnClaimed')}</span>`;
         } else if (isComplete) {
-            btnHtml = `<button onclick="claimMission('${m.key}')" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-1.5 rounded-xl shadow-[0_0_15px_rgba(0,240,255,0.4)] active:scale-95 transition-all uppercase tracking-wider">Claim</button>`;
+            btnHtml = `<button onclick="claimMission('${m.key}')" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-1.5 rounded-xl shadow-[0_0_15px_rgba(0,240,255,0.4)] active:scale-95 transition-all uppercase tracking-wider">${t('btnClaim')}</button>`;
         } else {
             btnHtml = `<span class="text-[10px] font-black bg-slate-800/50 text-slate-200 px-3 py-1.5 rounded-xl border border-slate-600 shadow-inner">+${mission.reward} XP</span>`;
         }
@@ -935,7 +1059,7 @@
                  <i class="fa-solid ${m.icon} ${m.color} text-lg"></i>
               </div>
               <div class="flex flex-col">
-                <span class="text-xs font-black text-white tracking-wide">${m.label}</span>
+                <span class="text-xs font-black text-white tracking-wide">${t(m.labelKey)}</span>
                 <span class="text-crypto-glow text-[10px] font-bold tracking-widest uppercase opacity-80 mt-0.5">${progressText}</span>
               </div>
             </div>
@@ -943,75 +1067,6 @@
           </div>
         `;
       });
-    }
-
-    function renderSpecialMissions() {
-      const container = document.getElementById('special-missions-container');
-      if(!container) return;
-      container.innerHTML = '';
-
-      const mTask = userState.mexcTask || { completed: false, claimed: false };
-      let btnHtml = '';
-      if (mTask.claimed) {
-          btnHtml = `<span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/30 flex items-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]"><i class="fa-solid fa-check-double"></i> Claimed</span>`;
-      } else if (mTask.completed) {
-          btnHtml = `<button onclick="claimMexcTask()" class="text-[10px] font-black bg-gradient-to-r from-emerald-500 to-teal-400 text-white px-4 py-1.5 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.4)] active:scale-95 transition-all uppercase tracking-wider whitespace-nowrap">Claim</button>`;
-      } else {
-          btnHtml = `<button onclick="startMexcTask()" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-indigo-500 text-white px-4 py-1.5 rounded-xl shadow-[0_0_15px_rgba(59,130,246,0.4)] active:scale-95 transition-all uppercase tracking-wider whitespace-nowrap">Start</button>`;
-      }
-
-      container.innerHTML += `
-        <div class="glass-card rounded-2xl p-4 flex flex-col gap-3 transition-transform hover:-translate-y-0.5 border border-blue-500/30 relative overflow-hidden">
-          <div class="absolute -right-10 -top-10 w-32 h-32 bg-blue-600/10 rounded-full blur-2xl pointer-events-none"></div>
-          <div class="flex justify-between items-start gap-2 relative z-10">
-            <div class="flex items-center gap-3">
-              <div class="w-12 h-12 rounded-xl border bg-blue-900/40 border-blue-500/50 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
-                 <i class="fa-solid fa-rocket text-crypto-glow text-xl drop-shadow-[0_0_5px_#00f0ff]"></i>
-              </div>
-              <div class="flex flex-col">
-                <span class="text-sm font-black text-white tracking-wide">MEXC $50k Giveaway</span>
-                <span class="text-emerald-400 text-[10px] font-bold tracking-widest uppercase mt-0.5">+400 XP</span>
-              </div>
-            </div>
-            ${btnHtml}
-          </div>
-          <div class="text-[10px] text-slate-400 font-medium leading-relaxed bg-[#050511]/50 p-2.5 rounded-xl border border-slate-800 relative z-10">
-            Register a new MEXC account, join the campaign & deposit at least 100 USDT to win a $50,000 Futures Position!
-          </div>
-        </div>
-      `;
-    }
-
-    function startMexcTask() {
-       const link = "https://www.mexc.com/campaigns/Win-A-Tesla?utm_source=region_kol&utm_medium=az&utm_campaign=win-a-tesla&utm_language=az-AZ&inviteCode=mexc-2epzv";
-       if (tg && tg.openLink) {
-          tg.openLink(link);
-       } else {
-          window.open(link, '_blank');
-       }
-       
-       if(!userState.mexcTask) userState.mexcTask = { completed: false, claimed: false };
-       
-       setTimeout(() => {
-           userState.mexcTask.completed = true;
-           saveState();
-           updateUI();
-           showToast("Task Started", "Return after completing the requirements to claim your XP!", "info");
-       }, 2000);
-    }
-
-    function claimMexcTask() {
-       if (!userState.mexcTask || !userState.mexcTask.completed || userState.mexcTask.claimed) return;
-       
-       userState.mexcTask.claimed = true;
-       userState.xp += 400;
-       userState.totalXp += 400;
-       
-       checkLevelUp();
-       saveState();
-       updateUI();
-       
-       showToast("Task Completed!", "You earned 400 XP!", "success");
     }
 
     function claimMission(key) {
@@ -1026,18 +1081,18 @@
         saveState();
         updateUI();
         
-        showToast("Task Completed!", `You earned ${mission.reward} XP!`, "success");
+        showToast(t('msgTaskCompTitle'), t('msgTaskCompDesc', {reward: mission.reward}), "success");
     }
 
     function watchAd() {
       if (userState.adsWatchedToday >= 30) {
-        showToast("Limit", "You have reached the daily limit of 30 ads. Come back tomorrow!", "error");
+        showToast(t('msgLimitTitle'), t('msgLimitDesc'), "error");
         return;
       }
 
       const btn = document.getElementById('watch-ad-btn');
       const originalHTML = btn.innerHTML;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>Loading Ad...</span>';
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>${t('msgAdLoading')}</span>`;
       btn.classList.add('opacity-80', 'pointer-events-none');
 
       if (window.Adsgram) {
@@ -1052,7 +1107,7 @@
           saveState();
           updateUI();
           
-          showToast("Reward Granted!", "You successfully watched the ad and earned +10 XP.", "success");
+          showToast(t('msgAdRewardTitle'), t('msgAdRewardDesc'), "success");
           
           btn.innerHTML = originalHTML;
           btn.classList.remove('opacity-80', 'pointer-events-none');
@@ -1061,7 +1116,7 @@
           btn.classList.remove('opacity-80', 'pointer-events-none');
         });
       } else {
-        showToast("Error", "The ad system is currently not working.", "error");
+        showToast(t('msgErrorTitle'), t('msgErrorAdSys'), "error");
         btn.innerHTML = originalHTML;
         btn.classList.remove('opacity-80', 'pointer-events-none');
       }
@@ -1072,7 +1127,7 @@
     function openBox(type) {
       const cost = boxCosts[type];
       if (userState.xp < cost) {
-        showToast("Not enough XP", `You need ${cost.toLocaleString()} XP to open this box.`, "error");
+        showToast(t('msgNoXpTitle'), t('msgNoXpDesc', {cost: cost.toLocaleString()}), "error");
         return;
       }
 
@@ -1092,9 +1147,9 @@
       updateUI();
 
       if (isJackpot) {
-         showToast("HUGE JACKPOT! 💸", `Incredible! You won $${reward.toFixed(2)}!`, "jackpot");
+         showToast(t('msgJackpotTitle'), t('msgJackpotDesc', {reward: reward.toFixed(2)}), "jackpot");
       } else {
-         showToast("Box Opened!", `Congratulations! You won $${reward.toFixed(2)} from the box!`, "success");
+         showToast(t('msgBoxOpenTitle'), t('msgBoxOpenDesc', {reward: reward.toFixed(2)}), "success");
       }
     }
 
@@ -1103,17 +1158,17 @@
       const amount = parseFloat(document.getElementById('withdraw-amount').value);
 
       if (!address || address.length < 10) {
-        showToast("Invalid Address", "Please enter a valid TON wallet address.", "error");
+        showToast(t('msgInvAddrTitle'), t('msgInvAddrDesc'), "error");
         return;
       }
 
       if (isNaN(amount) || amount < 5) {
-        showToast("Invalid Amount", "The minimum withdrawal amount is $5.00.", "error");
+        showToast(t('msgInvAmtTitle'), t('msgInvAmtDesc'), "error");
         return;
       }
 
       if (amount > userState.usdBalance) {
-        showToast("Insufficient balance", "You do not have enough funds to withdraw this amount.", "error");
+        showToast(t('msgNoBalTitle'), t('msgNoBalDesc'), "error");
         return;
       }
 
@@ -1125,7 +1180,7 @@
         date: now.toLocaleDateString(),
         amount: amount,
         address: address.substring(0, 6) + '...' + address.substring(address.length - 4),
-        status: 'Pending'
+        status: t('pendingText')
       };
 
       userState.withdrawHistory.unshift(withdrawalRecord); 
@@ -1136,7 +1191,7 @@
       document.getElementById('wallet-address').value = '';
       document.getElementById('withdraw-amount').value = '';
 
-      showToast("Withdrawal Requested", `Your request for $${amount.toFixed(2)} has been submitted.`, "success");
+      showToast(t('msgWithReqTitle'), t('msgWithReqDesc', {amount: amount.toFixed(2)}), "success");
     }
 
     function renderWithdrawHistory() {
@@ -1146,7 +1201,7 @@
         container.innerHTML = `
           <div class="glass-card rounded-2xl p-6 text-center border-dashed border-2 border-slate-700">
             <i class="fa-solid fa-clock-rotate-left text-3xl text-slate-600 mb-2"></i>
-            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">History is Empty</p>
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">${t('historyEmpty')}</p>
           </div>`;
         return;
       }
@@ -1228,12 +1283,13 @@
 
         if (checkDailyReset()) {
             updateUI();
-            showToast("New Day Started!", "Daily limits and tasks have been reset.", "info");
+            showToast(t('msgNewDayTitle'), t('msgNewDayDesc'), "info");
         }
     }
     
     async function initApp() {
       fetchServerTime(); 
+      setLang(currentLang); // İlkin dil sazlaması
       
       setTimeout(() => {
         document.getElementById('loading-overlay').style.opacity = '0';
@@ -1282,7 +1338,7 @@
         
         let stateClass = isCompleted ? 'completed' : (isCurrent ? 'current cursor-pointer' : 'locked');
         let icon = isLocked ? '<i class="fa-solid fa-lock text-lg"></i>' : (i + 1);
-        let onClick = isCurrent || isCompleted ? `onclick="startGame(${i + 1})"` : `onclick="showToast('Locked', 'Complete previous levels to unlock!', 'error')"`;
+        let onClick = isCurrent || isCompleted ? `onclick="startGame(${i + 1})"` : `onclick="showToast('${t('msgLockedTitle')}', '${t('msgLockedDesc')}', 'error')"`;
         
         let starsHtml = '';
         if (isCompleted) {
@@ -1805,7 +1861,7 @@
       drawAimLine();
 
       drawBalloon(ctx, lx - 70, ly + 10, gameEngine.ballRadius * 0.6, gameEngine.nextColor, 'normal', 1);
-      ctx.fillStyle = '#94a3b8'; ctx.font = "bold 10px sans-serif"; ctx.fillText("NEXT", lx - 70, ly - 15);
+      ctx.fillStyle = '#94a3b8'; ctx.font = "bold 10px sans-serif"; ctx.fillText(t('nextText'), lx - 70, ly - 15);
       
       let grad = ctx.createRadialGradient(lx, ly, 10, lx, ly, 35);
       grad.addColorStop(0, '#1e293b');
@@ -2336,7 +2392,7 @@
             let alreadyCompleted = gameState.levelsCompleted[idx];
             let xpEarned = alreadyCompleted ? 0 : (LEVEL_REWARDS[idx] || 100);
             
-            title.innerText = "Level Clear!";
+            title.innerText = t('endLevelClear');
             title.className = "text-4xl font-black text-white mb-2 drop-shadow-[0_0_15px_#00f0ff]";
             
             if (!alreadyCompleted) {
@@ -2347,7 +2403,7 @@
                 gameState.levelsCompleted[idx] = true;
                 checkLevelUp();
             } else {
-                endReward.innerText = `+0 XP (Replay)`;
+                endReward.innerText = t('replayText');
                 endReward.className = "text-sm font-bold text-slate-400 mb-8 bg-slate-800 px-4 py-2 rounded-xl border border-slate-700";
             }
             
@@ -2363,7 +2419,7 @@
                gameState.stars[idx] = stars;
             }
 
-            nextBtn.innerText = idx < 9 ? "Next Level" : "Finish";
+            nextBtn.innerText = idx < 9 ? t('endNextLevel') : t('endFinish');
             nextBtn.onclick = () => { idx < 9 ? startGame(gameEngine.currentLevel + 1) : exitGame(); };
 
             saveState();
@@ -2371,11 +2427,11 @@
             if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
             
         } else {
-            title.innerText = "Level Failed";
+            title.innerText = t('endLevelFail');
             title.className = "text-4xl font-black text-red-400 mb-2 drop-shadow-[0_0_15px_#ef4444]";
             endStars.innerHTML = '<i class="fa-solid fa-skull-crossbones text-5xl text-slate-600 drop-shadow-lg"></i>';
             endReward.style.display = 'none';
-            nextBtn.innerText = "Retry";
+            nextBtn.innerText = t('endRetry');
             nextBtn.onclick = () => { startGame(gameEngine.currentLevel); };
             if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
         }
@@ -2418,7 +2474,7 @@
 
     function watchAdForPowerup(type) {
        if (gameState.adLimits[type] >= 5) {
-          showToast("Limit Reached", "Max 5 powerup ads per day.", "error");
+          showToast(t('msgLimReaTitle'), t('msgLimReaDesc'), "error");
           return;
        }
 
@@ -2429,12 +2485,12 @@
              gameState.adLimits[type]++;
              saveState();
              updatePowerupUI();
-             showToast("Powerup Received!", `You got 1 ${type.toUpperCase()}!`, "success");
+             showToast(t('msgPowRecTitle'), t('msgPowRecDesc', {type: t(type).toUpperCase()}), "success");
           }).catch(e => {
-             showToast("Error", "Ads unavailable at the moment.", "error");
+             showToast(t('msgErrorTitle'), t('msgErrorAdUnavail'), "error");
           });
        } else {
-           showToast("Error", "Ad system is currently offline.", "error");
+           showToast(t('msgErrorTitle'), t('msgErrorAdOff'), "error");
        }
     }
 

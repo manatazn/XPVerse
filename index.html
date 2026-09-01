@@ -271,7 +271,7 @@
         </div>
         <div class="bg-emerald-900/40 border border-emerald-500/30 px-3 py-1 rounded-xl flex items-center gap-2 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]">
           <i class="fa-solid fa-dollar-sign text-emerald-400 text-[10px]"></i>
-          <span id="user-usd" class="text-emerald-400 font-black text-xs tracking-wider">0.00</span>
+          <span id="user-usd" class="text-emerald-400 font-black text-xs tracking-wider">0.0000</span>
         </div>
       </div>
     </div>
@@ -310,7 +310,7 @@
       <button onclick="watchAd()" id="watch-ad-btn" class="w-full py-4 rounded-2xl text-white font-black text-sm tracking-[0.15em] uppercase flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(59,130,246,0.3)] btn-3d relative overflow-hidden group">
         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
         <i class="fa-solid fa-play bg-white/20 p-2 rounded-full text-[10px]"></i> 
-        <span><span data-i18n="watchAdBtn">Watch Ad</span> <span class="text-cyan-200">+10 XP</span></span>
+        <span><span data-i18n="watchAdBtn">Watch Ad</span> <span class="text-cyan-200">+10 XP</span> <span class="text-emerald-400 ml-1">+$0.0015</span></span>
       </button>
 
       <div class="glass-card rounded-xl p-3 flex justify-between items-center">
@@ -477,7 +477,7 @@
           <i class="fa-solid fa-wallet text-xl text-emerald-400"></i>
         </div>
         <p class="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-1 opacity-80" data-i18n="withdrawBalance">Withdrawal Balance</p>
-        <h1 class="text-5xl font-black text-white tracking-tighter mb-3">$<span id="withdraw-balance-display">0.00</span></h1>
+        <h1 class="text-5xl font-black text-white tracking-tighter mb-3">$<span id="withdraw-balance-display">0.0000</span></h1>
         <div class="inline-block bg-[#050511]/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-700/50">
           <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest"><i class="fa-solid fa-circle-info text-blue-400 mr-1"></i> <span data-i18n="minimum">Minimum:</span> $5.00</p>
         </div>
@@ -631,7 +631,7 @@
         msgLevelUpTitle: "Level Up!", msgLevelUpDesc: "Congratulations! New Level: {level}!",
         msgTaskCompTitle: "Task Completed!", msgTaskCompDesc: "You earned {reward} XP!",
         msgLimitTitle: "Limit", msgLimitDesc: "You have reached the daily limit of 30 ads. Come back tomorrow!",
-        msgAdLoading: "Loading Ad...", msgAdRewardTitle: "Reward Granted!", msgAdRewardDesc: "You successfully watched the ad and earned +10 XP.",
+        msgAdLoading: "Loading Ad...", msgAdRewardTitle: "Reward Granted!", msgAdRewardDesc: "You successfully watched the ad and earned +10 XP and $0.0015.",
         msgErrorTitle: "Error", msgErrorAdSys: "The ad system is currently not working.", msgErrorAdUnavail: "Ads unavailable at the moment.", msgErrorAdOff: "Ad system is currently offline.",
         msgNoXpTitle: "Not enough XP", msgNoXpDesc: "You need {cost} XP to open this box.",
         msgJackpotTitle: "HUGE JACKPOT! 💸", msgJackpotDesc: "Incredible! You won ${reward}!",
@@ -645,8 +645,9 @@
         endLevelClear: "Level Clear!", endLevelFail: "Level Failed", endNextLevel: "Next Level", endFinish: "Finish", endRetry: "Retry",
         msgLimReaTitle: "Limit Reached", msgLimReaDesc: "Max 5 powerup ads per day.",
         msgPowRecTitle: "Powerup Received!", msgPowRecDesc: "You got 1 {type}!",
-        missionDailyLogin: "Daily Login", missionWatch5: "Watch 5 Ads", missionWatch30: "Watch 30 Ads", missionAll: "All Tasks",
-        btnClaimed: "Claimed", btnClaim: "Claim", replayText: "+0 XP (Replay)", maxLvlText: "MAX LVL"
+        missionDailyLogin: "Daily Login", missionShare: "Share with Friends", missionWatch5: "Watch 5 Ads", missionWatch30: "Watch 30 Ads", missionAll: "All Tasks",
+        btnClaimed: "Claimed", btnClaim: "Claim", btnShare: "Share", replayText: "+0 XP (Replay)", maxLvlText: "MAX LVL",
+        shareMsg: "Join me in XPVerse and earn XP and USD! 🚀\n\nPlay now: "
       },
       az: {
         online: "Onlayn", balance: "Balans", dailyLimit: "Günlük Limit", streak: "Seriya",
@@ -665,7 +666,7 @@
         msgLevelUpTitle: "Yeni Səviyyə!", msgLevelUpDesc: "Təbrik edirik! Yeni Səviyyə: {level}!",
         msgTaskCompTitle: "Tapşırıq Tamamlandı!", msgTaskCompDesc: "Siz {reward} XP qazandınız!",
         msgLimitTitle: "Limit", msgLimitDesc: "Gündəlik 30 reklam limitinə çatdınız. Sabah yenidən cəhd edin!",
-        msgAdLoading: "Reklam Yüklənir...", msgAdRewardTitle: "Mükafat Verildi!", msgAdRewardDesc: "Reklamı uğurla izlədiniz və +10 XP qazandınız.",
+        msgAdLoading: "Reklam Yüklənir...", msgAdRewardTitle: "Mükafat Verildi!", msgAdRewardDesc: "Reklamı uğurla izlədiniz və +10 XP, $0.0015 qazandınız.",
         msgErrorTitle: "Xəta", msgErrorAdSys: "Reklam sistemi hazırda işləmir.", msgErrorAdUnavail: "Hazırda reklam mövcud deyil.", msgErrorAdOff: "Reklam sistemi hazırda oflayndır.",
         msgNoXpTitle: "Kifayət qədər XP yoxdur", msgNoXpDesc: "Bu qutunu açmaq üçün {cost} XP lazımdır.",
         msgJackpotTitle: "BÖYÜK CEKPOT! 💸", msgJackpotDesc: "İnanılmaz! Siz ${reward} qazandınız!",
@@ -679,8 +680,9 @@
         endLevelClear: "Səviyyə Keçildi!", endLevelFail: "Səviyyə Uğursuz", endNextLevel: "Növbəti Səviyyə", endFinish: "Bitir", endRetry: "Yenidən Sına",
         msgLimReaTitle: "Limitə Çatıldı", msgLimReaDesc: "Gündəlik maksimum 5 gücləndirici reklamı.",
         msgPowRecTitle: "Gücləndirici Alındı!", msgPowRecDesc: "1 {type} əldə etdiniz!",
-        missionDailyLogin: "Günlük Giriş", missionWatch5: "5 Reklam İzlə", missionWatch30: "30 Reklam İzlə", missionAll: "Bütün Tapşırıqlar",
-        btnClaimed: "Alındı", btnClaim: "Al", replayText: "+0 XP (Təkrar)", maxLvlText: "MAKS SƏV"
+        missionDailyLogin: "Günlük Giriş", missionShare: "Dostlarınla Paylaş", missionWatch5: "5 Reklam İzlə", missionWatch30: "30 Reklam İzlə", missionAll: "Bütün Tapşırıqlar",
+        btnClaimed: "Alındı", btnClaim: "Al", btnShare: "Paylaş", replayText: "+0 XP (Təkrar)", maxLvlText: "MAKS SƏV",
+        shareMsg: "XPVerse-də mənə qoşul, XP və USD qazan! 🚀\n\nİndi oyna: "
       }
     };
 
@@ -743,7 +745,7 @@
       photoUrl: (tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.photo_url : "",
       xp: 0,
       totalXp: 0,
-      usdBalance: 0.00,
+      usdBalance: 0.0000,
       level: 1,
       adsWatchedToday: 0,
       boxesOpened: 0,
@@ -762,6 +764,7 @@
 
     const getDefaultMissions = () => ({
       dailyReward: { completed: true, claimed: false, reward: 5, type: 'boolean' },
+      shareBot: { claimed: false, reward: 50, type: 'action' },
       watch5: { target: 5, claimed: false, reward: 20, type: 'progress' },
       watch30: { target: 30, claimed: false, reward: 50, type: 'progress' },
       all: { claimed: false, reward: 100, type: 'meta' }
@@ -960,7 +963,7 @@
     function updateUI() {
       document.getElementById('user-name').innerText = userState.firstName;
       document.getElementById('user-xp').innerHTML = `${userState.xp.toLocaleString()} <span class="text-[10px] text-crypto-glow font-bold">XP</span>`;
-      document.getElementById('user-usd').innerText = userState.usdBalance.toFixed(2);
+      document.getElementById('user-usd').innerText = userState.usdBalance.toFixed(4);
       
       if (userState.photoUrl) {
         document.getElementById('user-photo').src = userState.photoUrl;
@@ -971,7 +974,7 @@
       document.getElementById('ads-watched').innerText = userState.adsWatchedToday;
       document.getElementById('streak-days').innerText = userState.streak;
 
-      document.getElementById('withdraw-balance-display').innerText = userState.usdBalance.toFixed(2);
+      document.getElementById('withdraw-balance-display').innerText = userState.usdBalance.toFixed(4);
       renderWithdrawHistory();
 
       document.getElementById('profile-name').innerText = userState.firstName;
@@ -1024,6 +1027,7 @@
       
       const missionsList = [
         { key: 'dailyReward', labelKey: `missionDailyLogin`, icon: 'fa-gift', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20' },
+        { key: 'shareBot', labelKey: 'missionShare', icon: 'fa-share-nodes', color: 'text-green-400', bg: 'bg-green-500/10 border-green-500/20' },
         { key: 'watch5', labelKey: 'missionWatch5', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20' },
         { key: 'watch30', labelKey: 'missionWatch30', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20' },
         { key: 'all', labelKey: 'missionAll', icon: 'fa-crown', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' }
@@ -1039,13 +1043,17 @@
             progressText = `(${Math.min(userState.adsWatchedToday, mission.target)}/${mission.target})`;
         } else if (mission.type === 'boolean') {
             isComplete = mission.completed;
+        } else if (mission.type === 'action') {
+            isComplete = false;
         } else if (mission.type === 'meta') {
-            isComplete = ['dailyReward', 'watch5', 'watch30'].every(k => missionsState[k].claimed);
+            isComplete = ['dailyReward', 'shareBot', 'watch5', 'watch30'].every(k => missionsState[k].claimed);
         }
 
         let btnHtml = '';
         if (mission.claimed) {
             btnHtml = `<span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/30 flex items-center gap-1 shadow-[0_0_10px_rgba(16,185,129,0.1)inset]"><i class="fa-solid fa-check-double"></i> ${t('btnClaimed')}</span>`;
+        } else if (m.key === 'shareBot') {
+            btnHtml = `<button onclick="shareAndClaim()" class="text-[10px] font-black bg-gradient-to-r from-green-600 to-emerald-500 text-white px-4 py-1.5 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.4)] active:scale-95 transition-all uppercase tracking-wider"><i class="fa-solid fa-share"></i> ${t('btnShare')}</button>`;
         } else if (isComplete) {
             btnHtml = `<button onclick="claimMission('${m.key}')" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-4 py-1.5 rounded-xl shadow-[0_0_15px_rgba(0,240,255,0.4)] active:scale-95 transition-all uppercase tracking-wider">${t('btnClaim')}</button>`;
         } else {
@@ -1067,6 +1075,26 @@
           </div>
         `;
       });
+    }
+
+    function shareAndClaim() {
+        if (missionsState.shareBot.claimed) return;
+
+        const botUrl = "https://t.me/XPVersebot?start=" + userState.tgId;
+        const text = t('shareMsg');
+        const shareUrl = 'https://t.me/share/url?url=' + encodeURIComponent(botUrl) + '&text=' + encodeURIComponent(text);
+
+        tg.openTelegramLink(shareUrl);
+
+        missionsState.shareBot.claimed = true;
+        userState.xp += missionsState.shareBot.reward;
+        userState.totalXp += missionsState.shareBot.reward;
+
+        checkLevelUp();
+        saveState();
+        updateUI();
+
+        showToast(t('msgTaskCompTitle'), t('msgTaskCompDesc', {reward: missionsState.shareBot.reward}), "success");
     }
 
     function claimMission(key) {
@@ -1101,6 +1129,7 @@
         AdController.show().then((result) => {
           userState.xp += 10;
           userState.totalXp += 10;
+          userState.usdBalance += 0.0015;
           userState.adsWatchedToday += 1;
           
           checkLevelUp();

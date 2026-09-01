@@ -238,6 +238,7 @@
       <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
       <div class="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
     </div>
+    <p id="time-sync-status" class="text-[10px] text-blue-400 font-bold tracking-widest mt-6 animate-pulse uppercase">Server Connection...</p>
   </div>
 
   <div id="toast-container" class="glass-card rounded-2xl p-4 flex items-center gap-4">
@@ -612,7 +613,6 @@
     tg.setHeaderColor('#0a0b1a');
     tg.setBackgroundColor('#050511');
 
-    // Mətnlərin tərcümə lüğəti / Translation Dictionary
     const translations = {
       en: {
         online: "Online", balance: "Balance", dailyLimit: "Daily Limit", streak: "Streak",
@@ -633,6 +633,7 @@
         msgLimitTitle: "Limit", msgLimitDesc: "You have reached the daily limit of 30 ads. Come back tomorrow!",
         msgAdLoading: "Loading Ad...", msgAdRewardTitle: "Reward Granted!", msgAdRewardDesc: "You successfully watched the ad and earned +10 XP and $0.0015.",
         msgErrorTitle: "Error", msgErrorAdSys: "The ad system is currently not working.", msgErrorAdUnavail: "Ads unavailable at the moment.", msgErrorAdOff: "Ad system is currently offline.",
+        msgTimeError: "Server time could not be verified. Please check your connection.",
         msgNoXpTitle: "Not enough XP", msgNoXpDesc: "You need {cost} XP to open this box.",
         msgJackpotTitle: "HUGE JACKPOT! 💸", msgJackpotDesc: "Incredible! You won ${reward}!",
         msgBoxOpenTitle: "Box Opened!", msgBoxOpenDesc: "Congratulations! You won ${reward} from the box!",
@@ -668,6 +669,7 @@
         msgLimitTitle: "Limit", msgLimitDesc: "Gündəlik 30 reklam limitinə çatdınız. Sabah yenidən cəhd edin!",
         msgAdLoading: "Reklam Yüklənir...", msgAdRewardTitle: "Mükafat Verildi!", msgAdRewardDesc: "Reklamı uğurla izlədiniz, +10 XP və $0.0015 qazandınız.",
         msgErrorTitle: "Xəta", msgErrorAdSys: "Reklam sistemi hazırda işləmir.", msgErrorAdUnavail: "Hazırda reklam mövcud deyil.", msgErrorAdOff: "Reklam sistemi hazırda oflayndır.",
+        msgTimeError: "Server vaxtı təyin edilə bilmədi. İnternet bağlantınızı yoxlayın.",
         msgNoXpTitle: "Kifayət qədər XP yoxdur", msgNoXpDesc: "Bu qutunu açmaq üçün {cost} XP lazımdır.",
         msgJackpotTitle: "BÖYÜK CEKPOT! 💸", msgJackpotDesc: "İnanılmaz! Siz ${reward} qazandınız!",
         msgBoxOpenTitle: "Qutu Açıldı!", msgBoxOpenDesc: "Təbriklər! Qutudan ${reward} qazandınız!",
@@ -775,7 +777,9 @@
     let missionsState = getDefaultMissions();
     const streakRewards = [5, 10, 15, 20, 25, 30, 50]; 
 
+    // QƏTİ ZAMAN SİNXRONİZASİYASI LOGİKASI
     let accurateTimeOffset = null;
+    let isTimeSynced = false;
     let headerTimeout; 
 
     const bottomNavElement = document.getElementById('bottom-nav');
@@ -797,10 +801,16 @@
     if (tg.onEvent) tg.onEvent('viewportChanged', handleKeyboardState);
 
     async function fetchServerTime() {
+      const statusText = document.getElementById('time-sync-status');
+      
       const apis = [
         async () => { let res = await fetch('https://api.binance.com/api/v3/time'); let data = await res.json(); return data.serverTime; },
         async () => { let res = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC'); let data = await res.json(); return new Date(data.utc_datetime).getTime(); },
-        async () => { let res = await fetch('https://timeapi.io/api/Time/current/zone?timeZone=UTC'); let data = await res.json(); return new Date(data.dateTime + 'Z').getTime(); }
+        async () => { let res = await fetch('https://timeapi.io/api/Time/current/zone?timeZone=UTC'); let data = await res.json(); return new Date(data.dateTime + 'Z').getTime(); },
+        async () => { let res = await fetch('https://time.akamai.com/'); let data = await res.text(); return parseInt(data) * 1000; },
+        async () => { let res = await fetch('https://yandex.com/time/sync.json'); let data = await res.json(); return data.time; },
+        async () => { let res = await fetch('https://api.coinbase.com/v2/time'); let data = await res.json(); return new Date(data.data.iso).getTime(); },
+        async () => { let res = await fetch('https://api.kraken.com/0/public/Time'); let data = await res.json(); return data.result.unixtime * 1000; }
       ];
 
       for (let apiFunc of apis) {
@@ -808,15 +818,22 @@
           const serverTime = await apiFunc();
           if (serverTime) {
             accurateTimeOffset = serverTime - performance.now();
+            isTimeSynced = true;
+            if(statusText) statusText.innerText = "Synced!";
             return true;
           }
-        } catch (e) { }
+        } catch (e) {
+            console.warn("Time API failed, checking next source...");
+        }
       }
+      
+      if(statusText) statusText.innerText = "Connection Failed. Retrying...";
+      setTimeout(fetchServerTime, 5000); 
       return false;
     }
 
     function getNow() {
-      if (!accurateTimeOffset) return new Date(); 
+      if (!isTimeSynced) return null; // HEÇ VAXT LOKAL SAATA QAYITMA! (Təhlükəsizlik üçün)
       return new Date(accurateTimeOffset + performance.now());
     }
 
@@ -886,7 +903,7 @@
 
     function checkDailyReset() {
       const now = getNow();
-      if (!now) return false;
+      if (!now) return false; 
 
       const currentResetDay = getResetDay(now);
       
@@ -1113,6 +1130,11 @@
     }
 
     function watchAd() {
+      if (!isTimeSynced) {
+        showToast(t('msgErrorTitle'), t('msgTimeError'), "error");
+        return;
+      }
+      
       if (userState.adsWatchedToday >= 30) {
         showToast(t('msgLimitTitle'), t('msgLimitDesc'), "error");
         return;
@@ -1201,9 +1223,14 @@
         return;
       }
 
+      const now = getNow(); 
+      if (!now) {
+        showToast(t('msgErrorTitle'), t('msgTimeError'), "error");
+        return;
+      }
+
       userState.usdBalance -= amount;
       
-      const now = getNow() || new Date(); 
       const withdrawalRecord = {
         id: '#' + Math.random().toString(36).substr(2, 6).toUpperCase(),
         date: now.toLocaleDateString(),
@@ -1295,7 +1322,12 @@
 
     function updateTimer() {
         const now = getNow();
-        if (!now) return;
+        const timerEl = document.getElementById('reset-timer');
+        
+        if (!now) {
+            if (timerEl) timerEl.innerText = "--:--:--";
+            return;
+        }
 
         const tomorrow = new Date(now);
         tomorrow.setUTCHours(24, 0, 0, 0); 
@@ -1305,7 +1337,6 @@
         const m = Math.floor((diff / 1000 / 60) % 60);
         const s = Math.floor((diff / 1000) % 60);
         
-        const timerEl = document.getElementById('reset-timer');
         if (timerEl) {
             timerEl.innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
         }
@@ -1317,7 +1348,8 @@
     }
     
     async function initApp() {
-      fetchServerTime(); 
+      // API vasitəsilə mütləq şəkildə saat sinxronizasiyasını gözləyirik
+      await fetchServerTime(); 
       setLang(currentLang);
       
       setTimeout(() => {
@@ -1325,7 +1357,7 @@
         setTimeout(() => {
           document.getElementById('loading-overlay').style.display = 'none';
         }, 500); 
-      }, 2000);
+      }, 500);
 
       loadState();
       checkDailyReset();
@@ -1414,6 +1446,11 @@
     };
 
     function startGame(level) {
+      if (!isTimeSynced) {
+         showToast(t('msgErrorTitle'), t('msgTimeError'), "error");
+         return;
+      }
+        
       document.body.classList.add('in-game');
       document.getElementById('game-play-container').classList.add('fullscreen-mode');
       
@@ -2502,6 +2539,10 @@
     }
 
     function watchAdForPowerup(type) {
+       if (!isTimeSynced) {
+          showToast(t('msgErrorTitle'), t('msgTimeError'), "error");
+          return;
+       }
        if (gameState.adLimits[type] >= 5) {
           showToast(t('msgLimReaTitle'), t('msgLimReaDesc'), "error");
           return;

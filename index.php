@@ -1341,7 +1341,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       const res = await apiCall('open_box', { boxType: type });
       if(res && !res.error) {
-        if(res.jackpot) showToast('HUGE JACKPOT! 脂', `You won $${res.reward.toFixed(2)} USDT!`, 'jackpot');
+        if(res.jackpot) showToast('HUGE JACKPOT! 💸', `You won $${res.reward.toFixed(2)} USDT!`, 'jackpot');
         else showToast('Box Opened!', `You won $${res.reward.toFixed(2)} USDT!`, 'success');
       }
     }
@@ -1380,137 +1380,165 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // =========================================================
     // ADMIN PANEL JS LOGIC (Azerbaijani UI bound)
     // =========================================================
-    function switchAdminTab(tab) {
+
+    function switchAdminTab(tabId) {
         document.querySelectorAll('.admin-section').forEach(el => el.classList.add('hidden'));
-        document.getElementById(`admin-sec-${tab}`).classList.remove('hidden');
-        document.querySelectorAll('.admin-tab').forEach(el => { el.classList.remove('bg-red-600/20', 'text-red-400', 'border', 'border-red-500/50'); el.classList.add('text-slate-400'); });
-        document.getElementById(`tab-${tab}`).classList.add('bg-red-600/20', 'text-red-400', 'border', 'border-red-500/50');
-        document.getElementById(`tab-${tab}`).classList.remove('text-slate-400');
+        document.querySelectorAll('.admin-tab').forEach(el => {
+            el.classList.remove('bg-red-600/20', 'text-red-400', 'border-red-500/50');
+            el.classList.add('text-slate-400', 'border-transparent');
+        });
+        document.getElementById(`admin-sec-${tabId}`).classList.remove('hidden');
+        const tabBtn = document.getElementById(`tab-${tabId}`);
+        tabBtn.classList.remove('text-slate-400', 'border-transparent');
+        tabBtn.classList.add('bg-red-600/20', 'text-red-400', 'border', 'border-red-500/50');
         
-        if(tab === 'settings') {
-            const s = appState.settings;
-            document.getElementById('adm-set-sdk').value = (s.adBlockIds || []).join(', ');
-            document.getElementById('adm-set-adlimit').value = s.globalAdLimit || 30;
-            document.getElementById('adm-set-reset').value = s.resetTime || '03:00';
-            document.getElementById('adm-set-maintenance').checked = s.maintenance;
-            document.getElementById('adm-set-xp2x').checked = s.xp2xEnabled;
-            document.getElementById('adm-set-xp2x-perm').checked = s.xp2xPermanent;
-            document.getElementById('adm-set-xp2x-st').value = s.xp2xStart;
-            document.getElementById('adm-set-xp2x-ed').value = s.xp2xEnd;
-        } else if (tab === 'users') { renderAdminUsers(); }
-        else if (tab === 'withdrawals') { renderAdminWithdraws(); }
-        else if (tab === 'tasks') { renderAdminTasks(); }
-        else if (tab === 'errors') { renderAdminErrors(); }
+        if (tabId === 'users') renderAdminUsers();
+        if (tabId === 'tasks') renderAdminTasks();
+        if (tabId === 'withdrawals') renderAdminWithdrawals();
+        if (tabId === 'errors') renderAdminErrors();
     }
 
     function renderAdminUsers() {
         const query = document.getElementById('admin-user-search').value.toLowerCase();
-        const bList = appState.admin.banned || [];
-        const list = appState.admin.users.filter(u => u.tgId.includes(query) || (u.username||'').toLowerCase().includes(query) || (u.firstName||'').toLowerCase().includes(query));
-        
-        document.getElementById('admin-user-list').innerHTML = list.map(u => {
-            const isBan = u.banned || bList.includes(u.tgId);
-            return `<div class="glass-card p-3 rounded-lg border border-slate-700">
-                <div class="flex justify-between items-center mb-2">
-                    <div><p class="text-xs font-black text-white">${u.firstName} <span class="text-slate-400 font-mono text-[9px]">@${u.username}</span></p><p class="text-[9px] text-blue-400 cursor-pointer" onclick="openAdminUserDetail('${u.tgId}')"><u>ID: ${u.tgId}</u></p></div>
+        const list = document.getElementById('admin-user-list');
+        const users = appState.admin.users.filter(u => 
+            u.tgId.toLowerCase().includes(query) || 
+            (u.username && u.username.toLowerCase().includes(query)) || 
+            (u.firstName && u.firstName.toLowerCase().includes(query))
+        );
+
+        list.innerHTML = users.map(u => `
+            <div class="glass-card p-3 rounded-lg flex flex-col gap-2 border ${u.banned ? 'border-red-900 bg-red-900/10' : 'border-slate-700'}">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <span class="text-sm font-black text-white">${u.firstName} ${u.lastName || ''}</span>
+                        <span class="text-[9px] ${u.isOnline ? 'text-emerald-400' : 'text-slate-500'} ml-1 uppercase font-bold">${u.isOnline ? 'Online' : 'Offline'}</span>
+                        <br><span class="text-[10px] text-blue-400 font-mono">${u.tgId}</span>
+                    </div>
                     <div class="text-right">
-                        ${u.isOnline ? '<span class="text-[8px] bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded">Aktiv</span>' : '<span class="text-[8px] bg-slate-500/20 text-slate-400 px-2 py-1 rounded">Oflayn</span>'}
-                        ${isBan ? '<span class="text-[8px] bg-red-500/20 text-red-500 px-2 py-1 rounded ml-1">BANNED</span>' : ''}
+                        <span class="text-xs font-black text-emerald-400">$${formatNum(u.usd, true)}</span><br>
+                        <span class="text-[10px] font-bold text-crypto-glow">${formatNum(u.xp)} XP</span>
                     </div>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="apiCall('admin_action_user', {targetUid:'${u.tgId}', userAction:'reset_ads'}).then(()=>apiCall('admin_dashboard'))" class="flex-1 bg-amber-600/20 text-amber-500 py-1 rounded text-[9px] font-black uppercase">Reklam Limitini Sıfırla (${u.adsWatchedToday})</button>
-                    <button onclick="apiCall('admin_action_user', {targetUid:'${u.tgId}', userAction:'${isBan?'unban':'preban'}'}).then(()=>apiCall('admin_dashboard'))" class="flex-1 ${isBan?'bg-emerald-600/20 text-emerald-500':'bg-red-600/20 text-red-500'} py-1 rounded text-[9px] font-black uppercase">${isBan?'Blokdan Çıxar':'Blokla'}</button>
+                    <button onclick="adminActionUser('${u.tgId}', 'reset_ads')" class="flex-1 bg-blue-600/30 text-blue-400 px-2 py-1.5 rounded text-[10px] font-bold border border-blue-500/30">Reklam Sıfırla</button>
+                    <button onclick="adminActionUser('${u.tgId}', 'reset_balance')" class="flex-1 bg-amber-600/30 text-amber-400 px-2 py-1.5 rounded text-[10px] font-bold border border-amber-500/30">Balans Sıfırla</button>
+                    ${u.banned 
+                        ? `<button onclick="apiCall('admin_action_user', {targetUid: '${u.tgId}', userAction: 'unban'})" class="flex-1 bg-emerald-600/30 text-emerald-400 px-2 py-1.5 rounded text-[10px] font-bold border border-emerald-500/30">Unban</button>`
+                        : `<button onclick="apiCall('admin_action_user', {targetUid: '${u.tgId}', userAction: 'preban'})" class="flex-1 bg-red-600/30 text-red-400 px-2 py-1.5 rounded text-[10px] font-bold border border-red-500/30">Ban</button>`
+                    }
                 </div>
-            </div>`
-        }).join('');
+            </div>
+        `).join('');
     }
 
-    function openAdminUserDetail(uid) {
-        const u = appState.admin.users.find(x => x.tgId === uid); if(!u) return;
-        document.getElementById('admin-user-modal').classList.remove('hidden'); document.getElementById('admin-user-modal').classList.add('flex');
-        
-        let html = `
-            <div class="flex justify-between items-center mb-4">
-                <h4 class="text-sm font-black text-white">${u.firstName} ${u.lastName} <span class="text-blue-400 text-xs">@${u.username||'-'}</span></h4>
-                ${u.isOnline ? '<span class="text-[10px] text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded bg-emerald-500/10">Aktiv</span>' : '<span class="text-[10px] text-slate-400 border border-slate-700 px-2 py-1 rounded bg-slate-800">Oflayn</span>'}
-            </div>
-            <div class="grid grid-cols-2 gap-2 text-[10px] mb-4">
-                <div class="bg-slate-800/50 p-2 rounded border border-slate-700/50"><span class="text-slate-500 block uppercase">Qeydiyyat Tarixi</span><span class="text-white">${u.regDateBaku}</span></div>
-                <div class="bg-slate-800/50 p-2 rounded border border-slate-700/50"><span class="text-slate-500 block uppercase">Son Aktivlik</span><span class="text-white">${u.lastActiveBaku}</span></div>
-                <div class="bg-slate-800/50 p-2 rounded border border-slate-700/50"><span class="text-slate-500 block uppercase">Baxılan Reklam (Bugün/Cəmi)</span><span class="text-white">${u.adsWatchedToday} / ${u.totalAdsWatched}</span></div>
-                <div class="bg-slate-800/50 p-2 rounded border border-slate-700/50"><span class="text-slate-500 block uppercase">Edilən Tapşırıqlar</span><span class="text-white">${u.tasksCompleted}</span></div>
-            </div>
-            <div class="bg-[#050511] p-3 rounded border border-slate-700 mb-4">
-                <h5 class="text-[10px] text-blue-400 font-black uppercase mb-2">Balans İdarəetməsi</h5>
-                <div class="flex gap-2 items-center mb-2">
-                    <span class="text-xs text-emerald-400 w-16">USDT:</span>
-                    <input type="number" id="adm-det-usd" value="${u.usd.toFixed(2)}" class="flex-1 bg-transparent border-b border-slate-600 text-white outline-none">
+    function renderAdminTasks() {
+        const list = document.getElementById('admin-tasks-list');
+        list.innerHTML = appState.dynTasks.map(t => `
+            <div class="glass-card p-3 rounded-lg border border-slate-700 flex justify-between items-center">
+                <div>
+                    <span class="text-sm font-black text-white">${t.name}</span>
+                    <span class="text-[9px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded ml-1 uppercase">${t.type}</span><br>
+                    <span class="text-[10px] text-emerald-400">+$${t.rewardUsd}</span> / <span class="text-[10px] text-crypto-glow">+${t.rewardXp} XP</span>
                 </div>
-                <div class="flex gap-2 items-center mb-3">
-                    <span class="text-xs text-crypto-glow w-16">XP:</span>
-                    <input type="number" id="adm-det-xp" value="${u.xp}" class="flex-1 bg-transparent border-b border-slate-600 text-white outline-none">
+                <div class="flex gap-2">
+                    <button onclick="openTaskModal('${t.id}')" class="bg-blue-600/30 text-blue-400 w-8 h-8 rounded border border-blue-500/30"><i class="fa-solid fa-pen"></i></button>
+                    <button onclick="apiCall('admin_task_delete', {taskId: '${t.id}'}).then(r => r && apiCall('admin_dashboard'))" class="bg-red-600/30 text-red-400 w-8 h-8 rounded border border-red-500/30"><i class="fa-solid fa-trash"></i></button>
                 </div>
-                <button onclick="apiCall('admin_action_user', {targetUid:'${u.tgId}', userAction:'update_balance', newUsd: document.getElementById('adm-det-usd').value, newXp: document.getElementById('adm-det-xp').value}).then(()=>apiCall('admin_dashboard'))" class="w-full bg-blue-600 text-white text-[10px] font-black uppercase py-2 rounded">Balansı Yadda Saxla</button>
             </div>
-            <div class="flex gap-2">
-                <button onclick="apiCall('admin_action_user', {targetUid:'${u.tgId}', userAction:'reset_balance'}).then(()=>apiCall('admin_dashboard'))" class="flex-1 bg-red-900/50 text-red-400 border border-red-900 text-[9px] font-black uppercase py-2 rounded">Balansı Sıfırla</button>
+        `).join('');
+    }
+
+    function renderAdminWithdrawals() {
+        const list = document.getElementById('admin-withdrawal-list');
+        list.innerHTML = appState.admin.withdrawals.map(w => `
+            <div class="glass-card p-3 rounded-lg border border-slate-700">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <span class="text-xs font-black text-white">${w.user_name} <span class="text-slate-500">(${w.user_id})</span></span><br>
+                        <span class="text-[10px] text-blue-400 font-mono">${w.address}</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-sm font-black text-emerald-400">$${formatNum(w.amount, true)}</span><br>
+                        <span class="text-[9px] text-slate-500">${w.date}</span>
+                    </div>
+                </div>
+                ${w.status === 'Pending' ? `
+                <div class="flex gap-2 mt-2 pt-2 border-t border-slate-800">
+                    <button onclick="apiCall('admin_action_withdraw', {targetUid: '${w.user_id}', idx: ${w.idx}, withdrawAction: 'approve'}).then(r => r && apiCall('admin_dashboard'))" class="flex-1 bg-emerald-600 text-white text-[10px] font-bold py-1.5 rounded uppercase">Təsdiqlə</button>
+                    <button onclick="apiCall('admin_action_withdraw', {targetUid: '${w.user_id}', idx: ${w.idx}, withdrawAction: 'reject'}).then(r => r && apiCall('admin_dashboard'))" class="flex-1 bg-red-600 text-white text-[10px] font-bold py-1.5 rounded uppercase">Rədd Et</button>
+                </div>` : `<div class="text-[10px] font-black uppercase text-center mt-2 ${w.status === 'Approved' ? 'text-emerald-400' : 'text-red-400'}">${w.status}</div>`}
             </div>
-        `;
-        document.getElementById('admin-user-modal-content').innerHTML = html;
+        `).join('');
+    }
+
+    function renderAdminErrors() {
+        const list = document.getElementById('admin-error-list');
+        if(!appState.admin.errors || appState.admin.errors.length === 0) {
+            list.innerHTML = '<p class="text-[10px] text-slate-500 text-center py-4">Xəta tapılmadı.</p>'; return;
+        }
+        list.innerHTML = appState.admin.errors.map(e => `
+            <div class="glass-card p-3 rounded-lg border border-red-900/50 bg-red-900/10">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-[10px] font-black text-red-400 uppercase">${e.type}</span>
+                    <span class="text-[9px] text-slate-500">${new Date(e.time * 1000).toLocaleString('az-AZ')}</span>
+                </div>
+                <p class="text-xs text-white break-words">${e.message}</p>
+                <p class="text-[9px] text-slate-400 mt-1">UID: ${e.uid} | Yer: ${e.page}</p>
+                <p class="text-[9px] text-red-300/70 font-mono mt-1">${e.cause}</p>
+            </div>
+        `).join('');
     }
 
     function adminPreBan() {
         const uid = document.getElementById('preban-uid').value;
-        if(!uid) return;
-        apiCall('admin_action_user', {targetUid:uid, userAction:'preban'}).then(()=>{
-            document.getElementById('preban-uid').value=''; apiCall('admin_dashboard');
-        });
+        if(uid) apiCall('admin_action_user', {targetUid: uid, userAction: 'preban'}).then(r => { if(r) { document.getElementById('preban-uid').value = ''; apiCall('admin_dashboard'); }});
     }
 
-    function saveAdminSettings() {
-        apiCall('admin_update_settings', {
-            blockIds: document.getElementById('adm-set-sdk').value,
-            globalAdLimit: document.getElementById('adm-set-adlimit').value,
-            resetTime: document.getElementById('adm-set-reset').value,
-            maintenance: document.getElementById('adm-set-maintenance').checked,
-            xp2xEnabled: document.getElementById('adm-set-xp2x').checked,
-            xp2xPermanent: document.getElementById('adm-set-xp2x-perm').checked,
-            xp2xStart: document.getElementById('adm-set-xp2x-st').value,
-            xp2xEnd: document.getElementById('adm-set-xp2x-ed').value
-        });
+    function adminActionUser(uid, action) {
+        apiCall('admin_action_user', { targetUid: uid, userAction: action }).then(r => r && apiCall('admin_dashboard'));
     }
 
-    function renderAdminTasks() {
-        document.getElementById('admin-tasks-list').innerHTML = appState.dynTasks.map(t => `<div class="glass-card p-3 rounded-lg border border-slate-700 flex justify-between items-center"><div><p class="text-xs font-black text-white">${t.name}</p><p class="text-[9px] text-slate-400">${t.type.toUpperCase()} | XP: ${t.rewardXp} | USDT: ${t.rewardUsd}</p><p class="text-[9px] text-blue-400 mt-0.5">Limit: ${t.completionLimit==0?'Yoxdur':t.completionLimit} | Həll edilib: ${t.completions}</p></div><div class="flex flex-col gap-1"><button onclick="editTask('${t.id}')" class="bg-blue-600 text-white px-2 py-1 rounded text-[9px]">Düzəlt</button><button onclick="apiCall('admin_task_delete', {taskId:'${t.id}'}).then(()=>apiCall('admin_dashboard'))" class="bg-red-600 text-white px-2 py-1 rounded text-[9px]">Sil</button></div></div>`).join('');
+    function openTaskModal(taskId = null) {
+        const title = document.getElementById('task-modal-title');
+        if (taskId) {
+            const t = appState.dynTasks.find(x => x.id === taskId);
+            if(t) {
+                document.getElementById('task-id').value = t.id;
+                document.getElementById('task-name').value = t.name;
+                document.getElementById('task-type').value = t.type;
+                document.getElementById('task-is-daily').value = t.isDaily ? "1" : "0";
+                document.getElementById('task-reward-xp').value = t.rewardXp;
+                document.getElementById('task-reward-usd').value = t.rewardUsd;
+                document.getElementById('task-link').value = t.link;
+                document.getElementById('task-note').value = t.note || '';
+                document.getElementById('task-require-verify').checked = t.requireVerification || false;
+                document.getElementById('task-uid-example').value = t.uidExample || '';
+                document.getElementById('task-limit').value = t.completionLimit || 0;
+                title.innerText = "Tapşırığı Redaktə Et";
+            }
+        } else {
+            document.getElementById('task-id').value = '';
+            document.getElementById('task-name').value = '';
+            document.getElementById('task-reward-xp').value = '0';
+            document.getElementById('task-reward-usd').value = '0';
+            document.getElementById('task-link').value = '';
+            document.getElementById('task-note').value = '';
+            document.getElementById('task-require-verify').checked = false;
+            document.getElementById('task-uid-example').value = '';
+            document.getElementById('task-limit').value = '0';
+            title.innerText = "Yeni Tapşırıq";
+        }
+        document.getElementById('admin-task-modal').classList.remove('hidden');
+        document.getElementById('admin-task-modal').classList.add('flex');
     }
-
-    function openTaskModal(id = null) {
-        document.getElementById('admin-task-modal').classList.remove('hidden'); document.getElementById('admin-task-modal').classList.add('flex');
-        let t = { id:'', name:'', type:'normal', isDaily:1, rewardXp:0, rewardUsd:0, link:'', note:'', requireVerification:false, uidExample:'', completionLimit:0, completions:0 };
-        if (id) { const f = appState.dynTasks.find(x => x.id === id); if(f) t = f; }
-        
-        document.getElementById('task-modal-title').innerText = id ? 'Tapşırığı Düzəlt' : 'Yeni Tapşırıq';
-        document.getElementById('task-id').value = t.id;
-        document.getElementById('task-name').value = t.name;
-        document.getElementById('task-type').value = t.type;
-        document.getElementById('task-is-daily').value = t.isDaily;
-        document.getElementById('task-reward-xp').value = t.rewardXp;
-        document.getElementById('task-reward-usd').value = t.rewardUsd;
-        document.getElementById('task-link').value = t.link;
-        document.getElementById('task-note').value = t.note || '';
-        document.getElementById('task-require-verify').checked = t.requireVerification || false;
-        document.getElementById('task-uid-example').value = t.uidExample || '';
-        document.getElementById('task-limit').value = t.completionLimit;
-    }
-    window.editTask = openTaskModal;
 
     function saveTask() {
-        const t = {
+        const task = {
             id: document.getElementById('task-id').value,
             name: document.getElementById('task-name').value,
             type: document.getElementById('task-type').value,
-            isDaily: parseInt(document.getElementById('task-is-daily').value),
+            isDaily: document.getElementById('task-is-daily').value === "1",
             rewardXp: parseInt(document.getElementById('task-reward-xp').value),
             rewardUsd: parseFloat(document.getElementById('task-reward-usd').value),
             link: document.getElementById('task-link').value,
@@ -1519,35 +1547,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             uidExample: document.getElementById('task-uid-example').value,
             completionLimit: parseInt(document.getElementById('task-limit').value)
         };
-        apiCall('admin_task_save', { task: t }).then(()=> { document.getElementById('admin-task-modal').classList.add('hidden'); apiCall('admin_dashboard'); });
+        apiCall('admin_task_save', { task }).then(() => {
+            document.getElementById('admin-task-modal').classList.add('hidden');
+            apiCall('admin_dashboard').then(() => renderAdminTasks());
+        });
     }
 
-    function renderAdminWithdraws() {
-        document.getElementById('admin-withdrawal-list').innerHTML = appState.admin.withdrawals.map(w => `<div class="glass-card p-3 rounded-lg border border-slate-700"><div class="flex justify-between"><p class="text-xs font-black text-white">${w.user_name} <span class="text-[9px] text-blue-400">(${w.user_id})</span></p><p class="text-[11px] font-black text-emerald-400">$${w.amount}</p></div><p class="text-[9px] text-slate-400 mt-1">${w.id} - ${w.date} - <span class="text-white">${w.address}</span></p>${w.status==='Pending'?`<div class="flex gap-2 mt-2"><button onclick="apiCall('admin_action_withdraw', {targetUid:'${w.user_id}', idx:${w.idx}, withdrawAction:'approve'}).then(()=>apiCall('admin_dashboard'))" class="flex-1 bg-emerald-600 text-white text-[9px] py-1.5 rounded">Təsdiqlə</button><button onclick="apiCall('admin_action_withdraw', {targetUid:'${w.user_id}', idx:${w.idx}, withdrawAction:'reject'}).then(()=>apiCall('admin_dashboard'))" class="flex-1 bg-red-600 text-white text-[9px] py-1.5 rounded">Rədd Et</button></div>`:`<div class="mt-2 text-[9px] font-black uppercase text-${w.status==='Approved'?'emerald':'red'}-500">${w.status}</div>`}</div>`).join('');
+    function saveAdminSettings() {
+        const payload = {
+            blockIds: document.getElementById('adm-set-sdk').value,
+            globalAdLimit: document.getElementById('adm-set-adlimit').value,
+            resetTime: document.getElementById('adm-set-reset').value,
+            maintenance: document.getElementById('adm-set-maintenance').checked,
+            xp2xEnabled: document.getElementById('adm-set-xp2x').checked,
+            xp2xPermanent: document.getElementById('adm-set-xp2x-perm').checked,
+            xp2xStart: document.getElementById('adm-set-xp2x-st').value,
+            xp2xEnd: document.getElementById('adm-set-xp2x-ed').value
+        };
+        apiCall('admin_update_settings', payload).then(r => r && showToast('Uğurlu', r.message, 'success'));
     }
 
-    function renderAdminErrors() {
-        document.getElementById('admin-error-list').innerHTML = appState.admin.errors.map(e => {
-            const d = new Date(e.time * 1000).toLocaleString('az-AZ', {timeZone: 'Asia/Baku', hour12:false});
-            return `<div class="glass-card p-3 rounded border border-red-900/50 mb-2"><div class="flex justify-between items-start mb-1"><span class="text-[10px] bg-red-900/50 text-red-400 px-1.5 py-0.5 rounded font-black">${e.type}</span><span class="text-[9px] text-slate-500">${d}</span></div><p class="text-xs text-white break-words">${e.message}</p><p class="text-[9px] text-slate-400 mt-1">Səbəb: ${e.cause}</p><p class="text-[9px] text-blue-400 mt-0.5">UID: ${e.uid} | Səhifə: ${e.page}</p></div>`;
-        }).join('');
-    }
+    // =========================================================
+    // SYSTEM INITIALIZATION (MÜTLƏQ LAZIM OLAN HİSSƏ)
+    // =========================================================
 
-    // Initialize App & Real-time Sync
-    async function initApp() {
-      const res = await apiCall('init', {}, true);
-      if(res && res.serverTime) startServerTimer(res.serverTime, res.serverResetTime);
-      setTimeout(() => { document.getElementById('loading-overlay').style.opacity = '0'; setTimeout(() => document.getElementById('loading-overlay').style.display = 'none', 500); }, 600);
-      
-      setInterval(async () => {
-          if (document.visibilityState === 'visible' && document.getElementById('ban-overlay').style.display !== 'flex' && document.getElementById('maintenance-overlay').style.display !== 'flex') {
-              const r = await apiCall('sync', {}, true);
-              if(r && appState.isAdmin && document.getElementById('view-admin').classList.contains('animate-slide-up')) { apiCall('admin_dashboard', {}, true); }
-          }
-      }, 15000); // 15 sec polling
-    }
-    
-    initApp();
+    window.addEventListener('DOMContentLoaded', () => {
+        // Start Sync Process
+        apiCall('sync').then(data => {
+            if (data) {
+                // Initialize Server Timer (Saatı başladan hissə)
+                if(data.serverTime && data.serverResetTime) {
+                    startServerTimer(data.serverTime, data.serverResetTime);
+                }
+                
+                // If user is Admin, preload settings values
+                if (data.isAdmin && data.settings) {
+                    document.getElementById('adm-set-sdk').value = (data.settings.adBlockIds || []).join(', ');
+                    document.getElementById('adm-set-adlimit').value = data.settings.globalAdLimit || 30;
+                    document.getElementById('adm-set-reset').value = data.settings.resetTime || '03:00';
+                    document.getElementById('adm-set-maintenance').checked = data.settings.maintenance || false;
+                    document.getElementById('adm-set-xp2x').checked = data.settings.xp2xEnabled || false;
+                    document.getElementById('adm-set-xp2x-perm').checked = data.settings.xp2xPermanent || false;
+                    
+                    // Format dates for input if they exist
+                    if(data.settings.xp2xStart) document.getElementById('adm-set-xp2x-st').value = data.settings.xp2xStart;
+                    if(data.settings.xp2xEnd) document.getElementById('adm-set-xp2x-ed').value = data.settings.xp2xEnd;
+                }
+            }
+            
+            // Hide loading screen smoothly
+            setTimeout(() => {
+                const loader = document.getElementById('loading-overlay');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
+            }, 800);
+        });
+    });
   </script>
 </body>
 </html>

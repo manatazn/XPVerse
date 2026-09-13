@@ -42,16 +42,33 @@ function writeDB($filename, $data) {
     return true;
 }
 
+// Admin Action Logger
+function logAdminAction($action, $details) {
+    $logs = readDB('admin_logs.json');
+    array_unshift($logs, [
+        'time' => date('Y-m-d H:i:s'),
+        'action' => $action,
+        'details' => $details
+    ]);
+    if (count($logs) > 50) $logs = array_slice($logs, 0, 50);
+    writeDB('admin_logs.json', $logs);
+}
+
 // Ensure settings exist (Multiple APIs Supported)
 $settings = readDB('settings.json');
-if (empty($settings) || !isset($settings['adBlockIds'])) {
+if (empty($settings)) {
     $settings = [
-        'adBlockIds' => [
-            'int-35545'
-        ]
+        'adBlockIds' => ['int-35545'],
+        'maintenance' => false,
+        'doubleXpUntil' => 0,
+        'dynamicTasks' => []
     ];
     writeDB('settings.json', $settings);
 }
+
+// Check Double XP Status
+$isDoubleXp = (isset($settings['doubleXpUntil']) && time() < $settings['doubleXpUntil']);
+$xpMult = $isDoubleXp ? 2 : 1;
 
 // Logical Date Calculation: New day starts at 03:00 MSK
 $now = new DateTime('now');
@@ -75,6 +92,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $input['action'];
     $uid = (string)$input['tgId'];
     
+    // Check Maintenance Mode
+    if (isset($settings['maintenance']) && $settings['maintenance'] === true && $uid !== '5461064199' && strpos($action, 'admin_') !== 0) {
+        echo json_encode(['error' => 'MAINTENANCE', 'message' => 'The bot is currently undergoing maintenance. We will be back shortly!']);
+        exit;
+    }
+
     $users = readDB('users.json');
     $referrals = readDB('referrals.json');
     $rewards = readDB('rewards.json');
@@ -97,6 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'photoUrl' => $input['photoUrl'] ?? '',
             'xp' => 0,
             'totalXp' => 0,
+            'dailyXp' => 0,
             'usd' => 0.00,
             'level' => 1,
             'adsWatchedToday' => 0,
@@ -149,9 +173,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         $users[$uid]['adsWatchedToday'] = 0;
+        $users[$uid]['dailyXp'] = 0;
         $users[$uid]['lastResetDay'] = $today;
         if(isset($tasks[$uid])) $tasks[$uid] = [];
     }
+    
+    // Ensure dailyXp exists for older users
+    if (!isset($users[$uid]['dailyXp'])) $users[$uid]['dailyXp'] = 0;
 
     // Helper: Level Calculation
     function calcLevel($xp) {
@@ -164,7 +192,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Helper: Evaluate Referral Approval
-    function evaluateReferralProgress($refUid, &$users, &$referrals, &$rewards) {
+    function evaluateReferralProgress($refUid, &$users, &$referrals, &$rewards, $xpMult) {
         global $now;
         $refUser = $users[$refUid];
         if (empty($refUser['referrer'])) return;
@@ -188,8 +216,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $referralChanged = true;
                     $rewardAdded = true;
                     
-                    $users[$referrerId]['xp'] += 250;
-                    $users[$referrerId]['totalXp'] += 250;
+                    $rewardXp = 250 * $xpMult;
+                    $users[$referrerId]['xp'] += $rewardXp;
+                    $users[$referrerId]['totalXp'] += $rewardXp;
+                    $users[$referrerId]['dailyXp'] += $rewardXp;
                     $users[$referrerId]['level'] = calcLevel($users[$referrerId]['totalXp']);
                     $users[$referrerId]['usd'] += 0.025;
                     
@@ -198,7 +228,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     array_unshift($rewards[$referrerId], [
                         'title' => 'Referral Bonus',
                         'desc' => "Referral: " . $refName,
-                        'xp' => 250,
+                        'xp' => $rewardXp,
                         'usd' => 0.025,
                         'date' => $now->format('M j, Y')
                     ]);
@@ -221,6 +251,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $response['serverTime'] = $now->getTimestamp();
     $response['serverResetTime'] = $resetTarget->getTimestamp(); 
     $response['settings'] = $settings;
+    $response['isDoubleXp'] = $isDoubleXp;
 
     // --- ADMIN PANEL SECURE ROUTES ---
     if (strpos($action, 'admin_') === 0) {
@@ -234,11 +265,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($action === 'admin_dashboard') {
             $totalUsd = 0; $totalAds = 0; $totalTasks = 0; $totalXp = 0; $totalUsers = count($users);
             $totalRefs = 0;
-            foreach($users as $u) {
+            foreach($users as $uUid => $u) {
                 $totalUsd += $u['usd'];
                 $totalAds += $u['totalAdsWatched'];
                 $totalTasks += $u['tasksCompleted'];
                 $totalXp += $u['totalXp'];
+                
+                // attach ref count for UI
+                $uRefs = isset($referrals[$uUid]) ? count($referrals[$uUid]) : 0;
+                $users[$uUid]['refCount'] = $uRefs;
             }
             foreach($withdrawals as $wList) {
                 foreach($wList as $w) {
@@ -262,13 +297,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ];
             $response['all_users'] = array_values($users);
             $response['all_withdrawals'] = $allWithdrawals;
+            $response['admin_logs'] = readDB('admin_logs.json');
             echo json_encode($response); exit;
         }
 
         if ($action === 'admin_update_settings') {
-            $settings['adBlockIds'] = $input['blockIds'];
+            if (isset($input['blockIds'])) $settings['adBlockIds'] = $input['blockIds'];
+            if (isset($input['maintenance'])) {
+                $settings['maintenance'] = (bool)$input['maintenance'];
+                logAdminAction('Toggle Maintenance', 'Maintenance mode set to: ' . ($settings['maintenance'] ? 'ON' : 'OFF'));
+            }
+            if (isset($input['doubleXpHours'])) {
+                $hours = (int)$input['doubleXpHours'];
+                if ($hours > 0) {
+                    $settings['doubleXpUntil'] = time() + ($hours * 3600);
+                    logAdminAction('Double XP', "Activated for $hours hours");
+                } else {
+                    $settings['doubleXpUntil'] = 0;
+                    logAdminAction('Double XP', "Deactivated");
+                }
+            }
             writeDB('settings.json', $settings);
-            $response['message'] = 'Settings (APIs) updated successfully.';
+            $response['message'] = 'Settings updated successfully.';
+            $response['settings'] = $settings;
+            echo json_encode($response); exit;
+        }
+
+        if ($action === 'admin_task_manager') {
+            if ($input['taskAction'] === 'add') {
+                $newTask = [
+                    'id' => 'dt_' . time(),
+                    'title' => $input['title'],
+                    'url' => $input['url'],
+                    'reward' => (int)$input['reward']
+                ];
+                if (!isset($settings['dynamicTasks'])) $settings['dynamicTasks'] = [];
+                $settings['dynamicTasks'][] = $newTask;
+                logAdminAction('Task Added', "Title: {$newTask['title']}, Reward: {$newTask['reward']}");
+            } else if ($input['taskAction'] === 'delete') {
+                $tid = $input['taskId'];
+                $settings['dynamicTasks'] = array_values(array_filter($settings['dynamicTasks'], function($t) use ($tid) {
+                    return $t['id'] !== $tid;
+                }));
+                logAdminAction('Task Deleted', "Task ID: $tid");
+            }
+            writeDB('settings.json', $settings);
+            $response['settings'] = $settings;
+            $response['message'] = 'Tasks updated.';
+            echo json_encode($response); exit;
+        }
+
+        if ($action === 'admin_reset_ads') {
+            foreach($users as $k => $u) {
+                $users[$k]['adsWatchedToday'] = 0;
+            }
+            writeDB('users.json', $users);
+            logAdminAction('Global Reset', 'All user daily ad limits reset to 0');
+            $response['message'] = 'All Ad Limits Reset';
+            echo json_encode($response); exit;
+        }
+
+        if ($action === 'admin_wipe_data') {
+            // Keep admin user, wipe rest
+            $adminUser = $users['5461064199'] ?? null;
+            $users = [];
+            if ($adminUser) $users['5461064199'] = $adminUser;
+            
+            writeDB('users.json', $users);
+            writeDB('referrals.json', []);
+            writeDB('rewards.json', []);
+            writeDB('withdrawals.json', []);
+            writeDB('tasks.json', []);
+            writeDB('admin_logs.json', []);
+            
+            logAdminAction('System Wipe', 'All user data wiped (except admin)');
+            $response['message'] = 'Bot data wiped completely.';
             echo json_encode($response); exit;
         }
 
@@ -282,14 +385,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($act === 'ban') {
                 $users[$targetUid]['banned'] = true;
+                logAdminAction('User Ban', "Banned UID: $targetUid");
             } elseif ($act === 'unban') {
                 $users[$targetUid]['banned'] = false;
-            } elseif ($act === 'reset_ads') {
-                $users[$targetUid]['adsWatchedToday'] = 0;
+                logAdminAction('User Unban', "Unbanned UID: $targetUid");
             } elseif ($act === 'update_balance') {
+                $oldUsd = $users[$targetUid]['usd'];
+                $oldXp = $users[$targetUid]['xp'];
+                
                 $users[$targetUid]['usd'] = max(0, (float)$input['newUsd']);
                 $users[$targetUid]['xp'] = max(0, (int)$input['newXp']);
-                $users[$targetUid]['totalXp'] = max($users[$targetUid]['totalXp'], $users[$targetUid]['xp']);
+                
+                // If admin increases XP, add it to totalXp so it looks natural
+                if ($users[$targetUid]['xp'] > $oldXp) {
+                    $diff = $users[$targetUid]['xp'] - $oldXp;
+                    $users[$targetUid]['totalXp'] += $diff;
+                }
+                
+                logAdminAction('Balance Update', "UID: $targetUid | USD: $oldUsd -> {$users[$targetUid]['usd']} | XP: $oldXp -> {$users[$targetUid]['xp']}");
             }
             writeDB('users.json', $users);
             $response['message'] = 'User updated successfully.';
@@ -303,12 +416,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (isset($withdrawals[$targetUid][$idx])) {
                 if ($withdrawals[$targetUid][$idx]['status'] === 'Pending') {
+                    $amount = $withdrawals[$targetUid][$idx]['amount'];
                     if ($wAct === 'approve') {
                         $withdrawals[$targetUid][$idx]['status'] = 'Approved';
+                        logAdminAction('Withdraw Approved', "UID: $targetUid | Amount: $$amount");
                     } else if ($wAct === 'reject') {
                         $withdrawals[$targetUid][$idx]['status'] = 'Rejected';
-                        $users[$targetUid]['usd'] += $withdrawals[$targetUid][$idx]['amount'];
+                        $users[$targetUid]['usd'] += $amount;
                         writeDB('users.json', $users);
+                        logAdminAction('Withdraw Rejected', "UID: $targetUid | Amount: $$amount returned to balance");
                     }
                     writeDB('withdrawals.json', $withdrawals);
                     $response['message'] = 'Withdrawal processed.';
@@ -325,14 +441,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // NORMAL USER ACTIONS
     switch ($action) {
+        case 'sync':
+            // Just returning the state without any modification
+            break;
+
         case 'watch_ad':
             if ($users[$uid]['adsWatchedToday'] < 30) {
+                $rewardXp = 20 * $xpMult;
                 $users[$uid]['adsWatchedToday'] += 1;
                 $users[$uid]['totalAdsWatched'] += 1;
-                $users[$uid]['xp'] += 20;
-                $users[$uid]['totalXp'] += 20;
+                $users[$uid]['xp'] += $rewardXp;
+                $users[$uid]['totalXp'] += $rewardXp;
+                $users[$uid]['dailyXp'] += $rewardXp;
                 $users[$uid]['level'] = calcLevel($users[$uid]['totalXp']);
-                evaluateReferralProgress($uid, $users, $referrals, $rewards);
+                evaluateReferralProgress($uid, $users, $referrals, $rewards, $xpMult);
+                $response['earned'] = $rewardXp;
             } else {
                 $response['error'] = 'Ad limit reached';
             }
@@ -342,11 +465,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $taskId = $input['taskId'] ?? '';
             if ($taskId === 'sponsor_azx') {
                 if (empty($users[$uid]['sponsorAzx'])) {
+                    $rewardXp = 200 * $xpMult;
                     $users[$uid]['sponsorAzx'] = true;
-                    $users[$uid]['xp'] += 200;
-                    $users[$uid]['totalXp'] += 200;
+                    $users[$uid]['xp'] += $rewardXp;
+                    $users[$uid]['totalXp'] += $rewardXp;
+                    $users[$uid]['dailyXp'] += $rewardXp;
                     $users[$uid]['level'] = calcLevel($users[$uid]['totalXp']);
-                    evaluateReferralProgress($uid, $users, $referrals, $rewards);
+                    evaluateReferralProgress($uid, $users, $referrals, $rewards, $xpMult);
+                    $response['earned'] = $rewardXp;
                 } else {
                     $response['error'] = 'Task already claimed.';
                 }
@@ -357,15 +483,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $response['error'] = 'Complete all daily tasks first.';
                         break;
                     }
-                    $rewardXp = (int)($input['reward'] ?? 0);
-                    if ($rewardXp > 0 && $rewardXp <= 500) { 
+                    $rewardXp = (int)($input['reward'] ?? 0) * $xpMult;
+                    if ($rewardXp > 0 && $rewardXp <= 5000) { 
                         $tasks[$uid][] = $taskId;
                         $users[$uid]['tasksCompleted'] += 1;
                         $users[$uid]['xp'] += $rewardXp;
                         $users[$uid]['totalXp'] += $rewardXp;
+                        $users[$uid]['dailyXp'] += $rewardXp;
                         $users[$uid]['level'] = calcLevel($users[$uid]['totalXp']);
-                        evaluateReferralProgress($uid, $users, $referrals, $rewards);
+                        evaluateReferralProgress($uid, $users, $referrals, $rewards, $xpMult);
                         writeDB('tasks.json', $tasks);
+                        $response['earned'] = $rewardXp;
                     }
                 } else {
                     $response['error'] = 'Task already claimed today.';
@@ -378,7 +506,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $costs = ['bronze' => 10000, 'silver' => 50000, 'gold' => 100000];
             
             if (isset($costs[$type]) && $users[$uid]['xp'] >= $costs[$type]) {
-                $users[$uid]['xp'] -= $costs[$type];
+                $users[$uid]['xp'] -= $costs[$type]; // Current XP drops, but Total XP stays same
                 $users[$uid]['boxesOpened'] += 1;
                 $isJackpot = (rand(1, 10000) === 1); 
                 $rewardUsd = 0;
@@ -390,7 +518,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $response['reward'] = $rewardUsd;
                 $response['jackpot'] = $isJackpot;
             } else {
-                $response['error'] = 'Not enough XP';
+                $response['error'] = 'Not enough Current XP';
             }
             break;
 
@@ -527,6 +655,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h2 class="text-white font-black tracking-[0.25em] text-2xl uppercase bg-clip-text text-transparent bg-gradient-to-r from-crypto-glow via-blue-400 to-indigo-500 mb-2 drop-shadow-lg">XPVerse</h2>
   </div>
 
+  <!-- Maintenance Ban overlay handled dynamically in JS -->
+
   <!-- Notification Toast -->
   <div id="toast-container" class="glass-card rounded-2xl p-3 flex items-center gap-3">
     <div id="toast-icon" class="w-10 h-10 rounded-full flex shrink-0 items-center justify-center text-lg shadow-inner">
@@ -554,7 +684,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
       </div>
       <div class="flex flex-col items-end gap-1.5">
-        <div class="bg-[#050511] border border-blue-500/30 px-2.5 py-1 rounded-lg flex items-center gap-1.5">
+        <!-- BALANCE: Current Spendable XP -->
+        <div class="bg-[#050511] border border-blue-500/30 px-2.5 py-1 rounded-lg flex items-center gap-1.5" onclick="showToast('Balance', 'This is your current spendable XP.', 'info')">
           <i class="fa-solid fa-bolt text-crypto-glow text-[10px]"></i>
           <span id="user-xp" class="text-white font-black text-xs tracking-wider">0 <span class="text-[9px] text-crypto-glow">XP</span></span>
         </div>
@@ -571,13 +702,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     <!-- HOME PAGE -->
     <div id="view-home" class="view-section fade-in space-y-5">
+      
+      <!-- 2x XP Banner -->
+      <div id="double-xp-banner" class="hidden bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 text-white font-black text-[10px] uppercase tracking-widest rounded-xl p-2 text-center animate-pulse shadow-[0_0_15px_rgba(236,72,153,0.5)]">
+         <i class="fa-solid fa-fire mr-1"></i> 2x XP Event Active! Earn double from Ads & Tasks! <i class="fa-solid fa-fire ml-1"></i>
+      </div>
+
       <div class="relative glass-card rounded-[1.5rem] p-5 text-center border-t border-t-blue-400/20 overflow-hidden flex flex-col items-center justify-center min-h-[220px]">
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-500/20 rounded-full filter blur-[40px] pointer-events-none animate-pulse-fast"></div>
         <div class="relative z-10 flex flex-col items-center">
           <div class="w-14 h-14 rounded-full bg-gradient-to-br from-blue-900/60 to-[#050511] border border-blue-400/40 flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(59,130,246,0.4)]">
              <i class="fa-solid fa-gem text-2xl text-crypto-glow drop-shadow-[0_0_10px_rgba(0,240,255,0.9)]"></i>
           </div>
-          <p class="text-[10px] font-black text-blue-400 uppercase tracking-[0.25em] mb-1 opacity-90">Total Balance</p>
+          <p class="text-[10px] font-black text-blue-400 uppercase tracking-[0.25em] mb-1 opacity-90">Current Balance</p>
           <h1 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-blue-500 tracking-tighter drop-shadow-xl" id="main-xp-display">0 XP</h1>
         </div>
         <div class="w-full mt-6 grid grid-cols-2 gap-3">
@@ -601,7 +738,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <button onclick="watchAd()" id="watch-ad-btn" class="w-full py-3.5 rounded-[1.25rem] text-white font-black text-sm tracking-[0.1em] uppercase flex items-center justify-center gap-2.5 shadow-[0_10px_20px_rgba(59,130,246,0.3)] btn-3d relative overflow-hidden group">
         <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
         <i class="fa-solid fa-play bg-white/20 p-2 rounded-full text-[10px] drop-shadow-md"></i> 
-        <span>Watch Ad <span class="text-cyan-200 ml-1">+20 XP</span></span>
+        <span>Watch Ad <span id="ad-reward-text" class="text-cyan-200 ml-1">+20 XP</span></span>
       </button>
 
       <!-- SERVER TIMED RESET -->
@@ -647,6 +784,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <i class="fa-solid fa-star text-amber-400"></i> Sponsor Task
         </h3>
         <div id="sponsor-container" class="space-y-3"></div>
+      </div>
+      
+      <!-- Dynamic / Admin Tasks -->
+      <div id="dynamic-tasks-section" class="mt-6 mb-4 hidden">
+        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] pl-2 mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-bolt text-crypto-glow"></i> Special Missions
+        </h3>
+        <div id="dynamic-tasks-container" class="space-y-3"></div>
       </div>
 
       <div>
@@ -716,7 +861,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div id="view-boxes" class="view-section hidden fade-in space-y-4">
       <div class="text-center mb-4">
         <h2 class="text-2xl font-black text-white tracking-tight drop-shadow-lg">Box</h2>
-        <p class="text-[11px] text-amber-400 mt-0.5 uppercase tracking-widest font-bold">Try Your Luck, Win USDT</p>
+        <p class="text-[11px] text-amber-400 mt-0.5 uppercase tracking-widest font-bold">Spend Current XP, Win USDT</p>
       </div>
       
       <div class="box-bronze glass-card rounded-[1.25rem] p-4 relative overflow-hidden flex justify-between items-center transition-transform hover:scale-[1.02] shadow-md">
@@ -860,18 +1005,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </h3>
       
       <div class="grid grid-cols-2 gap-3">
+        <!-- LIFETIME XP -->
         <div class="glass-card p-4 rounded-xl border-t border-t-crypto-glow/40 shadow-md flex flex-col items-center justify-center text-center">
             <div class="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center mb-1.5">
                 <i class="fa-solid fa-bolt text-crypto-glow text-sm"></i>
             </div>
-            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Total XP</p>
+            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Lifetime XP (Total)</p>
             <p id="profile-stat-xp" class="text-lg font-black text-white">0</p>
         </div>
         <div class="glass-card p-4 rounded-xl border-t border-t-emerald-500/40 shadow-md flex flex-col items-center justify-center text-center">
             <div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center mb-1.5">
                 <i class="fa-solid fa-wallet text-emerald-400 text-sm"></i>
             </div>
-            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Balance</p>
+            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Total Balance</p>
             <p id="profile-stat-usd" class="text-lg font-black text-white">$0</p>
         </div>
         <div class="glass-card p-4 rounded-xl border-t border-t-purple-500/40 shadow-md flex flex-col items-center justify-center text-center">
@@ -898,9 +1044,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
 
       <div class="flex gap-2 mb-2 bg-[#050511] p-1 rounded-lg border border-slate-700/50">
-          <button onclick="switchAdminTab('dashboard')" class="admin-tab flex-1 py-2 text-[10px] font-black uppercase rounded bg-red-600/20 text-red-400 border border-red-500/50 transition" id="tab-dashboard">Dashboard</button>
+          <button onclick="switchAdminTab('dashboard')" class="admin-tab flex-1 py-2 text-[10px] font-black uppercase rounded bg-red-600/20 text-red-400 border border-red-500/50 transition" id="tab-dashboard">Dash</button>
           <button onclick="switchAdminTab('users')" class="admin-tab flex-1 py-2 text-[10px] font-black uppercase rounded text-slate-400 hover:bg-slate-800 transition" id="tab-users">Users</button>
-          <button onclick="switchAdminTab('withdrawals')" class="admin-tab flex-1 py-2 text-[10px] font-black uppercase rounded text-slate-400 hover:bg-slate-800 transition" id="tab-withdrawals">Withdraws</button>
+          <button onclick="switchAdminTab('withdrawals')" class="admin-tab flex-1 py-2 text-[10px] font-black uppercase rounded text-slate-400 hover:bg-slate-800 transition" id="tab-withdrawals">Withdraw</button>
           <button onclick="switchAdminTab('settings')" class="admin-tab flex-1 py-2 text-[10px] font-black uppercase rounded text-slate-400 hover:bg-slate-800 transition" id="tab-settings">Settings</button>
       </div>
 
@@ -915,30 +1061,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   <p class="text-[9px] text-slate-400 uppercase font-black">USD Generated</p>
                   <p id="adm-stat-usd" class="text-lg font-black text-emerald-400">$0</p>
               </div>
-              <div class="glass-card p-3 rounded-xl border border-slate-700 text-center">
-                  <p class="text-[9px] text-slate-400 uppercase font-black">Ads Watched</p>
-                  <p id="adm-stat-ads" class="text-lg font-black text-white">0</p>
-              </div>
-              <div class="glass-card p-3 rounded-xl border border-slate-700 text-center">
-                  <p class="text-[9px] text-slate-400 uppercase font-black">Tasks Done</p>
-                  <p id="adm-stat-tasks" class="text-lg font-black text-white">0</p>
-              </div>
-              <div class="glass-card p-3 rounded-xl border border-slate-700 text-center">
-                  <p class="text-[9px] text-slate-400 uppercase font-black">Total XP</p>
-                  <p id="adm-stat-xp" class="text-lg font-black text-crypto-glow">0</p>
-              </div>
-              <div class="glass-card p-3 rounded-xl border border-slate-700 text-center">
-                  <p class="text-[9px] text-slate-400 uppercase font-black">Referrals</p>
-                  <p id="adm-stat-refs" class="text-lg font-black text-purple-400">0</p>
-              </div>
+          </div>
+          
+          <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest pl-1 mt-4 border-t border-slate-800 pt-3">Recent Admin Actions (Logs)</h3>
+          <div id="admin-action-logs" class="space-y-2 max-h-[300px] overflow-y-auto admin-scroll">
+              <!-- JS Populated -->
           </div>
       </div>
 
-      <!-- Users Management -->
+      <!-- Users Management (New Detailed Layout) -->
       <div id="admin-sec-users" class="admin-section hidden space-y-3">
           <input type="text" id="admin-user-search" onkeyup="filterAdminUsers()" placeholder="Search UID or Username..." class="w-full bg-[#050511] border border-slate-700 rounded-lg py-2 px-3 text-xs text-white focus:border-blue-500 outline-none">
-          <div class="max-h-[60vh] overflow-y-auto admin-scroll space-y-2 pr-1" id="admin-user-list">
-              <!-- JS Populated -->
+          <div class="max-h-[65vh] overflow-y-auto admin-scroll space-y-3 pr-1" id="admin-user-list">
+              <!-- JS Populated with beautiful cards -->
           </div>
       </div>
 
@@ -949,12 +1084,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
       </div>
 
-      <!-- Settings -->
+      <!-- Settings & Tasks -->
       <div id="admin-sec-settings" class="admin-section hidden space-y-3">
+          
+          <!-- System Toggles -->
+          <div class="glass-card rounded-xl p-4 border border-slate-700 space-y-4">
+              <div class="flex justify-between items-center bg-[#050511] p-3 rounded-lg border border-slate-800">
+                  <div>
+                      <h4 class="text-xs font-black text-white">Maintenance Mode</h4>
+                      <p class="text-[9px] text-slate-500">Only admin can enter</p>
+                  </div>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="admin-maint-toggle" class="sr-only peer" onchange="toggleMaintenance()">
+                    <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"></div>
+                  </label>
+              </div>
+
+              <div class="bg-[#050511] p-3 rounded-lg border border-slate-800 flex items-center gap-2">
+                  <div class="flex-1">
+                      <h4 class="text-xs font-black text-crypto-glow">Enable 2x XP Event</h4>
+                      <p class="text-[9px] text-slate-500">Duration in hours (0 to disable)</p>
+                  </div>
+                  <input type="number" id="admin-double-xp-hours" placeholder="Hours" class="w-16 bg-slate-800 border border-slate-600 rounded text-xs text-center text-white py-1">
+                  <button onclick="setDoubleXp()" class="bg-blue-600 text-white px-2 py-1 rounded text-[10px] font-black uppercase">Set</button>
+              </div>
+          </div>
+
+          <!-- Danger Zone -->
+          <div class="glass-card rounded-xl p-4 border border-red-900/50 bg-red-900/10">
+              <h3 class="text-[10px] font-black text-red-500 uppercase tracking-widest mb-3"><i class="fa-solid fa-triangle-exclamation"></i> Danger Zone</h3>
+              <div class="flex gap-2">
+                  <button onclick="resetAllAds()" class="flex-1 bg-orange-600 text-white py-2 rounded text-[10px] font-black uppercase tracking-wider shadow-lg">Reset All Daily Ads</button>
+                  <button onclick="wipeBotData()" class="flex-1 bg-red-700 text-white py-2 rounded text-[10px] font-black uppercase tracking-wider shadow-lg">Wipe All Data</button>
+              </div>
+          </div>
+
+          <!-- Dynamic Tasks Manager -->
+          <div class="glass-card rounded-xl p-4 border border-slate-700">
+              <h3 class="text-[10px] font-black text-crypto-glow uppercase tracking-widest mb-3 border-b border-slate-700 pb-2"><i class="fa-solid fa-list-check"></i> Add Custom Task</h3>
+              <div class="space-y-2 mb-3">
+                  <input type="text" id="dt-title" placeholder="Task Title (e.g., Join Channel)" class="w-full bg-[#050511] border border-slate-700 rounded py-2 px-3 text-xs text-white outline-none">
+                  <input type="text" id="dt-url" placeholder="Link (e.g., https://t.me/...)" class="w-full bg-[#050511] border border-slate-700 rounded py-2 px-3 text-xs text-white outline-none">
+                  <input type="number" id="dt-reward" placeholder="Reward XP (e.g., 500)" class="w-full bg-[#050511] border border-slate-700 rounded py-2 px-3 text-xs text-white outline-none">
+                  <button onclick="addDynamicTask()" class="w-full bg-emerald-600 text-white py-2 rounded text-xs font-black uppercase tracking-wider">Add Task</button>
+              </div>
+              <div id="admin-dynamic-tasks-list" class="space-y-2">
+                  <!-- Task list -->
+              </div>
+          </div>
+
           <div class="glass-card rounded-xl p-4 border border-slate-700">
               <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Adsgram Block IDs (Comma separated)</label>
-              <textarea id="admin-ad-sdk" rows="4" class="w-full bg-[#050511] border border-slate-700 rounded-lg py-2.5 px-3 text-xs text-white focus:border-blue-500 outline-none mb-3" placeholder="int-35545, int-35546, ..."></textarea>
-              <button onclick="saveAdminSettings()" class="w-full py-2 bg-blue-600 text-white rounded text-xs font-black uppercase tracking-wider">Save Settings</button>
+              <textarea id="admin-ad-sdk" rows="3" class="w-full bg-[#050511] border border-slate-700 rounded py-2 px-3 text-xs text-white outline-none mb-2" placeholder="int-35545, int-35546, ..."></textarea>
+              <button onclick="saveAdminSettings()" class="w-full bg-blue-600 text-white py-2 rounded text-xs font-black uppercase tracking-wider">Save Ads Config</button>
           </div>
       </div>
 
@@ -993,7 +1175,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </nav>
 
   <!-- Admin Auth Modal -->
-  <div id="admin-auth-modal" class="fixed inset-0 modal-overlay hidden flex-col items-center justify-center p-4 transition-opacity fade-in">
+  <div id="admin-auth-modal" class="fixed inset-0 modal-overlay hidden flex-col items-center justify-center p-4 transition-opacity fade-in z-[100000]">
     <div class="glass-card w-full max-w-[280px] rounded-[1.5rem] p-5 relative border border-red-500/50 shadow-[0_0_40px_rgba(239,68,68,0.3)]">
       <button onclick="closeAdminAuth()" class="absolute top-3 right-3 text-slate-400 hover:text-white transition"><i class="fa-solid fa-xmark"></i></button>
       <h3 class="text-lg font-black text-white text-center mb-4"><i class="fa-solid fa-lock text-red-500 mr-1"></i> Admin Access</h3>
@@ -1002,7 +1184,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </div>
 
-  <div id="ref-info-modal" class="fixed inset-0 modal-overlay hidden flex-col items-center justify-center p-4 transition-opacity fade-in">
+  <!-- Referral Info Modal -->
+  <div id="ref-info-modal" class="fixed inset-0 modal-overlay hidden flex-col items-center justify-center p-4 transition-opacity fade-in z-[100000]">
     <div class="glass-card w-full max-w-sm rounded-[1.5rem] p-5 relative border border-blue-500/30 shadow-[0_0_40px_rgba(0,0,0,0.9)]">
       <button onclick="toggleRefInfo()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center hover:text-white active:scale-90 transition-transform border border-slate-700 shadow-sm"><i class="fa-solid fa-xmark text-sm"></i></button>
       <div class="w-12 h-12 mx-auto bg-blue-500/10 rounded-full flex items-center justify-center mb-4 border border-blue-500/30 text-blue-400 text-xl shadow-[0_0_15px_rgba(59,130,246,0.2)]"><i class="fa-solid fa-users"></i></div>
@@ -1037,13 +1220,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     const startParam = tg.initDataUnsafe?.start_param || null;
 
     let appState = {
-      user: {}, referrals: [], rewards: [], withdrawals: [], tasks: [], settings: { adBlockIds: ['int-35545'] }
+      user: {}, referrals: [], rewards: [], withdrawals: [], tasks: [], settings: { adBlockIds: ['int-35545'], dynamicTasks: [] }
     };
     
+    let isDoubleXp = false;
+    let isSyncing = false; // Prevents overlapping requests
+
     // Admin globals
     let adminToken = '';
     let adminUsers = [];
     let adminWithdrawals = [];
+    let adminLogs = [];
 
     function formatNum(num, isMoney = false) {
         if (!num) return isMoney ? "0" : "0";
@@ -1051,7 +1238,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         return isMoney ? (val % 1 === 0 ? val.toString() : val.toFixed(2).replace(/\.?0+$/, '')) : val.toLocaleString();
     }
 
-    async function apiCall(action, payload = {}) {
+    async function apiCall(action, payload = {}, silent = false) {
+      if(isSyncing && silent) return false;
+      if(silent) isSyncing = true;
       try {
         const body = {
           action: action, tgId: tgUser.id, firstName: tgUser.first_name || '', lastName: tgUser.last_name || '',
@@ -1062,12 +1251,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         });
         const data = await res.json();
         
+        if(silent) isSyncing = false;
+
         if(data.error) {
-          if (data.error === 'BANNED') {
-             document.body.innerHTML = `<div class="h-screen w-full flex flex-col items-center justify-center bg-red-900 text-white p-5 text-center"><i class="fa-solid fa-ban text-5xl mb-4"></i><h1 class="text-2xl font-black mb-2">ACCOUNT BANNED</h1><p class="text-xs opacity-80">${data.message}</p></div>`;
+          if (data.error === 'BANNED' || data.error === 'MAINTENANCE') {
+             const icon = data.error === 'BANNED' ? 'fa-ban' : 'fa-tools';
+             document.body.innerHTML = `<div class="h-screen w-full flex flex-col items-center justify-center bg-red-900/90 backdrop-blur text-white p-5 text-center"><i class="fa-solid ${icon} text-5xl mb-4 text-red-400"></i><h1 class="text-2xl font-black mb-2">${data.error}</h1><p class="text-xs opacity-80 leading-relaxed">${data.message}</p></div>`;
              return false;
           }
-          showToast("Error", data.error, "error");
+          if(!silent) showToast("Error", data.error, "error");
           return false;
         }
 
@@ -1077,14 +1269,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if(data.withdrawals) appState.withdrawals = data.withdrawals;
         if(data.tasks) appState.tasks = data.tasks;
         if(data.settings) appState.settings = data.settings;
+        if(data.isDoubleXp !== undefined) isDoubleXp = data.isDoubleXp;
 
         updateUI();
+        
+        if (action === 'admin_dashboard') {
+            adminUsers = data.all_users || [];
+            adminWithdrawals = data.all_withdrawals || [];
+            adminLogs = data.admin_logs || [];
+            renderAdminDashboard(data.stats);
+        }
+
         return data;
       } catch (err) {
-        showToast("Connection Error", "Could not reach server.", "error");
+        if(silent) isSyncing = false;
+        if(!silent) showToast("Connection Error", "Could not reach server.", "error");
         return false;
       }
     }
+
+    // Auto-Sync loop (Anlıq yenilənmə - çekim, admin balans əlavə etməsi üçün)
+    setInterval(() => {
+        apiCall('sync', {}, true);
+    }, 15000);
 
     function showToast(title, message, type = 'info') {
       const toast = document.getElementById('toast-container');
@@ -1125,12 +1332,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       if (u.username) { document.getElementById('profile-page-username').innerText = `@${u.username}`; document.getElementById('profile-page-username').style.display = 'inline-block'; } 
       else { document.getElementById('profile-page-username').style.display = 'none'; }
       document.getElementById('profile-page-id').innerText = u.tgId;
-      document.getElementById('profile-stat-xp').innerText = formatNum(u.totalXp);
+      
+      // Update Stats
+      document.getElementById('profile-stat-xp').innerText = formatNum(u.totalXp); // Lifetime
       document.getElementById('profile-stat-usd').innerText = `$${formatNum(u.usd, true)}`;
       document.getElementById('profile-stat-refs').innerText = appState.referrals.length;
       document.getElementById('profile-stat-tasks').innerText = u.tasksCompleted;
 
-      // Show admin button safely
+      // Ensure Admin Button Appears
       if (u.tgId === '5461064199') {
           document.getElementById('admin-secret-btn').classList.remove('hidden');
       }
@@ -1144,11 +1353,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       document.getElementById('ref-approved').innerText = appState.referrals.filter(r => r.status === 'Approved').length;
       document.getElementById('ref-link-input').value = `https://t.me/XPVersebot?startapp=${u.tgId}`;
       
+      // Double XP UI Handle
+      const banner = document.getElementById('double-xp-banner');
+      const adText = document.getElementById('ad-reward-text');
+      if (isDoubleXp) {
+          banner.classList.remove('hidden');
+          adText.innerText = "+40 XP (2x)";
+          adText.classList.add('text-pink-400');
+      } else {
+          banner.classList.add('hidden');
+          adText.innerText = "+20 XP";
+          adText.classList.remove('text-pink-400');
+      }
+
       renderReferrals(); renderRewardHistory();
       document.getElementById('withdraw-balance-display').innerText = formatNum(u.usd, true);
-      renderWithdrawHistory(); renderDailyLoginTask(); renderTasks();
+      renderWithdrawHistory(); renderDailyLoginTask(); renderTasks(); renderDynamicTasks();
     }
 
+    /* All standard functions from existing logic are integrated here cleanly */
+    
     function renderDailyLoginTask() {
       const container = document.getElementById('streak-tracker-container'); const btnContainer = document.getElementById('daily-login-btn-container');
       container.innerHTML = '';
@@ -1163,300 +1387,372 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         else if (isToday) { styles = "bg-blue-600/30 border-crypto-glow shadow-[0_0_15px_rgba(0,240,255,0.4)] text-white"; }
         container.innerHTML += `<div class="relative flex flex-col items-center gap-1 z-10 flex-1"><div class="w-8 h-8 rounded-lg border flex items-center justify-center transition-all duration-300 ${styles} z-10 relative bg-[#0a0b1a]">${icon}</div><span class="text-[8px] font-black tracking-widest ${isToday ? 'text-crypto-glow drop-shadow-[0_0_3px_#00f0ff]' : 'text-slate-500'}">DAY ${i}</span>${i < 7 ? `<div class="absolute top-4 left-[50%] w-full h-1 -z-0 ${lineStyle} rounded-full"></div>` : ''}</div>`;
       }
-      
-      if (claimedToday) btnContainer.innerHTML = `<button class="bg-emerald-900/50 border border-emerald-500/40 text-emerald-400 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 cursor-not-allowed opacity-80 shadow-inner"><i class="fa-solid fa-check-double"></i> Claimed</button>`;
-      else btnContainer.innerHTML = `<button onclick="claimTask('dailyLogin', ${rewards[streak - 1]})" class="bg-gradient-to-r from-crypto-glow to-blue-500 text-crypto-dark shadow-[0_3px_15px_rgba(0,240,255,0.4)] hover:brightness-110 active:scale-95 transition-all px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest animate-pulse-fast">CLAIM</button>`;
+      if (!claimedToday) {
+        btnContainer.innerHTML = `<button onclick="claimTask('dailyLogin', ${rewards[streak-1]})" class="bg-crypto-glow text-[#050511] px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider shadow-[0_0_15px_rgba(0,240,255,0.5)] hover:scale-105 active:scale-95 transition-all">Claim</button>`;
+      } else {
+        btnContainer.innerHTML = `<div class="bg-slate-800 text-slate-400 px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider">Done</div>`;
+      }
     }
 
     function renderTasks() {
+      // Sponsor Task
       const spContainer = document.getElementById('sponsor-container');
-      if (appState.user.sponsorAzx) spContainer.innerHTML = `<div class="glass-card rounded-xl p-3 flex justify-between items-center border border-slate-800 shadow-sm"><div class="flex items-center gap-2.5"><div class="w-10 h-10 rounded-lg border bg-blue-500/10 border-blue-500/20 flex items-center justify-center"><i class="fa-brands fa-telegram text-blue-400 text-lg"></i></div><div class="flex flex-col"><span class="text-[13px] font-black text-white tracking-wide">Join @azxcrypto</span><span class="text-emerald-400 text-[9px] font-bold tracking-widest uppercase mt-0.5">Completed</span></div></div><span class="text-[10px] font-black bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-lg border border-emerald-500/30 flex items-center gap-1"><i class="fa-solid fa-check-double"></i></span></div>`;
-      else spContainer.innerHTML = `<div class="glass-card rounded-xl p-3 flex justify-between items-center border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.15)] relative overflow-hidden"><div class="absolute -right-4 -top-4 w-16 h-16 bg-blue-500/20 rounded-full blur-xl"></div><div class="flex items-center gap-2.5 relative z-10"><div class="w-10 h-10 rounded-lg border bg-blue-500/20 border-blue-500/40 flex items-center justify-center shadow-inner"><i class="fa-brands fa-telegram text-blue-400 text-lg drop-shadow-sm"></i></div><div class="flex flex-col"><span class="text-[13px] font-black text-white tracking-wide">Join @azxcrypto</span><span class="text-crypto-glow text-[9px] font-bold tracking-widest uppercase mt-0.5">+200 XP</span></div></div><button onclick="claimSponsorTask()" class="relative z-10 text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-3 py-1.5 rounded-lg shadow-[0_3px_10px_rgba(0,240,255,0.3)] active:scale-95 transition-all uppercase tracking-wider">Join & Claim</button></div>`;
-
-      const container = document.getElementById('missions-container'); container.innerHTML = '';
-      const missionsList = [
-        { id: 'watch5', label: 'Watch 5 Ads', icon: 'fa-video', color: 'text-blue-400', bg: 'bg-blue-500/10 border-blue-500/20', reward: 20, target: 5, current: appState.user.adsWatchedToday },
-        { id: 'watch15', label: 'Watch 15 Ads', icon: 'fa-film', color: 'text-indigo-400', bg: 'bg-indigo-500/10 border-indigo-500/20', reward: 40, target: 15, current: appState.user.adsWatchedToday },
-        { id: 'watch30', label: 'Watch 30 Ads', icon: 'fa-clapperboard', color: 'text-purple-400', bg: 'bg-purple-500/10 border-purple-500/20', reward: 80, target: 30, current: appState.user.adsWatchedToday },
-        { id: 'complete_all', label: 'Complete All Tasks', icon: 'fa-check-to-slot', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20', reward: 100, target: 30, current: appState.user.adsWatchedToday }
-      ];
-
-      missionsList.forEach(m => {
-        const claimed = appState.tasks.includes(m.id); const canClaim = !claimed && m.current >= m.target;
-        let btnHtml = '';
-        if (claimed) btnHtml = `<span class="text-[9px] font-black bg-emerald-500/10 text-emerald-400 px-2.5 py-1.5 rounded-lg border border-emerald-500/30 flex items-center gap-1 shadow-inner"><i class="fa-solid fa-check-double"></i> Claimed</span>`;
-        else if (canClaim) btnHtml = `<button onclick="claimTask('${m.id}', ${m.reward})" class="text-[10px] font-black bg-gradient-to-r from-blue-600 to-cyan-500 text-white px-3 py-1.5 rounded-lg shadow-[0_3px_10px_rgba(0,240,255,0.3)] active:scale-95 transition-all uppercase tracking-wider">Claim</button>`;
-        else btnHtml = `<span class="text-[10px] font-black bg-slate-800/60 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 shadow-inner">+${m.reward} XP</span>`;
-        container.innerHTML += `<div class="glass-card rounded-xl p-3 flex justify-between items-center transition-transform hover:-translate-y-0.5 border border-slate-800/80 shadow-sm"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-lg border ${m.bg} flex items-center justify-center shadow-inner"><i class="fa-solid ${m.icon} ${m.color} text-lg drop-shadow-sm"></i></div><div class="flex flex-col"><span class="text-[13px] font-black text-white tracking-wide">${m.label}</span><span class="text-crypto-glow text-[9px] font-bold tracking-widest uppercase opacity-80 mt-0.5">Progress: ${Math.min(m.current, m.target)}/${m.target}</span></div></div>${btnHtml}</div>`;
-      });
-    }
-
-    async function claimSponsorTask() {
-        if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-        tg.openTelegramLink('https://t.me/azxcrypto');
-        setTimeout(async () => { const res = await apiCall('claim_task', { taskId: 'sponsor_azx', reward: 200 }); if(res && !res.error) showToast('Sponsor Task', `You earned +200 XP!`, 'success'); }, 1500);
-    }
-    async function claimTask(taskId, reward) {
-        if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-        const res = await apiCall('claim_task', { taskId, reward });
-        if(res && !res.error) showToast('Task Completed!', `You earned +${reward} XP!`, 'success');
-    }
-
-    // UPDATED: MULTI-API FALLBACK SYSTEM
-    async function watchAd() {
-      const btn = document.getElementById('watch-ad-btn'); 
-      const originalHTML = btn.innerHTML;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-base"></i> <span>Loading...</span>`;
-      btn.classList.add('opacity-80', 'pointer-events-none');
-      
-      const blockIds = appState.settings.adBlockIds || ["int-35545"];
-      let adShown = false;
-      
-      // Rotate through APIs if one fails or hits a limit
-      for(let i = 0; i < blockIds.length; i++) {
-        let currentId = blockIds[i].trim();
-        if(!currentId) continue;
-        
-        try {
-          if (window.Adsgram) {
-            const AdController = window.Adsgram.init({ blockId: currentId });
-            await AdController.show(); // This returns a promise
-            adShown = true;
-            break; // Ad loaded successfully, exit the loop
-          }
-        } catch (e) {
-          console.warn(`Adsgram API (${currentId}) failed or limited. Trying next API...`);
-        }
-      }
-      
-      if(adShown) {
-         const res = await apiCall('watch_ad');
-         if(res && !res.error) showToast('Reward Granted!', 'You earned +20 XP.', 'success');
+      if (appState.user.sponsorAzx) {
+        spContainer.innerHTML = `<div class="bg-emerald-900/20 border border-emerald-500/30 rounded-xl p-3 flex justify-between items-center"><div class="flex items-center gap-2"><i class="fa-brands fa-telegram text-emerald-400 text-lg"></i><div><p class="text-[11px] font-black text-emerald-400">Join AZX Community</p><p class="text-[9px] text-slate-400">+200 XP</p></div></div><i class="fa-solid fa-check text-emerald-400 mr-2"></i></div>`;
       } else {
-         showToast('Error', 'No ads available right now across all networks. Please try again later.', 'error');
+        spContainer.innerHTML = `<div class="bg-[#050511]/60 border border-amber-500/30 rounded-xl p-3 flex justify-between items-center shadow-[0_0_10px_rgba(251,191,36,0.1)]"><div class="flex items-center gap-2"><i class="fa-brands fa-telegram text-blue-400 text-lg"></i><div><p class="text-[11px] font-black text-white">Join AZX Community</p><p class="text-[9px] text-amber-400 font-bold uppercase tracking-widest mt-0.5">+200 XP</p></div></div><button onclick="tg.openTelegramLink('https://t.me/azxcoin'); setTimeout(() => claimTask('sponsor_azx'), 5000);" class="bg-amber-500/20 text-amber-400 border border-amber-500/50 px-3 py-1.5 rounded text-[10px] font-black uppercase tracking-wider">Start</button></div>`;
       }
-      
-      btn.innerHTML = originalHTML; 
-      btn.classList.remove('opacity-80', 'pointer-events-none');
+
+      // Hardcoded Basic Missions
+      const mContainer = document.getElementById('missions-container');
+      const m = [
+        { id: 'watch_5', title: 'Watch 5 Ads', target: 5, reward: 50, icon: 'fa-play', color: 'blue' },
+        { id: 'watch_15', title: 'Watch 15 Ads', target: 15, reward: 150, icon: 'fa-clapperboard', color: 'purple' },
+        { id: 'watch_30', title: 'Watch 30 Ads', target: 30, reward: 300, icon: 'fa-video', color: 'crypto-glow' },
+        { id: 'complete_all', title: 'Complete All Tasks', target: 30, reward: 500, icon: 'fa-trophy', color: 'amber' }
+      ];
+      mContainer.innerHTML = m.map(task => {
+        const isDone = appState.tasks.includes(task.id);
+        const progress = Math.min(appState.user.adsWatchedToday, task.target);
+        const canClaim = progress >= task.target && !isDone;
+        let btnHtml = '';
+        if (isDone) btnHtml = `<i class="fa-solid fa-check-circle text-emerald-400"></i>`;
+        else if (canClaim) btnHtml = `<button onclick="claimTask('${task.id}', ${task.reward})" class="bg-${task.color}-500/20 text-${task.color}-400 border border-${task.color}-500/50 px-3 py-1 rounded text-[10px] font-black uppercase tracking-wider animate-pulse">Claim</button>`;
+        else btnHtml = `<span class="text-[10px] font-black text-slate-500">${progress}/${task.target}</span>`;
+        return `<div class="bg-[#050511]/60 border border-slate-700/50 rounded-xl p-3 flex justify-between items-center"><div class="flex items-center gap-2.5"><div class="w-8 h-8 rounded-lg bg-${task.color}-500/10 flex items-center justify-center"><i class="fa-solid ${task.icon} text-${task.color}-400 text-xs"></i></div><div><p class="text-[11px] font-black text-white">${task.title}</p><p class="text-[9px] text-${task.color}-400 font-bold uppercase tracking-widest mt-0.5">+${task.reward} XP</p></div></div><div>${btnHtml}</div></div>`;
+      }).join('');
     }
 
-    async function openBox(type) {
-      if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
-      const res = await apiCall('open_box', { boxType: type });
-      if(res && !res.error) {
-        if(res.jackpot) showToast('HUGE JACKPOT! 🎉', `Incredible! You won $${res.reward.toFixed(2)} USDT!`, 'jackpot');
-        else showToast('Box Opened!', `Congratulations! You won $${res.reward.toFixed(2)} USDT!`, 'success');
+    function renderDynamicTasks() {
+        const dtContainer = document.getElementById('dynamic-tasks-container');
+        const dtSection = document.getElementById('dynamic-tasks-section');
+        const dtList = appState.settings?.dynamicTasks || [];
+        
+        if (dtList.length === 0) {
+            dtSection.classList.add('hidden');
+            return;
+        }
+        dtSection.classList.remove('hidden');
+
+        dtContainer.innerHTML = dtList.map(task => {
+            const isDone = appState.tasks.includes(task.id);
+            if (isDone) {
+                return `<div class="bg-emerald-900/10 border border-emerald-500/30 rounded-xl p-3 flex justify-between items-center"><div class="flex items-center gap-2"><i class="fa-solid fa-star text-emerald-400 text-sm"></i><div><p class="text-[11px] font-black text-emerald-400">${task.title}</p><p class="text-[9px] text-slate-400">+${task.reward} XP</p></div></div><i class="fa-solid fa-check text-emerald-400 mr-2"></i></div>`;
+            } else {
+                return `<div class="bg-[#050511]/60 border border-crypto-glow/30 rounded-xl p-3 flex justify-between items-center"><div class="flex items-center gap-2"><i class="fa-solid fa-star text-crypto-glow text-sm"></i><div><p class="text-[11px] font-black text-white">${task.title}</p><p class="text-[9px] text-crypto-glow font-bold uppercase tracking-widest mt-0.5">+${task.reward} XP</p></div></div><button onclick="window.open('${task.url}', '_blank'); setTimeout(() => claimTask('${task.id}', ${task.reward}), 5000);" class="bg-blue-600 text-white px-3 py-1.5 rounded text-[10px] font-black uppercase tracking-wider">Start</button></div>`;
+            }
+        }).join('');
+    }
+
+    async function claimTask(taskId, reward = 0) {
+      const res = await apiCall('claim_task', { taskId, reward });
+      if (res && res.success) {
+        showToast('Task Complete!', `You earned ${res.earned} XP.`, 'success');
       }
     }
 
-    async function requestWithdrawal() {
-      const address = document.getElementById('wallet-address').value; const amount = parseFloat(document.getElementById('withdraw-amount').value);
-      if (!address || address.length < 10) return showToast('Invalid Address', 'Please enter a valid TON wallet address.', 'error');
-      if (isNaN(amount) || amount < 10) return showToast('Invalid Amount', 'The minimum withdrawal amount is $10 USDT.', 'error');
-      if (amount > appState.user.usd) return showToast('Insufficient Balance', 'You do not have enough USDT available.', 'error');
-      if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-      const res = await apiCall('withdraw', { amount, address });
-      if(res && !res.error) { showToast('Withdrawal Requested', `Your request for $${amount.toFixed(2)} USDT has been submitted.`, 'success'); document.getElementById('wallet-address').value = ''; document.getElementById('withdraw-amount').value = ''; }
+    async function watchAd() {
+      if (appState.user.adsWatchedToday >= 30) return showToast('Limit Reached', 'You have watched all 30 ads for today.', 'warning');
+      const btn = document.getElementById('watch-ad-btn');
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Loading...';
+      btn.disabled = true;
+      try {
+        const blockId = appState.settings.adBlockIds[Math.floor(Math.random() * appState.settings.adBlockIds.length)];
+        const AdController = window.Adsgram.init({ blockId: blockId });
+        await AdController.show();
+        const res = await apiCall('watch_ad');
+        if (res && res.success) {
+          showToast('Reward Earned!', `Ad watched successfully! +${res.earned} XP`, 'success');
+        }
+      } catch (e) {
+        showToast('Ad Failed', 'Could not show ad or you closed it early.', 'error');
+      } finally {
+        const xpText = isDoubleXp ? '+40 XP (2x)' : '+20 XP';
+        const xpClass = isDoubleXp ? 'text-pink-400' : 'text-cyan-200';
+        btn.innerHTML = `<i class="fa-solid fa-play bg-white/20 p-2 rounded-full text-[10px]"></i> <span>Watch Ad <span id="ad-reward-text" class="${xpClass} ml-1">${xpText}</span></span>`;
+        btn.disabled = false;
+      }
     }
-
-    function renderWithdrawHistory() {
-      const container = document.getElementById('withdraw-history-container');
-      if (appState.withdrawals.length === 0) return container.innerHTML = `<div class="glass-card rounded-xl p-5 text-center border-dashed border-2 border-slate-700/50"><i class="fa-solid fa-clock-rotate-left text-3xl text-slate-700 mb-2 drop-shadow-md"></i><p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">History is Empty</p></div>`;
-      container.innerHTML = appState.withdrawals.map(r => `<div class="glass-card rounded-xl p-3 flex justify-between items-center border border-slate-800/80"><div class="flex items-center gap-2.5"><div class="w-8 h-8 rounded-full bg-[#050511] border border-slate-700 flex items-center justify-center shadow-inner"><i class="fa-solid fa-arrow-right-arrow-left text-slate-400 text-xs"></i></div><div><p class="text-xs font-black text-white tracking-wide">${r.id} <span class="text-[9px] text-slate-500 ml-1 font-bold">${r.date}</span></p><p class="text-[9px] text-blue-400 mt-0.5 font-mono bg-blue-500/10 inline-block px-1.5 py-0.5 rounded border border-blue-500/20">${r.address}</p></div></div><div class="text-right"><p class="text-[13px] font-black text-emerald-400">-$${formatNum(r.amount, true)}</p><p class="text-[8px] font-black text-amber-400 uppercase tracking-widest mt-1 bg-amber-500/10 inline-block px-2 py-0.5 rounded-full border border-amber-500/20">${r.status}</p></div></div>`).join('');
-    }
-
-    function copyRefLink() { navigator.clipboard.writeText(document.getElementById('ref-link-input').value).then(() => showToast("Success", "Referral link copied!", "success")); }
-    function shareReferralTelegram() { tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(`https://t.me/XPVersebot?startapp=${appState.user.tgId}`)}&text=${encodeURIComponent(`🚀 Complete premium tasks, open boxes, and earn USDT straight to your TON Wallet! 💎 I'm already playing XPVerse, join me now 🔥`)}`); }
-    function toggleRefInfo() { document.getElementById('ref-info-modal').classList.toggle('hidden'); document.getElementById('ref-info-modal').classList.toggle('flex'); }
 
     function renderReferrals() {
-      const container = document.getElementById('referral-list-container');
-      if (appState.referrals.length === 0) return container.innerHTML = `<div class="glass-card rounded-xl p-5 text-center border-dashed border-2 border-slate-700/50"><i class="fa-solid fa-user-plus text-3xl text-slate-700 mb-2 drop-shadow-md"></i><p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">No referrals yet</p></div>`;
-      container.innerHTML = appState.referrals.map(r => {
-        const isAppr = r.status === 'Approved'; const statusClass = isAppr ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-amber-500/10 text-amber-400 border-amber-500/30';
-        return `<div class="glass-card rounded-xl p-3.5 flex flex-col gap-3 border border-slate-800/80"><div class="flex justify-between items-center"><div class="flex items-center gap-2.5"><div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center font-black text-white text-sm">${r.name.charAt(0).toUpperCase()}</div><div class="flex flex-col"><span class="text-xs font-black text-white tracking-wide truncate max-w-[120px]">${r.name}</span>${r.username ? `<span class="text-[9px] text-slate-400 font-mono mt-0.5">@${r.username}</span>` : ''}</div></div><span class="text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded border ${statusClass}">${r.status}</span></div>${!isAppr ? `<div class="bg-[#050511]/60 rounded-lg p-2.5 border border-slate-700/60 grid grid-cols-2 gap-2.5 shadow-inner"><div class="text-center"><p class="text-[8px] font-bold text-slate-500 uppercase tracking-widest mb-1">Ads</p><div class="w-full bg-slate-800 rounded-full h-1 mb-1 overflow-hidden shadow-inner"><div class="bg-blue-500 h-full rounded-full" style="width: ${Math.min((r.ads/25)*100, 100)}%"></div></div><p class="text-[10px] font-black text-white">${r.ads} <span class="text-slate-500 font-bold">/ 25</span></p></div><div class="text-center border-l border-slate-700"><p class="text-[8px] font-bold text-slate-500 uppercase tracking-widest mb-1">Task</p><div class="w-3/4 mx-auto bg-slate-800 rounded-full h-1 mb-1 overflow-hidden shadow-inner"><div class="bg-crypto-glow h-full rounded-full" style="width: ${Math.min((r.tasks/5)*100, 100)}%"></div></div><p class="text-[10px] font-black text-white">${r.tasks} <span class="text-slate-500 font-bold">/ 5</span></p></div></div>` : ''}</div>`;
+      const c = document.getElementById('referral-list-container');
+      if (appState.referrals.length === 0) {
+        c.innerHTML = '<div class="text-center py-5 bg-[#050511]/60 rounded-xl border border-slate-700/50"><i class="fa-solid fa-user-plus text-2xl text-slate-600 mb-2"></i><p class="text-[11px] text-slate-400 font-bold">No referrals yet.</p></div>'; return;
+      }
+      c.innerHTML = appState.referrals.map(r => {
+        const statusColor = r.status === 'Approved' ? 'emerald' : 'amber';
+        return `<div class="bg-[#050511]/60 border border-slate-700/50 rounded-xl p-3 flex flex-col gap-2"><div class="flex justify-between items-center"><div class="flex items-center gap-2"><div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-[10px] text-white font-black uppercase border border-slate-600">${r.name.substring(0,2)}</div><div><p class="text-[11px] font-black text-white">${r.name}</p><p class="text-[9px] text-slate-500">${r.joinDate}</p></div></div><span class="bg-${statusColor}-500/10 text-${statusColor}-400 border border-${statusColor}-500/30 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider">${r.status}</span></div><div class="grid grid-cols-2 gap-2 mt-1"><div class="bg-slate-900/50 p-1.5 rounded-lg text-center border border-slate-800"><p class="text-[8px] text-slate-500 uppercase font-black">Ads Watched</p><p class="text-[10px] font-black text-blue-400">${r.ads} / 25</p></div><div class="bg-slate-900/50 p-1.5 rounded-lg text-center border border-slate-800"><p class="text-[8px] text-slate-500 uppercase font-black">Tasks Done</p><p class="text-[10px] font-black text-crypto-glow">${r.tasks} / 5</p></div></div></div>`;
       }).join('');
     }
 
     function renderRewardHistory() {
-      const container = document.getElementById('referral-rewards-container');
-      if (appState.rewards.length === 0) return container.innerHTML = `<div class="glass-card rounded-xl p-4 text-center border-dashed border border-slate-700/50"><p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">No rewards yet</p></div>`;
-      container.innerHTML = appState.rewards.map(r => `<div class="glass-card rounded-lg p-3 flex justify-between items-center border border-slate-800/80 shadow-sm"><div class="flex items-center gap-2.5"><div class="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center text-emerald-400 shadow-inner"><i class="fa-solid fa-gift text-sm drop-shadow-sm"></i></div><div><p class="text-[11px] font-black text-white tracking-wide">${r.title}</p><p class="text-[9px] text-slate-400 mt-0.5 truncate max-w-[130px]">${r.desc}</p></div></div><div class="text-right flex flex-col items-end"><span class="text-[10px] font-black text-crypto-glow">+${r.xp} XP</span><span class="text-[10px] font-black text-emerald-400 mt-0.5">+$${formatNum(r.usd, true)}</span></div></div>`).join('');
+      const c = document.getElementById('referral-rewards-container');
+      if (appState.rewards.length === 0) {
+        c.innerHTML = '<div class="text-center py-4 bg-[#050511]/60 rounded-xl border border-slate-700/50"><p class="text-[10px] text-slate-500 font-bold">No rewards yet.</p></div>'; return;
+      }
+      c.innerHTML = appState.rewards.map(r => `<div class="bg-emerald-900/10 border border-emerald-500/20 rounded-xl p-2.5 flex justify-between items-center"><div class="flex flex-col"><p class="text-[10px] font-black text-emerald-400">${r.title}</p><p class="text-[9px] text-slate-400">${r.desc}</p></div><div class="text-right"><p class="text-[11px] font-black text-white">+${r.xp} XP</p><p class="text-[9px] text-emerald-400 font-bold">+$${r.usd}</p></div></div>`).join('');
     }
 
-    function switchTab(tabId) {
-      document.querySelectorAll('.view-section').forEach(el => { el.classList.add('hidden'); el.classList.remove('animate-slide-up'); });
-      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('nav-active'));
-      const targetView = document.getElementById(`view-${tabId}`);
-      targetView.classList.remove('hidden'); targetView.classList.add('animate-slide-up');
-      
-      const tabTarget = document.querySelector(`[data-target="${tabId}"]`);
-      if (tabTarget) tabTarget.classList.add('nav-active');
-      if (tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // SERVER-SYNCED TIMER (Independent of Device Time)
-    let timeRemaining = 0;
-    let timerInterval = null;
-    
-    function startServerTimer(currentServer, resetServer) {
-        if(timerInterval) clearInterval(timerInterval);
-        timeRemaining = resetServer - currentServer;
-        
-        timerInterval = setInterval(() => {
-            if (timeRemaining > 0) timeRemaining--;
-            if (timeRemaining <= 0) { 
-                document.getElementById('reset-timer').innerText = "00:00:00"; 
-                // Auto reload to fetch new day data once hit zero
-                setTimeout(() => { window.location.reload(); }, 2000);
-                return; 
+    async function openBox(type) {
+      const costs = { bronze: 10000, silver: 50000, gold: 100000 };
+      if (appState.user.xp < costs[type]) { return showToast('Insufficient XP', `You need ${formatNum(costs[type])} Current XP to open this box.`, 'error'); }
+      tg.showConfirm(`Open ${type} box for ${formatNum(costs[type])} XP?`, async (confirmed) => {
+        if(confirmed) {
+            const res = await apiCall('open_box', { boxType: type });
+            if (res && res.success) {
+                if (res.jackpot) showToast('JACKPOT!', `Incredible! You won $${res.reward.toFixed(2)} USDT!`, 'jackpot');
+                else showToast('Box Opened!', `You won $${res.reward.toFixed(2)} USDT.`, 'success');
             }
-            
-            const h = Math.floor(timeRemaining / 3600);
-            const m = Math.floor((timeRemaining % 3600) / 60);
-            const s = Math.floor(timeRemaining % 60);
-            document.getElementById('reset-timer').innerText = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        }, 1000);
-    }
-    
-    async function initApp() {
-      const res = await apiCall('init');
-      if(res && res.serverTime) startServerTimer(res.serverTime, res.serverResetTime);
-      setTimeout(() => { document.getElementById('loading-overlay').style.opacity = '0'; setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; }, 500); }, 600);
+        }
+      });
     }
 
-    // --- ADMIN PANEL FUNCTIONS ---
-    function openAdminAuth() {
-        document.getElementById('admin-auth-modal').classList.remove('hidden');
-        document.getElementById('admin-auth-modal').classList.add('flex');
+    async function requestWithdrawal() {
+      const amount = parseFloat(document.getElementById('withdraw-amount').value);
+      const address = document.getElementById('wallet-address').value.trim();
+      if (amount < 10) return showToast('Error', 'Minimum withdrawal is $10.', 'error');
+      if (amount > appState.user.usd) return showToast('Error', 'Insufficient balance.', 'error');
+      if (address.length < 10) return showToast('Error', 'Enter a valid TON wallet address.', 'error');
+      
+      const btn = document.getElementById('withdraw-btn');
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...'; btn.disabled = true;
+      const res = await apiCall('withdraw', { amount, address });
+      btn.innerHTML = '<i class="fa-solid fa-money-bill-transfer text-base"></i> Request Withdrawal'; btn.disabled = false;
+      
+      if (res && res.success) {
+        showToast('Success', 'Withdrawal request submitted successfully.', 'success');
+        document.getElementById('withdraw-amount').value = ''; document.getElementById('wallet-address').value = '';
+      }
     }
-    function closeAdminAuth() {
-        document.getElementById('admin-auth-modal').classList.add('hidden');
-        document.getElementById('admin-auth-modal').classList.remove('flex');
+
+    function renderWithdrawHistory() {
+      const c = document.getElementById('withdraw-history-container');
+      if (appState.withdrawals.length === 0) {
+        c.innerHTML = '<div class="text-center py-5 bg-[#050511]/60 rounded-xl border border-slate-700/50"><i class="fa-solid fa-clock-rotate-left text-2xl text-slate-600 mb-2"></i><p class="text-[11px] text-slate-400 font-bold">No withdrawal history.</p></div>'; return;
+      }
+      c.innerHTML = appState.withdrawals.map(w => {
+        let sc = 'amber'; let si = 'fa-clock';
+        if (w.status === 'Approved') { sc = 'emerald'; si = 'fa-check-double'; }
+        else if (w.status === 'Rejected') { sc = 'red'; si = 'fa-xmark'; }
+        return `<div class="bg-[#050511]/60 border border-slate-700/50 rounded-xl p-3 flex justify-between items-center"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-lg bg-${sc}-500/10 flex items-center justify-center border border-${sc}-500/30"><i class="fa-solid ${si} text-${sc}-400 text-sm"></i></div><div><p class="text-[11px] font-black text-white">${w.id}</p><p class="text-[9px] text-slate-500 font-mono">${w.address}</p><p class="text-[8px] text-slate-600">${w.date}</p></div></div><div class="text-right"><p class="text-[12px] font-black text-white">$${w.amount.toFixed(2)}</p><span class="text-[9px] text-${sc}-400 font-bold uppercase tracking-widest">${w.status}</span></div></div>`;
+      }).join('');
     }
+
+    function copyRefLink() { const el = document.getElementById('ref-link-input'); el.select(); document.execCommand('copy'); showToast('Copied!', 'Referral link copied to clipboard.', 'success'); }
+    function shareReferralTelegram() { const url = `https://t.me/share/url?url=https://t.me/XPVersebot?startapp=${appState.user.tgId}&text=Play%20XPVerse%20and%20earn%20USDT!`; tg.openTelegramLink(url); }
+    function toggleRefInfo() { const m = document.getElementById('ref-info-modal'); m.classList.toggle('hidden'); m.classList.toggle('flex'); }
+
+    // Navigation
+    function switchTab(tabId) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('nav-active'));
+      document.querySelector(`.nav-btn[data-target="${tabId}"]`).classList.add('nav-active');
+      window.scrollTo(0,0); tg.HapticFeedback.selectionChanged();
+    }
+
+    // Timer Update
+    setInterval(() => {
+      if (!appState.user) return;
+      let diff = appState.serverResetTime - Math.floor(Date.now() / 1000);
+      if (diff <= 0) { document.getElementById('reset-timer').innerText = "Resetting..."; setTimeout(() => location.reload(), 2000); return; }
+      const h = Math.floor(diff / 3600).toString().padStart(2, '0');
+      const m = Math.floor((diff % 3600) / 60).toString().padStart(2, '0');
+      const s = Math.floor(diff % 60).toString().padStart(2, '0');
+      document.getElementById('reset-timer').innerText = `${h}:${m}:${s}`;
+    }, 1000);
+
+    /* ====== ADMIN PANEL LOGIC ====== */
+    function openAdminAuth() { document.getElementById('admin-auth-modal').classList.remove('hidden'); document.getElementById('admin-auth-modal').classList.add('flex'); }
+    function closeAdminAuth() { document.getElementById('admin-auth-modal').classList.add('hidden'); document.getElementById('admin-auth-modal').classList.remove('flex'); }
+    
     async function submitAdminAuth() {
-        const code = document.getElementById('admin-code-input').value;
-        adminToken = code;
-        const res = await apiCall('admin_dashboard', { adminCode: code });
-        if(res && !res.error) {
-            closeAdminAuth();
-            switchTab('admin');
-            
-            document.getElementById('adm-stat-users').innerText = res.stats.users;
-            document.getElementById('adm-stat-usd').innerText = `$${res.stats.usd.toFixed(2)}`;
-            document.getElementById('adm-stat-ads').innerText = res.stats.ads;
-            document.getElementById('adm-stat-tasks').innerText = res.stats.tasks;
-            document.getElementById('adm-stat-xp').innerText = res.stats.xp;
-            document.getElementById('adm-stat-refs').innerText = res.stats.refs;
-            
-            document.getElementById('admin-ad-sdk').value = (appState.settings.adBlockIds || []).join(', ');
-            adminUsers = res.all_users;
-            adminWithdrawals = res.all_withdrawals;
-            renderAdminUsers();
-            renderAdminWithdrawals();
+        adminToken = document.getElementById('admin-code-input').value;
+        const res = await apiCall('admin_dashboard', { adminCode: adminToken });
+        if(res && res.success) {
+            closeAdminAuth(); switchTab('admin'); showToast('Admin Auth', 'Access Granted', 'success');
+        } else {
+            showToast('Auth Failed', 'Invalid Code', 'error');
         }
     }
 
     function switchAdminTab(tab) {
         document.querySelectorAll('.admin-section').forEach(el => el.classList.add('hidden'));
         document.getElementById(`admin-sec-${tab}`).classList.remove('hidden');
-        document.querySelectorAll('.admin-tab').forEach(el => { el.classList.remove('bg-red-600/20', 'text-red-400', 'border', 'border-red-500/50'); el.classList.add('text-slate-400'); });
-        document.getElementById(`tab-${tab}`).classList.add('bg-red-600/20', 'text-red-400', 'border', 'border-red-500/50');
-        document.getElementById(`tab-${tab}`).classList.remove('text-slate-400');
-    }
-
-    function renderAdminUsers() {
-        const query = document.getElementById('admin-user-search').value.toLowerCase();
-        const list = adminUsers.filter(u => u.tgId.includes(query) || (u.username && u.username.toLowerCase().includes(query)));
+        document.querySelectorAll('.admin-tab').forEach(el => {
+            el.classList.remove('bg-red-600/20', 'text-red-400', 'border-red-500/50'); el.classList.add('text-slate-400');
+        });
+        const activeTab = document.getElementById(`tab-${tab}`);
+        activeTab.classList.remove('text-slate-400'); activeTab.classList.add('bg-red-600/20', 'text-red-400', 'border-red-500/50');
         
-        document.getElementById('admin-user-list').innerHTML = list.map(u => `
-            <div class="glass-card p-3 rounded-lg border border-slate-700 space-y-2">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="text-xs font-black text-white">${u.firstName} <span class="text-slate-400 font-mono text-[9px]">@${u.username}</span></p>
-                        <p class="text-[9px] text-blue-400">ID: ${u.tgId} | Active: ${u.lastActive.substr(0,16)}</p>
-                    </div>
-                    ${u.banned ? '<span class="text-[8px] bg-red-500/20 text-red-500 px-2 py-1 rounded">BANNED</span>' : '<span class="text-[8px] bg-emerald-500/20 text-emerald-500 px-2 py-1 rounded">ACTIVE</span>'}
-                </div>
-                <div class="flex gap-2 items-center bg-[#050511] p-2 rounded">
-                    <input type="number" id="adm-usd-${u.tgId}" value="${u.usd.toFixed(2)}" class="w-16 bg-transparent text-xs text-emerald-400 outline-none border-b border-slate-600 text-center" title="USD">
-                    <input type="number" id="adm-xp-${u.tgId}" value="${u.xp}" class="w-16 bg-transparent text-xs text-crypto-glow outline-none border-b border-slate-600 text-center" title="XP">
-                    <button onclick="adminSaveUser('${u.tgId}')" class="bg-blue-600/20 text-blue-400 px-2 py-1 rounded text-[10px]">Save</button>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="adminActionUser('${u.tgId}', 'reset_ads')" class="flex-1 bg-amber-500/20 text-amber-500 py-1 rounded text-[9px] uppercase font-black">Reset Ads (${u.adsWatchedToday})</button>
-                    <button onclick="adminActionUser('${u.tgId}', '${u.banned ? 'unban' : 'ban'}')" class="flex-1 ${u.banned ? 'bg-emerald-500/20 text-emerald-500' : 'bg-red-500/20 text-red-500'} py-1 rounded text-[9px] uppercase font-black">${u.banned ? 'Unban' : 'Ban'}</button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function filterAdminUsers() { renderAdminUsers(); }
-
-    async function adminSaveUser(tgId) {
-        const newUsd = document.getElementById(`adm-usd-${tgId}`).value;
-        const newXp = document.getElementById(`adm-xp-${tgId}`).value;
-        await adminActionUser(tgId, 'update_balance', { newUsd, newXp });
-    }
-
-    async function adminActionUser(targetUid, userAction, extras = {}) {
-        const res = await apiCall('admin_action_user', { adminCode: adminToken, targetUid, userAction, ...extras });
-        if(res && !res.error) {
-            showToast('Success', res.message, 'success');
-            submitAdminAuth(); // Refresh data
+        if(tab === 'settings') {
+            document.getElementById('admin-ad-sdk').value = appState.settings.adBlockIds.join(', ');
+            document.getElementById('admin-maint-toggle').checked = appState.settings.maintenance || false;
+            renderAdminDynamicTasks();
+        } else if (tab === 'dashboard') {
+            renderAdminLogs();
         }
+    }
+
+    function renderAdminDashboard(stats) {
+        if(!stats) return;
+        document.getElementById('adm-stat-users').innerText = stats.users;
+        document.getElementById('adm-stat-usd').innerText = `$${stats.usd.toFixed(2)}`;
+        renderAdminUsers(); renderAdminWithdrawals(); renderAdminLogs();
+    }
+
+    function renderAdminLogs() {
+        const c = document.getElementById('admin-action-logs');
+        if(!adminLogs || adminLogs.length === 0) { c.innerHTML = '<p class="text-[10px] text-slate-500">No recent actions.</p>'; return; }
+        c.innerHTML = adminLogs.map(l => `<div class="bg-slate-900/50 border border-slate-700/50 rounded-lg p-2"><div class="flex justify-between items-center mb-1"><span class="text-[9px] font-black text-crypto-glow uppercase tracking-widest">${l.action}</span><span class="text-[8px] text-slate-500">${l.time}</span></div><p class="text-[10px] text-slate-300">${l.details}</p></div>`).join('');
+    }
+
+    function filterAdminUsers() { renderAdminUsers(document.getElementById('admin-user-search').value.toLowerCase()); }
+
+    function renderAdminUsers(filter = '') {
+        const list = document.getElementById('admin-user-list');
+        list.innerHTML = adminUsers.filter(u => u.tgId.includes(filter) || u.username.toLowerCase().includes(filter)).map(u => {
+            return `
+            <div class="glass-card p-3 rounded-xl border border-slate-700/80">
+                <div class="flex justify-between items-start mb-2 border-b border-slate-700 pb-2">
+                    <div>
+                        <p class="text-xs font-black text-white">${u.firstName} ${u.lastName}</p>
+                        <p class="text-[9px] text-blue-400 font-mono">@${u.username} | UID: ${u.tgId}</p>
+                        <p class="text-[9px] text-slate-500 mt-0.5"><i class="fa-solid fa-clock mr-1"></i>Last Active: ${u.lastActive}</p>
+                    </div>
+                    <div class="text-right">
+                        ${u.banned ? '<span class="bg-red-500 text-white px-2 py-0.5 rounded text-[8px] font-black uppercase">Banned</span>' : '<span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[8px] font-black uppercase">Active</span>'}
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-2 mb-3">
+                    <div class="bg-slate-900/50 p-1.5 rounded text-center border border-slate-800"><p class="text-[8px] text-slate-500 uppercase font-black">Daily Ads</p><p class="text-[10px] font-black text-blue-400">${u.adsWatchedToday}</p></div>
+                    <div class="bg-slate-900/50 p-1.5 rounded text-center border border-slate-800"><p class="text-[8px] text-slate-500 uppercase font-black">Daily XP</p><p class="text-[10px] font-black text-crypto-glow">${u.dailyXp || 0}</p></div>
+                    <div class="bg-slate-900/50 p-1.5 rounded text-center border border-slate-800"><p class="text-[8px] text-slate-500 uppercase font-black">Referrals</p><p class="text-[10px] font-black text-purple-400">${u.refCount || 0}</p></div>
+                </div>
+                
+                <div class="flex gap-2 mb-3">
+                    <div class="flex-1">
+                        <label class="text-[8px] text-slate-500 uppercase font-black">Current XP</label>
+                        <input type="number" id="adm-xp-${u.tgId}" value="${u.xp}" class="w-full bg-[#050511] border border-slate-600 rounded text-xs px-2 py-1 text-white">
+                    </div>
+                    <div class="flex-1">
+                        <label class="text-[8px] text-slate-500 uppercase font-black">USD Balance</label>
+                        <input type="number" id="adm-usd-${u.tgId}" value="${u.usd}" class="w-full bg-[#050511] border border-slate-600 rounded text-xs px-2 py-1 text-white">
+                    </div>
+                </div>
+                
+                <div class="flex gap-1.5">
+                    <button onclick="adminActionUser('${u.tgId}', 'update_balance')" class="flex-1 bg-blue-600 text-white py-1.5 rounded text-[9px] font-black uppercase">Save Balances</button>
+                    ${u.banned 
+                        ? `<button onclick="adminActionUser('${u.tgId}', 'unban')" class="flex-1 bg-emerald-600 text-white py-1.5 rounded text-[9px] font-black uppercase">Unban</button>`
+                        : `<button onclick="adminActionUser('${u.tgId}', 'ban')" class="flex-1 bg-red-600 text-white py-1.5 rounded text-[9px] font-black uppercase">Ban</button>`
+                    }
+                </div>
+            </div>`;
+        }).join('');
     }
 
     function renderAdminWithdrawals() {
-        const pending = adminWithdrawals.filter(w => w.status === 'Pending');
-        if(pending.length === 0) {
-            document.getElementById('admin-withdrawal-list').innerHTML = '<p class="text-center text-xs text-slate-500 py-4">No pending requests</p>';
-            return;
-        }
-        document.getElementById('admin-withdrawal-list').innerHTML = pending.map(w => `
-            <div class="glass-card p-3 rounded-lg border border-slate-700">
-                <div class="flex justify-between items-center mb-2">
-                    <div>
-                        <p class="text-xs font-black text-white">ID: ${w.user_id}</p>
-                        <p class="text-[9px] text-slate-400">${w.date}</p>
-                    </div>
-                    <p class="text-sm font-black text-emerald-400">$${w.amount.toFixed(2)}</p>
+        const list = document.getElementById('admin-withdrawal-list');
+        list.innerHTML = adminWithdrawals.map(w => `
+            <div class="glass-card p-3 rounded-xl border border-slate-700">
+                <div class="flex justify-between">
+                    <div><p class="text-[10px] font-black text-white">UID: ${w.user_id}</p><p class="text-[9px] text-slate-400">Addr: ${w.address}</p></div>
+                    <div class="text-right"><p class="text-xs font-black text-emerald-400">$${w.amount}</p><p class="text-[8px] text-amber-400 font-bold uppercase">${w.status}</p></div>
                 </div>
-                <div class="bg-[#050511] p-1.5 rounded mb-2 overflow-hidden text-ellipsis">
-                    <p class="text-[10px] text-blue-400 font-mono">${w.address}</p>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="adminWithdrawAction('${w.user_id}', ${w.idx}, 'approve')" class="flex-1 bg-emerald-500/20 text-emerald-500 py-1.5 rounded text-[10px] uppercase font-black">Approve</button>
-                    <button onclick="adminWithdrawAction('${w.user_id}', ${w.idx}, 'reject')" class="flex-1 bg-red-500/20 text-red-500 py-1.5 rounded text-[10px] uppercase font-black">Reject</button>
-                </div>
+                ${w.status === 'Pending' ? `<div class="flex gap-2 mt-2"><button onclick="adminActionWithdraw('${w.user_id}', ${w.idx}, 'approve')" class="flex-1 bg-emerald-600 text-white py-1 rounded text-[9px] font-black uppercase">Approve</button><button onclick="adminActionWithdraw('${w.user_id}', ${w.idx}, 'reject')" class="flex-1 bg-red-600 text-white py-1 rounded text-[9px] font-black uppercase">Reject</button></div>` : ''}
             </div>
         `).join('');
     }
 
-    async function adminWithdrawAction(targetUid, idx, action) {
-        if(confirm(`Are you sure you want to ${action} this withdrawal?`)) {
-            const res = await apiCall('admin_action_withdraw', { adminCode: adminToken, targetUid, idx, withdrawAction: action });
-            if(res && !res.error) {
-                showToast('Success', res.message, 'success');
-                submitAdminAuth(); // Refresh
-            }
+    async function adminActionUser(targetUid, action) {
+        let payload = { adminCode: adminToken, targetUid: targetUid, userAction: action };
+        if (action === 'update_balance') {
+            payload.newXp = document.getElementById(`adm-xp-${targetUid}`).value;
+            payload.newUsd = document.getElementById(`adm-usd-${targetUid}`).value;
         }
+        await apiCall('admin_action_user', payload);
+        await apiCall('admin_dashboard', { adminCode: adminToken }); // Refresh
+        showToast('Success', 'User updated.', 'success');
+    }
+
+    async function adminActionWithdraw(targetUid, idx, action) {
+        await apiCall('admin_action_withdraw', { adminCode: adminToken, targetUid, idx, withdrawAction: action });
+        await apiCall('admin_dashboard', { adminCode: adminToken }); // Refresh
+        showToast('Success', 'Withdrawal processed.', 'success');
     }
 
     async function saveAdminSettings() {
-        const blockIdsStr = document.getElementById('admin-ad-sdk').value;
-        const blockIds = blockIdsStr.split(',').map(id => id.trim()).filter(id => id.length > 0);
-        
-        const res = await apiCall('admin_update_settings', { adminCode: adminToken, blockIds });
-        if(res && !res.error) {
-            showToast('Success', res.message, 'success');
-            appState.settings.adBlockIds = blockIds;
+        const ids = document.getElementById('admin-ad-sdk').value.split(',').map(s => s.trim()).filter(Boolean);
+        await apiCall('admin_update_settings', { adminCode: adminToken, blockIds: ids });
+        showToast('Success', 'Ads Config Saved.', 'success');
+    }
+    
+    async function toggleMaintenance() {
+        const isMaint = document.getElementById('admin-maint-toggle').checked;
+        await apiCall('admin_update_settings', { adminCode: adminToken, maintenance: isMaint });
+        showToast('System', `Maintenance is now ${isMaint ? 'ON' : 'OFF'}`, 'success');
+    }
+
+    async function setDoubleXp() {
+        const hours = document.getElementById('admin-double-xp-hours').value;
+        await apiCall('admin_update_settings', { adminCode: adminToken, doubleXpHours: hours });
+        showToast('System', hours > 0 ? `2x XP Active for ${hours} hours.` : '2x XP Disabled.', 'success');
+        document.getElementById('admin-double-xp-hours').value = '';
+    }
+
+    async function resetAllAds() {
+        if(confirm("Are you sure you want to reset today's ad limits for ALL users?")) {
+            await apiCall('admin_reset_ads', { adminCode: adminToken });
+            await apiCall('admin_dashboard', { adminCode: adminToken });
+            showToast('System', 'All ad limits reset.', 'success');
         }
     }
 
-    // Start App
-    window.addEventListener('load', initApp);
+    async function wipeBotData() {
+        if(confirm("DANGER! This will delete ALL user data, referrals, and withdrawals (except admin). Are you ABSOLUTELY sure?")) {
+            await apiCall('admin_wipe_data', { adminCode: adminToken });
+            await apiCall('admin_dashboard', { adminCode: adminToken });
+            showToast('System', 'Wipe Complete.', 'success');
+        }
+    }
+
+    async function addDynamicTask() {
+        const title = document.getElementById('dt-title').value;
+        const url = document.getElementById('dt-url').value;
+        const reward = document.getElementById('dt-reward').value;
+        
+        if(!title || !url || !reward) return showToast('Error', 'Fill all task fields', 'error');
+        await apiCall('admin_task_manager', { adminCode: adminToken, taskAction: 'add', title, url, reward });
+        document.getElementById('dt-title').value = ''; document.getElementById('dt-url').value = ''; document.getElementById('dt-reward').value = '';
+        renderAdminDynamicTasks(); showToast('Success', 'Task Added', 'success');
+    }
+
+    async function deleteDynamicTask(tid) {
+        await apiCall('admin_task_manager', { adminCode: adminToken, taskAction: 'delete', taskId: tid });
+        renderAdminDynamicTasks(); showToast('Success', 'Task Deleted', 'success');
+    }
+
+    function renderAdminDynamicTasks() {
+        const list = document.getElementById('admin-dynamic-tasks-list');
+        const dtList = appState.settings.dynamicTasks || [];
+        list.innerHTML = dtList.map(t => `
+            <div class="flex justify-between items-center bg-slate-900/50 p-2 rounded border border-slate-700">
+                <div><p class="text-[10px] font-black text-white">${t.title}</p><p class="text-[8px] text-crypto-glow">+${t.reward} XP</p></div>
+                <button onclick="deleteDynamicTask('${t.id}')" class="text-red-500 hover:text-red-400"><i class="fa-solid fa-trash text-xs"></i></button>
+            </div>
+        `).join('');
+    }
+
+    // Init
+    window.addEventListener('load', async () => {
+        const res = await apiCall('init');
+        if (res !== false) {
+            document.getElementById('loading-overlay').style.opacity = '0';
+            setTimeout(() => document.getElementById('loading-overlay').remove(), 500);
+        }
+    });
   </script>
 </body>
 </html>
